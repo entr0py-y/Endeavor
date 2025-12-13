@@ -8,35 +8,43 @@ export const config = {
   },
 };
 
+// In-memory storage for quests (will reset on server restart)
+let questStorage: any[] = [
+  {
+    _id: '1',
+    title: 'Beach Cleanup Challenge',
+    description: 'Clean up trash from the local beach',
+    type: 'cleanup',
+    difficulty: 'easy',
+    points: 50,
+    location: { lat: 34.0195, lng: -118.4912 },
+    beforePhoto: 'https://via.placeholder.com/400x300?text=Beach+Cleanup',
+    address: 'Santa Monica Beach',
+    status: 'available',
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: '2',
+    title: 'Park Restoration',
+    description: 'Help restore the community park',
+    type: 'restoration',
+    difficulty: 'medium',
+    points: 100,
+    location: { lat: 40.7829, lng: -73.9654 },
+    beforePhoto: 'https://via.placeholder.com/400x300?text=Park+Restoration',
+    address: 'Central Park',
+    status: 'available',
+    createdAt: new Date().toISOString()
+  }
+];
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === 'GET') {
-    // Return mock quests
-    const quests = [
-      {
-        _id: '1',
-        title: 'Beach Cleanup Challenge',
-        description: 'Clean up trash from the local beach',
-        type: 'cleanup',
-        difficulty: 'easy',
-        points: 50,
-        location: 'Santa Monica Beach',
-        status: 'available'
-      },
-      {
-        _id: '2',
-        title: 'Park Restoration',
-        description: 'Help restore the community park',
-        type: 'restoration',
-        difficulty: 'medium',
-        points: 100,
-        location: 'Central Park',
-        status: 'available'
-      }
-    ];
-    return res.status(200).json(quests);
+    // Return all quests
+    return res.status(200).json(questStorage);
   }
 
   if (req.method === 'POST') {
@@ -61,6 +69,9 @@ export default async function handler(
         status: 'available',
         createdAt: new Date().toISOString()
       };
+
+      // Add to storage
+      questStorage.unshift(newQuest); // Add to beginning of array
 
       return res.status(201).json({
         message: 'Quest posted successfully!',

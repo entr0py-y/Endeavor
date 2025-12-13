@@ -424,7 +424,7 @@ export default function Dashboard() {
 
       {/* Modals */}
       {showPostModal && (
-        <PostQuestModal onClose={() => setShowPostModal(false)} onSuccess={loadQuests} />
+        <PostQuestModal onClose={() => setShowPostModal(false)} onSuccess={() => { setShowPostModal(false); loadQuests(); }} />
       )}
     </div>
   );
