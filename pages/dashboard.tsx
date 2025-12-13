@@ -496,9 +496,14 @@ function PostQuestModal({ onClose, onSuccess }: any) {
         alert(result.message || 'Quest posted!');
         onSuccess();
         onClose();
+      } else if (result.error) {
+        alert(result.error);
+      } else {
+        alert('Failed to post quest');
       }
-    } catch (err) {
-      alert('Failed to post quest');
+    } catch (err: any) {
+      console.error('Quest post error:', err);
+      alert('Failed to post quest: ' + (err.message || 'Unknown error'));
     } finally {
       setLoading(false);
     }
