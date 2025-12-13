@@ -80,11 +80,20 @@ export const api = {
       },
       body: JSON.stringify(data)
     });
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.error || 'Failed to create quest');
+    
+    const text = await res.text();
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch (e) {
+      console.error('Response is not JSON:', text);
+      throw new Error('Server returned invalid response');
     }
-    return res.json();
+    
+    if (!res.ok) {
+      throw new Error(json.error || 'Failed to create quest');
+    }
+    return json;
   },
 
   completeQuest: async (questId: string, afterPhoto: string, token: string) => {
