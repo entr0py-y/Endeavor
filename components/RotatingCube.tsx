@@ -120,7 +120,7 @@ export default function RotatingCube() {
       rotationRef.current.zw += 0.002;
 
       // Define tesseract vertices (4D hypercube)
-      const vertices4D = [];
+      const vertices4D: number[][] = [];
       for (let i = 0; i < 16; i++) {
         vertices4D.push([
           (i & 1) ? 1 : -1,
