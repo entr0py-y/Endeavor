@@ -248,45 +248,24 @@ export default function Dashboard() {
         {/* User Stats */}
         <div className="mb-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div
-              initial={{ opacity: 0, x: -80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0 }}
-            >
-              <Card>
-                <div className="text-center">
-                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.xp || 0}</h2>
-                  <p className="text-white/60 text-sm tracking-wider">TOTAL XP</p>
-                </div>
-              </Card>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0 }}
-            >
-              <Card>
-                <div className="text-center">
-                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.level || 1}</h2>
-                  <p className="text-white/60 text-sm tracking-wider">LEVEL</p>
-                </div>
-              </Card>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: -80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0 }}
-            >
-              <Card>
-                <div className="text-center">
-                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.questsCompleted || 0}</h2>
-                  <p className="text-white/60 text-sm tracking-wider">COMPLETED</p>
-                </div>
-              </Card>
-            </motion.div>
+            <Card>
+              <div className="text-center">
+                <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.xp || 0}</h2>
+                <p className="text-white/60 text-sm tracking-wider">TOTAL XP</p>
+              </div>
+            </Card>
+            <Card>
+              <div className="text-center">
+                <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.level || 1}</h2>
+                <p className="text-white/60 text-sm tracking-wider">LEVEL</p>
+              </div>
+            </Card>
+            <Card>
+              <div className="text-center">
+                <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.questsCompleted || 0}</h2>
+                <p className="text-white/60 text-sm tracking-wider">COMPLETED</p>
+              </div>
+            </Card>
           </div>
         </div>
 
@@ -316,13 +295,7 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Open Quests Column */}
-            <motion.div
-              initial={{ opacity: 0, x: -80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0 }}
-              className="nothing-card p-6"
-            >
+            <div className="nothing-card p-6">
               <h3 className="text-xl font-bold tracking-wider mb-6">OPEN QUESTS</h3>
               {loading ? (
                 <div className="text-center py-8">
@@ -355,16 +328,10 @@ export default function Dashboard() {
                   ))}
                 </div>
               )}
-            </motion.div>
+            </div>
 
             {/* Global Chat Column */}
-            <motion.div
-              initial={{ opacity: 0, x: 80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0 }}
-              className="nothing-card p-6"
-            >
+            <div className="nothing-card p-6">
               <h3 className="text-xl font-bold tracking-wider mb-6">GLOBAL CHAT</h3>
               <div className="flex flex-col h-[400px]">
                 <div className="flex-1 overflow-y-auto space-y-3 mb-4">
@@ -407,16 +374,10 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* History Column */}
-            <motion.div
-              initial={{ opacity: 0, x: -80 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.3 }}
-              transition={{ duration: 0 }}
-              className="nothing-card p-6"
-            >
+            <div className="nothing-card p-6">
               <h3 className="text-xl font-bold tracking-wider mb-6">HISTORY</h3>
               <div className="space-y-3 max-h-[400px] overflow-y-auto">
                 {/* Sample history items - replace with real data */}
@@ -442,7 +403,7 @@ export default function Dashboard() {
                   Your quest history will appear here
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
