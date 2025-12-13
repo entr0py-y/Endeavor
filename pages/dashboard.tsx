@@ -251,8 +251,8 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0, x: -80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0 }}
             >
               <Card>
                 <div className="text-center">
@@ -264,8 +264,8 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0, x: 80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.3, ease: "easeOut", delay: 0.05 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0 }}
             >
               <Card>
                 <div className="text-center">
@@ -277,8 +277,8 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0, x: -80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0 }}
             >
               <Card>
                 <div className="text-center">
@@ -319,8 +319,8 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0, x: -80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-30px" }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0 }}
               className="nothing-card p-6"
             >
               <h3 className="text-xl font-bold tracking-wider mb-6">OPEN QUESTS</h3>
@@ -361,8 +361,8 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0, x: 80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-30px" }}
-              transition={{ duration: 0.35, ease: "easeOut", delay: 0.05 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0 }}
               className="nothing-card p-6"
             >
               <h3 className="text-xl font-bold tracking-wider mb-6">GLOBAL CHAT</h3>
@@ -413,8 +413,8 @@ export default function Dashboard() {
             <motion.div
               initial={{ opacity: 0, x: -80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-30px" }}
-              transition={{ duration: 0.35, ease: "easeOut", delay: 0.1 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0 }}
               className="nothing-card p-6"
             >
               <h3 className="text-xl font-bold tracking-wider mb-6">HISTORY</h3>
