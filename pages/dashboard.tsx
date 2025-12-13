@@ -27,7 +27,6 @@ export default function Dashboard() {
   const [chatMessage, setChatMessage] = useState<string>('');
   const [chatMessages, setChatMessages] = useState<Array<{username: string, message: string, timestamp: Date}>>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -36,14 +35,6 @@ export default function Dashboard() {
     }
     loadQuests();
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const loadQuests = async () => {
     try {
@@ -115,9 +106,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen w-full bg-nothing-black">
-      <div style={{ transform: `rotateX(${scrollY * 0.05}deg) rotateY(${scrollY * 0.05}deg)`, transition: 'transform 0.05s linear' }}>
-        <RotatingCube />
-      </div>
+      <RotatingCube />
       <FollowCube />
       <CursorGlow />
       <RedBars />
@@ -248,30 +237,58 @@ export default function Dashboard() {
         {/* User Stats */}
         <div className="mb-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card>
-              <div className="text-center">
-                <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.xp || 0}</h2>
-                <p className="text-white/60 text-sm tracking-wider">TOTAL XP</p>
-              </div>
-            </Card>
-            <Card>
-              <div className="text-center">
-                <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.level || 1}</h2>
-                <p className="text-white/60 text-sm tracking-wider">LEVEL</p>
-              </div>
-            </Card>
-            <Card>
-              <div className="text-center">
-                <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.questsCompleted || 0}</h2>
-                <p className="text-white/60 text-sm tracking-wider">COMPLETED</p>
-              </div>
-            </Card>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.4 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+              <Card>
+                <div className="text-center">
+                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.xp || 0}</h2>
+                  <p className="text-white/60 text-sm tracking-wider">TOTAL XP</p>
+                </div>
+              </Card>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.4 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+            >
+              <Card>
+                <div className="text-center">
+                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.level || 1}</h2>
+                  <p className="text-white/60 text-sm tracking-wider">LEVEL</p>
+                </div>
+              </Card>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.4 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+            >
+              <Card>
+                <div className="text-center">
+                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.questsCompleted || 0}</h2>
+                  <p className="text-white/60 text-sm tracking-wider">COMPLETED</p>
+                </div>
+              </Card>
+            </motion.div>
           </div>
         </div>
 
         {/* Actions */}
         <div className="mb-16">
-          <div className="cursor-pointer" onClick={() => setShowPostModal(true)}>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.4 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="cursor-pointer"
+            onClick={() => setShowPostModal(true)}
+          >
             <Card hover>
               <div className="text-center py-8">
                 <div className="mb-4 flex justify-center">
@@ -286,7 +303,7 @@ export default function Dashboard() {
                 <p className="text-white/60 text-sm">Found some trash? Let others help clean it up</p>
               </div>
             </Card>
-          </div>
+          </motion.div>
         </div>
 
         {/* Three Column Section: Open Quests, Global Chat, History */}
@@ -295,7 +312,13 @@ export default function Dashboard() {
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Open Quests Column */}
-            <div className="nothing-card p-6">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="nothing-card p-6"
+            >
               <h3 className="text-xl font-bold tracking-wider mb-6">OPEN QUESTS</h3>
               {loading ? (
                 <div className="text-center py-8">
@@ -328,10 +351,16 @@ export default function Dashboard() {
                   ))}
                 </div>
               )}
-            </div>
+            </motion.div>
 
             {/* Global Chat Column */}
-            <div className="nothing-card p-6">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
+              className="nothing-card p-6"
+            >
               <h3 className="text-xl font-bold tracking-wider mb-6">GLOBAL CHAT</h3>
               <div className="flex flex-col h-[400px]">
                 <div className="flex-1 overflow-y-auto space-y-3 mb-4">
@@ -374,10 +403,16 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* History Column */}
-            <div className="nothing-card p-6">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+              className="nothing-card p-6"
+            >
               <h3 className="text-xl font-bold tracking-wider mb-6">HISTORY</h3>
               <div className="space-y-3 max-h-[400px] overflow-y-auto">
                 {/* Sample history items - replace with real data */}
@@ -403,7 +438,7 @@ export default function Dashboard() {
                   Your quest history will appear here
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 

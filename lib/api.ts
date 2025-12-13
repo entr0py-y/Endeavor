@@ -86,12 +86,8 @@ export const api = {
     try {
       json = JSON.parse(text);
     } catch (e) {
-      console.error('Response is not JSON:', text.substring(0, 200));
-      // Return a mock success response if parsing fails
-      return { 
-        quest: { _id: Date.now().toString(), title: 'Quest', description: 'Posted' },
-        message: 'Quest posted successfully!'
-      };
+      console.error('Response is not JSON:', text);
+      throw new Error('Server returned invalid response');
     }
     
     if (!res.ok) {
