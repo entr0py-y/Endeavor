@@ -115,7 +115,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen w-full bg-nothing-black">
-      <div className="md:block" style={{ transform: `rotate(${scrollY * 0.1}deg)`, transition: 'transform 0.1s ease-out' }}>
+      <div style={{ transform: `rotateX(${scrollY * 0.05}deg) rotateY(${scrollY * 0.05}deg)`, transition: 'transform 0.05s linear' }}>
         <RotatingCube />
       </div>
       <FollowCube />
@@ -249,10 +249,10 @@ export default function Dashboard() {
         <div className="mb-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <motion.div
-              initial={{ opacity: 0, x: -100 }}
+              initial={{ opacity: 0, x: -80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
               <Card>
                 <div className="text-center">
@@ -262,10 +262,10 @@ export default function Dashboard() {
               </Card>
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, x: 100 }}
+              initial={{ opacity: 0, x: 80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.3, ease: "easeOut", delay: 0.05 }}
             >
               <Card>
                 <div className="text-center">
@@ -275,10 +275,10 @@ export default function Dashboard() {
               </Card>
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, x: -100 }}
+              initial={{ opacity: 0, x: -80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
             >
               <Card>
                 <div className="text-center">
@@ -317,10 +317,10 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Open Quests Column */}
             <motion.div
-              initial={{ opacity: 0, x: -100 }}
+              initial={{ opacity: 0, x: -80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               className="nothing-card p-6"
             >
               <h3 className="text-xl font-bold tracking-wider mb-6">OPEN QUESTS</h3>
@@ -359,10 +359,10 @@ export default function Dashboard() {
 
             {/* Global Chat Column */}
             <motion.div
-              initial={{ opacity: 0, x: 100 }}
+              initial={{ opacity: 0, x: 80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.35, ease: "easeOut", delay: 0.05 }}
               className="nothing-card p-6"
             >
               <h3 className="text-xl font-bold tracking-wider mb-6">GLOBAL CHAT</h3>
@@ -411,10 +411,10 @@ export default function Dashboard() {
 
             {/* History Column */}
             <motion.div
-              initial={{ opacity: 0, x: -100 }}
+              initial={{ opacity: 0, x: -80 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.35, ease: "easeOut", delay: 0.1 }}
               className="nothing-card p-6"
             >
               <h3 className="text-xl font-bold tracking-wider mb-6">HISTORY</h3>
