@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [chatMessage, setChatMessage] = useState<string>('');
   const [chatMessages, setChatMessages] = useState<Array<{username: string, message: string, timestamp: Date}>>([]);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -115,13 +116,21 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="relative inline-block">
-              <RotatingSmallCube position="left" scale={0.3} offset={10} />
-              <RotatingPrism scale={0.3} />
-              <RotatingSmallCube position="right" scale={0.3} offset={10} />
-              <h1 className="text-2xl font-light tracking-[0.25em] relative z-10" style={{ fontWeight: 300 }}>SWEEPX</h1>
+              <div className="hidden md:block">
+                <RotatingSmallCube position="left" scale={0.3} offset={10} />
+                <RotatingPrism scale={0.3} />
+                <RotatingSmallCube position="right" scale={0.3} offset={10} />
+              </div>
+              <div className="md:hidden">
+                <RotatingSmallCube position="left" scale={0.15} offset={5} />
+                <RotatingPrism scale={0.15} />
+                <RotatingSmallCube position="right" scale={0.15} offset={5} />
+              </div>
+              <h1 className="text-lg md:text-2xl font-light tracking-[0.25em] relative z-10" style={{ fontWeight: 300 }}>SWEEPX</h1>
             </div>
             
-            <nav className="flex items-center gap-8">
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-8">
               <button
                 onClick={() => router.push('/dashboard')}
                 className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
@@ -159,8 +168,68 @@ export default function Dashboard() {
                 LOG OUT
               </button>
             </nav>
+
+            {/* Mobile Navigation */}
+            <div className="md:hidden flex items-center gap-3">
+              <button
+                onClick={handleLogout}
+                className="nothing-button text-xs px-3 py-2 dot-matrix"
+              >
+                LOG OUT
+              </button>
+              <button
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="text-white p-2 hover:bg-white/10 rounded transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Mobile Menu Dropdown */}
+        {showMobileMenu && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="md:hidden border-t border-white/15 bg-nothing-black"
+          >
+            <div className="max-w-7xl mx-auto px-6 py-4 space-y-2">
+              <button
+                onClick={() => { router.push('/dashboard'); setShowMobileMenu(false); }}
+                className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
+              >
+                HOME
+              </button>
+              <button
+                onClick={() => { router.push('/leaderboard'); setShowMobileMenu(false); }}
+                className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
+              >
+                LEADERBOARD
+              </button>
+              <button
+                onClick={() => { router.push('/friends'); setShowMobileMenu(false); }}
+                className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
+              >
+                FRIENDS
+              </button>
+              <button
+                onClick={() => { router.push('/profile'); setShowMobileMenu(false); }}
+                className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
+              >
+                PROFILE
+              </button>
+              <button
+                onClick={() => { router.push('/support'); setShowMobileMenu(false); }}
+                className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
+              >
+                SUPPORT
+              </button>
+            </div>
+          </motion.div>
+        )}
       </header>
 
       {/* Main Content */}

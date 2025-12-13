@@ -81,11 +81,18 @@ export default function LoginPage() {
       >
         {/* Logo */}
         <div className="text-center mb-16 relative">
-          <RotatingSmallCube position="left" scale={1} />
-          <RotatingPrism />
-          <RotatingSmallCube position="right" scale={1} />
-          <h1 className="text-6xl font-light tracking-[0.3em] mb-4 text-white relative z-10" style={{ fontWeight: 300 }}>SWEEPX</h1>
-          <p className="text-red-500 text-sm tracking-[0.15em] font-light relative z-10">
+          <div className="hidden md:block">
+            <RotatingSmallCube position="left" scale={1} />
+            <RotatingPrism />
+            <RotatingSmallCube position="right" scale={1} />
+          </div>
+          <div className="md:hidden">
+            <RotatingSmallCube position="left" scale={0.5} />
+            <RotatingPrism scale={0.5} />
+            <RotatingSmallCube position="right" scale={0.5} />
+          </div>
+          <h1 className="text-4xl md:text-6xl font-light tracking-[0.3em] mb-4 text-white relative z-10" style={{ fontWeight: 300 }}>SWEEPX</h1>
+          <p className="text-red-500 text-xs md:text-sm tracking-[0.15em] font-light relative z-10">
             Clean the world, earn rewards
           </p>
         </div>
