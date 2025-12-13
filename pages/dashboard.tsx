@@ -466,10 +466,44 @@ function PostQuestModal({ onClose, onSuccess }: any) {
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check file size (limit to 2MB to avoid payload issues)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Image too large. Please select an image under 2MB.');
+        return;
+      }
+      
       setPhoto(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
+        // Compress image if needed
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Resize if too large
+          const maxDimension = 800;
+          if (width > maxDimension || height > maxDimension) {
+            if (width > height) {
+              height = (height / width) * maxDimension;
+              width = maxDimension;
+            } else {
+              width = (width / height) * maxDimension;
+              height = maxDimension;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Convert to compressed base64
+          const compressedData = canvas.toDataURL('image/jpeg', 0.7);
+          setPhotoPreview(compressedData);
+        };
+        img.src = reader.result as string;
       };
       reader.readAsDataURL(file);
     }
@@ -492,14 +526,14 @@ function PostQuestModal({ onClose, onSuccess }: any) {
         address: ''
       }, token!);
 
-      if (result.quest) {
+      if (result && result.quest) {
         alert(result.message || 'Quest posted!');
         onSuccess();
-        onClose();
-      } else if (result.error) {
+      } else if (result && result.error) {
         alert(result.error);
       } else {
-        alert('Failed to post quest');
+        alert('Quest posted successfully!');
+        onSuccess();
       }
     } catch (err: any) {
       console.error('Quest post error:', err);
