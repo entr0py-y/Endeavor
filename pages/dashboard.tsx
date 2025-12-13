@@ -172,18 +172,18 @@ export default function Dashboard() {
             {/* Mobile Navigation */}
             <div className="md:hidden flex items-center gap-3">
               <button
-                onClick={handleLogout}
-                className="nothing-button text-xs px-3 py-2 dot-matrix"
-              >
-                LOG OUT
-              </button>
-              <button
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
                 className="text-white p-2 hover:bg-white/10 rounded transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                 </svg>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="nothing-button text-xs px-3 py-2 dot-matrix"
+              >
+                LOG OUT
               </button>
             </div>
           </div>
