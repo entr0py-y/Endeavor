@@ -442,9 +442,24 @@ function PostQuestModal({ onClose, onSuccess }: any) {
 
   useEffect(() => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-      });
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        },
+        (error) => {
+          // If location access is denied or unavailable, use a default location
+          console.log('Location access issue:', error.message);
+          setLocation({ lat: 37.7749, lng: -122.4194 }); // Default: San Francisco
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 10000,
+          maximumAge: 60000
+        }
+      );
+    } else {
+      // Geolocation not supported, use default location
+      setLocation({ lat: 37.7749, lng: -122.4194 });
     }
   }, []);
 
