@@ -34,7 +34,7 @@ export default function ClickTesseract({ x, y }: ClickTesseractProps) {
     }
 
     // Tesseract edges
-    const edges = [];
+    const edges: number[][] = [];
     for (let i = 0; i < 16; i++) {
       for (let j = i + 1; j < 16; j++) {
         let diff = 0;
