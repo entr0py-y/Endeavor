@@ -81,8 +81,10 @@ export default function Home() {
     if (index !== -1) {
       setCurrentSectionIndex(index);
       // Mobile fallback
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      if (window.innerWidth < 768) {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 
@@ -113,7 +115,7 @@ export default function Home() {
 
   return (
     <div
-      className="h-screen w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-y-scroll md:overflow-hidden snap-y snap-mandatory scroll-smooth"
+      className="h-[100dvh] w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-y-scroll md:overflow-hidden md:snap-none snap-y snap-mandatory scroll-smooth"
       onClick={handleGlobalClick}
     >
       {/* Background Elements */}
@@ -147,8 +149,8 @@ export default function Home() {
 
       {/* Navigation Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start text-white mix-blend-difference pointer-events-none">
-        <div className={`font-bold tracking-widest text-5xl md:text-7xl lg:text-8xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
-          &lt;PORTFOLIO/&gt;
+        <div className={`font-bold tracking-widest text-4xl md:text-6xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
+          <span className="text-white">&lt;</span>PORTFOLIO<span className="text-white">/&gt;</span>
         </div>
         <div className="hidden md:flex flex-col items-end gap-2 text-sm tracking-wider pt-2 pointer-events-auto">
           {sections.map((item, index) => (
@@ -174,7 +176,7 @@ export default function Home() {
         {/* Screen 1: Identity */}
         <section id="identity" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
           {/* 3D Object: Prism on Right for Identity */}
-          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none">
+          <div className="absolute right-10 md:right-32 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none">
             <RotatingPrism scale={1.5} />
           </div>
 
