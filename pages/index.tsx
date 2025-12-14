@@ -47,57 +47,75 @@ const RESUME_DATA = {
 
 export default function Home() {
   const router = useRouter();
+
+  /* State for Desktop Navigation Lock */
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
+  const sections = ['identity', 'education', 'skills', 'projects', 'connect'];
+
+  /* Smooth Scroll / Glow Logic (Retained for Mobile) */
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
   const [scrollGlow, setScrollGlow] = useState<'top' | 'bottom' | null>(null);
 
-  // Scroll Glow Logic
+  // Scroll Glow Logic (Mobile Only)
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-    let timeoutId: NodeJS.Timeout | null = null;
-
     const handleScroll = () => {
-      const isMobile = window.innerWidth < 768;
-      if (!isMobile) return;
+      const scrollY = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
 
-      const currentScrollY = window.scrollY;
-      const delta = currentScrollY - lastScrollY;
-
-      if (timeoutId) clearTimeout(timeoutId);
-
-      // Threashold > 5
-      if (Math.abs(delta) > 5) {
-        if (delta > 0) setScrollGlow('top');
-        else setScrollGlow('bottom');
-      }
-
-      timeoutId = setTimeout(() => {
-        setScrollGlow(null);
-      }, 150);
-
-      lastScrollY = currentScrollY;
+      if (scrollY < 100) setScrollGlow('top');
+      else if (windowHeight + scrollY >= documentHeight - 100) setScrollGlow('bottom');
+      else setScrollGlow(null);
     };
 
-    // Use the container for scrolling events if snap is applied to body/html or a container
-    // Since we are using a container for snap, we should verify if window scroll works or if we need to attach to container.
-    // Standard window scroll usually works unless container has overflow.
-    // For snap-y on a container, the container scrolls, not the window.
-    // I will attach to window for now, but might need to adjust if I use a specific container for scrolling.
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (timeoutId) clearTimeout(timeoutId);
-    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleGlobalClick = (e: React.MouseEvent) => {
+    setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
+  };
+
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+    const index = sections.indexOf(id);
+    if (index !== -1) {
+      setCurrentSectionIndex(index);
+      // Mobile fallback
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
+  // Prevent manual scroll on Desktop
+  useEffect(() => {
+    const preventDefault = (e: Event) => e.preventDefault();
+
+    // Check on mount and resize
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        window.addEventListener('wheel', preventDefault, { passive: false });
+        window.addEventListener('touchmove', preventDefault, { passive: false });
+      } else {
+        window.removeEventListener('wheel', preventDefault);
+        window.removeEventListener('touchmove', preventDefault);
+      }
+    };
+
+    handleResize(); // Initial check
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('wheel', preventDefault);
+      window.removeEventListener('touchmove', preventDefault);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
-    <div className="h-screen w-full bg-nothing-black font-space-mono overflow-y-scroll snap-y snap-mandatory scroll-smooth relative no-scrollbar cursor-none">
+    <div
+      className="h-screen w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-y-scroll md:overflow-hidden snap-y snap-mandatory scroll-smooth"
+      onClick={handleGlobalClick}
+    >
       {/* Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <RotatingCube />
@@ -109,9 +127,9 @@ export default function Home() {
       {/* Click Effect */}
       {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
 
-      {/* Irregular Scroll Glow Effects (Mobile: Fixed overlay) */}
+      {/* Irregular Scroll Glow Effects (Mobile Only) */}
       <div
-        className={`fixed top-0 left-0 right-0 h-40 pointer-events-none z-50 transition-opacity duration-500 ease-out ${scrollGlow === 'top' ? 'opacity-100' : 'opacity-0'}`}
+        className={`fixed top-0 left-0 right-0 h-40 pointer-events-none z-50 transition-opacity duration-500 ease-out md:hidden ${scrollGlow === 'top' ? 'opacity-100' : 'opacity-0'}`}
         style={{
           background: 'radial-gradient(ellipse at center top, rgba(220, 20, 60, 0.5) 0%, transparent 70%)',
           maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
@@ -119,7 +137,7 @@ export default function Home() {
         }}
       />
       <div
-        className={`fixed bottom-0 left-0 right-0 h-40 pointer-events-none z-50 transition-opacity duration-500 ease-out ${scrollGlow === 'bottom' ? 'opacity-100' : 'opacity-0'}`}
+        className={`fixed bottom-0 left-0 right-0 h-40 pointer-events-none z-50 transition-opacity duration-500 ease-out md:hidden ${scrollGlow === 'bottom' ? 'opacity-100' : 'opacity-0'}`}
         style={{
           background: 'radial-gradient(ellipse at center bottom, rgba(220, 20, 60, 0.5) 0%, transparent 70%)',
           maskImage: 'linear-gradient(to top, black 50%, transparent 100%)',
@@ -129,228 +147,209 @@ export default function Home() {
 
       {/* Navigation Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-8 py-6 flex justify-between items-center mix-blend-difference text-white">
-        <div className="font-bold tracking-widest text-lg">
+        <div className="font-bold tracking-widest text-4xl md:text-5xl lg:text-6xl">
           &lt;PORTFOLIO/&gt;
         </div>
         <div className="hidden md:flex gap-8 text-sm tracking-wider">
-          {['IDENTITY', 'EDUCATION', 'SKILLS', 'PROJECTS', 'CONNECT'].map((item, index) => (
+          {sections.map((item, index) => (
             <button
               key={item}
-              onClick={() => scrollToSection(item.toLowerCase())}
-              className="hover:text-nothing-red transition-colors relative group"
+              onClick={() => scrollToSection(item)}
+              className={`hover:text-nothing-red transition-colors relative group uppercase ${currentSectionIndex === index ? 'text-nothing-red' : ''}`}
             >
               <span className="opacity-50 mr-2">0{index + 1}.</span>
               {item}
-              <span className="absolute -bottom-1 left-0 w-0 h-px bg-nothing-red group-hover:w-full transition-all duration-300" />
+              <span className={`absolute -bottom-1 left-0 h-px bg-nothing-red transition-all duration-300 ${currentSectionIndex === index ? 'w-full' : 'w-0 group-hover:w-full'}`} />
             </button>
           ))}
         </div>
       </nav>
 
+      {/* Content Wrapper - Desktop Slider */}
+      <div
+        className="w-full h-full md:transition-transform md:duration-1000 md:ease-[0.22, 1, 0.36, 1]"
+        style={{ transform: typeof window !== 'undefined' && window.innerWidth >= 768 ? `translateY(-${currentSectionIndex * 100}vh)` : 'none' }}
+      >
 
-      {/* Screen 1: Merged Identity (Hero) */}
-      <section id="identity" className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
-        <motion.div
-          className="w-full max-w-2xl relative"
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="text-center mb-8 relative">
-            <div className="hidden md:block">
-              <RotatingSmallCube position="left" scale={0.85} offset={100} />
-              <RotatingPrism scale={0.85} />
-              <RotatingSmallCube position="right" scale={0.85} offset={100} />
-            </div>
-            <div className="md:hidden">
-              <RotatingSmallCube position="left" scale={0.6} offset={40} />
-              <RotatingPrism scale={0.6} />
-              <RotatingSmallCube position="right" scale={0.6} offset={40} />
-            </div>
-          </div>
-
-          <div className="nothing-card p-8 md:p-12 flex flex-col justify-center relative overflow-hidden bg-black/40 backdrop-blur-xl border-white/10">
-            {/* Background decoration */}
-            <div className="absolute top-0 right-0 p-8 opacity-10">
-              <svg width="200" height="200" viewBox="0 0 100 100" fill="none" stroke="white" strokeWidth="1">
-                <circle cx="50" cy="50" r="40" />
-                <path d="M50 10 V90 M10 50 H90" />
-              </svg>
-            </div>
-            <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-4 font-bold dot-matrix">IDENTITY MODULE</h2>
-            <h1 className="text-4xl md:text-6xl font-light tracking-wider mb-6 text-white font-space-mono drop-shadow-[0_0_25px_rgba(255,255,255,0.8)]">
-              {RESUME_DATA.name}
-            </h1>
-            <div className="h-px w-24 bg-nothing-red mb-6" />
-            <p className="text-xl text-white/80 tracking-wide font-light mb-2">
-              {RESUME_DATA.role}
-            </p>
-            <p className="text-white/50 tracking-wide max-w-xl mb-8">
-              {RESUME_DATA.tagline}
-            </p>
-
-            <div className="flex flex-col md:flex-row gap-4">
-              <button
-                onClick={() => scrollToSection('education')}
-                className="nothing-button-primary flex-1 py-4 text-sm tracking-[0.2em] hover:scale-[1.02] transition-transform dot-matrix font-bold !bg-white !border-white hover:!bg-nothing-red hover:!border-nothing-red hover:!text-white"
-              >
-                VIEW EDUCATION
-              </button>
-              <button
-                onClick={() => scrollToSection('connect')}
-                className="nothing-button flex-1 py-4 text-sm tracking-[0.2em] hover:scale-[1.02] transition-transform dot-matrix font-bold !text-white hover:!text-nothing-red hover:!border-nothing-red"
-              >
-                GET IN TOUCH
-              </button>
-            </div>
-          </div>
-        </motion.div>
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce opacity-50">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-            <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
-          </svg>
-        </div>
-      </section>
-
-      {/* Screen 2: Education */}
-      <section id="education" className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
-        <div className="w-full max-w-4xl">
+        {/* Screen 1: Identity */}
+        <section id="identity" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            className="w-full max-w-4xl relative text-left"
+            initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl font-bold tracking-wider mb-12 text-nothing-red dot-matrix text-center">EDUCATION LOGS</h2>
-            <div className="grid grid-cols-1 gap-6">
-              {RESUME_DATA.education.map((edu, index) => (
-                <div key={index} className="nothing-card p-8 hover:bg-white/5 transition-colors group">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-bold tracking-wide text-white group-hover:text-nothing-red transition-colors font-space-mono">
-                      {edu.institution}
-                    </h3>
-                    <span className="text-xs border border-white/20 px-2 py-1 rounded text-white/50">
-                      {edu.status}
-                    </span>
-                  </div>
-                  <p className="text-white/80 text-base tracking-wider mb-2">{edu.title}</p>
-                  <p className="text-white/40 text-sm font-mono">{edu.year}</p>
-                </div>
-              ))}
+            {/* Decorative elements - moved slightly or kept subtle */}
+            <div className="absolute -top-40 -left-20 opacity-20 pointer-events-none hidden md:block">
+              <RotatingPrism scale={0.5} />
+            </div>
+
+            <div className="flex flex-col justify-center relative items-start">
+              <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-4 font-bold dot-matrix">IDENTITY MODULE</h2>
+              <h1 className="text-5xl md:text-8xl font-light tracking-wider mb-8 text-white font-space-mono drop-shadow-[0_0_35px_rgba(255,255,255,0.8)]">
+                {RESUME_DATA.name}
+              </h1>
+              <div className="h-px w-24 bg-nothing-red mb-8" />
+              <p className="text-2xl text-white/90 tracking-wide font-light mb-4">
+                {RESUME_DATA.role}
+              </p>
+              <p className="text-white/60 tracking-wide max-w-2xl text-lg mb-12 text-left">
+                {RESUME_DATA.tagline}
+              </p>
+
+              <div className="flex flex-col md:flex-row gap-8 w-full max-w-md">
+                <button
+                  onClick={() => scrollToSection('education')}
+                  className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold"
+                >
+                  VIEW EDUCATION
+                </button>
+                <button
+                  onClick={() => scrollToSection('connect')}
+                  className="bg-transparent text-white/50 hover:text-white w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold border border-transparent hover:border-white/50"
+                >
+                  GET IN TOUCH
+                </button>
+              </div>
             </div>
           </motion.div>
-        </div>
-      </section>
+        </section>
 
-      {/* Screen 3: Skills */}
-      <section id="skills" className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
-        <div className="w-full max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <h3 className="text-3xl font-bold tracking-wider mb-12 flex items-center justify-center gap-2 text-nothing-red dot-matrix">
-              <span className="w-3 h-3 bg-nothing-red rounded-full"></span>
-              SKILL MATRIX
-            </h3>
-            <div className="nothing-card p-12 bg-white/5">
-              <div className="flex flex-wrap justify-center gap-4">
-                {/* Skill Items */}
+        {/* Screen 2: Education */}
+        <section id="education" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
+          <div className="w-full max-w-5xl">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="text-4xl font-bold tracking-wider mb-16 text-nothing-red dot-matrix text-left">EDUCATION LOGS</h2>
+              <div className="flex flex-col gap-12">
+                {RESUME_DATA.education.map((edu, index) => (
+                  <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-nothing-red transition-colors group w-full">
+                    <div className="text-left">
+                      <h3 className="text-3xl font-bold tracking-wide text-white group-hover:text-nothing-red transition-colors font-space-mono mb-2">
+                        {edu.institution}
+                      </h3>
+                      <p className="text-white/80 text-lg tracking-wider">{edu.title}</p>
+                    </div>
+                    <div className="mt-4 md:mt-0 text-left md:text-right w-full md:w-auto">
+                      <span className="block text-nothing-red text-sm tracking-widest mb-1">{edu.status}</span>
+                      <p className="text-white/40 text-sm font-mono">{edu.year}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Screen 3: Skills */}
+        <section id="skills" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
+          <div className="w-full max-w-6xl">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="text-left"
+            >
+              <h3 className="text-4xl font-bold tracking-wider mb-20 flex items-center justify-start gap-4 text-nothing-red dot-matrix">
+                <span className="w-3 h-3 bg-nothing-red rounded-full"></span>
+                SKILL MATRIX
+              </h3>
+
+              <div className="flex flex-wrap justify-start gap-x-12 gap-y-8 max-w-4xl">
+                {/* Skill Items - Just Text */}
                 {RESUME_DATA.skills.map((skill, index) => (
-                  <span key={index} className="px-4 py-2 border border-white/20 rounded-full text-sm text-white/70 tracking-wider hover:border-nothing-red hover:text-white transition-colors cursor-default">
+                  <span key={index} className="text-2xl md:text-3xl text-white/40 tracking-wider hover:text-white transition-all duration-300 cursor-default hover:translate-x-2 font-light block w-full md:w-auto">
                     {skill}
                   </span>
                 ))}
               </div>
-              <div className="mt-12 pt-8 border-t border-white/10 text-center">
-                <p className="text-sm text-white/40 tracking-wider leading-relaxed max-w-2xl mx-auto">
-                  Constant learner with a strong intuition for visual hierarchy and user experience. Building polished, human-centric interfaces.
+
+              <div className="mt-24 max-w-3xl">
+                <p className="text-lg text-white/30 tracking-widest leading-relaxed text-left">
+                  "Constant learner with a strong intuition for visual hierarchy and user experience."
                 </p>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Screen 4: Projects */}
-      <section id="projects" className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
-        <div className="w-full max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="text-3xl font-bold tracking-wider mb-12 text-nothing-red dot-matrix text-center">PROJECT MODULE</h2>
-            <div className="nothing-card p-12 flex items-center justify-center min-h-[300px]">
-              <p className="text-white/60 text-xl tracking-wide">will update later</p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Screen 5: Connect */}
-      <section id="connect" className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
-        <div className="w-full max-w-4xl flex flex-col justify-between h-full py-12">
-          <div className="flex-1 flex flex-col justify-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-            >
-              <h2 className="text-3xl font-bold tracking-wider mb-12 text-nothing-red dot-matrix text-center">CONNECT MODULE</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <a href="https://instagram.com/endeavv0r" target="_blank" rel="noopener noreferrer" className="group">
-                  <Card hover>
-                    <div className="flex items-center justify-between p-6">
-                      <div>
-                        <h3 className="text-2xl font-bold tracking-wider text-white group-hover:text-nothing-red transition-colors font-space-mono">INSTAGRAM</h3>
-                        <p className="text-white/40 text-sm mt-1">@endeavv0r</p>
-                      </div>
-                      <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:border-nothing-red transition-colors">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                        </svg>
-                      </div>
-                    </div>
-                  </Card>
-                </a>
-                <a href="https://www.linkedin.com/in/pushkar-jha-4a1258381" target="_blank" rel="noopener noreferrer" className="group">
-                  <Card hover>
-                    <div className="flex items-center justify-between p-6">
-                      <div>
-                        <h3 className="text-2xl font-bold tracking-wider text-white group-hover:text-nothing-red transition-colors font-space-mono">LINKEDIN</h3>
-                        <p className="text-white/40 text-sm mt-1">Connect professionally</p>
-                      </div>
-                      <div className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:border-nothing-red transition-colors">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                          <rect x="2" y="9" width="4" height="12"></rect>
-                          <circle cx="4" cy="4" r="2"></circle>
-                        </svg>
-                      </div>
-                    </div>
-                  </Card>
-                </a>
               </div>
             </motion.div>
           </div>
+        </section>
 
-          <div className="border-t border-white/10 pt-8 text-center">
-            <p className="text-nothing-red text-xs tracking-[0.2em] mb-2 dot-matrix">INSPIRATION</p>
-            <p className="text-white/20 text-xs tracking-wider">
-              UI inspired by iOS 26 liquid glass and Nothing OS 3.0
-            </p>
+        {/* Screen 4: Projects */}
+        <section id="projects" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
+          <div className="w-full max-w-4xl text-left">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h2 className="text-4xl font-bold tracking-wider mb-12 text-nothing-red dot-matrix">PROJECT MODULE</h2>
+              <div className="py-24 border-y border-white/10 w-full text-left">
+                <p className="text-white/40 text-2xl tracking-[0.2em] font-light">
+                            // DEVELOPMENT IN PROGRESS
+                </p>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Screen 5: Connect */}
+        <section id="connect" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
+          <div className="w-full max-w-5xl h-full flex flex-col justify-center py-20">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="flex-1 flex flex-col justify-center items-start"
+            >
+              <h2 className="text-4xl font-bold tracking-wider mb-24 text-nothing-red dot-matrix text-left">CONNECT MODULE</h2>
+
+              <div className="flex flex-col gap-16 items-start justify-start w-full">
+                <a href="https://instagram.com/endeavv0r" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-8">
+                  <div className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center group-hover:border-nothing-red group-hover:bg-nothing-red/10 transition-all duration-500">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-bold tracking-widest text-white group-hover:text-nothing-red transition-colors font-space-mono">INSTAGRAM</h3>
+                    <p className="text-white/40 text-sm mt-2 tracking-wider">@endeavv0r</p>
+                  </div>
+                </a>
+
+                <a href="https://www.linkedin.com/in/pushkar-jha-4a1258381" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-8">
+                  <div className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center group-hover:border-nothing-red group-hover:bg-nothing-red/10 transition-all duration-500">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                      <rect x="2" y="9" width="4" height="12"></rect>
+                      <circle cx="4" cy="4" r="2"></circle>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-3xl font-bold tracking-widest text-white group-hover:text-nothing-red transition-colors font-space-mono">LINKEDIN</h3>
+                    <p className="text-white/40 text-sm mt-2 tracking-wider">Connect Professionally</p>
+                  </div>
+                </a>
+              </div>
+            </motion.div>
+
+            <div className="mt-auto text-left pt-12">
+              <p className="text-white/20 text-xs tracking-[0.3em]">
+                DESIGNED BY PUSHKAR JHA
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </div>
     </div>
   );
 }
