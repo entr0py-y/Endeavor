@@ -173,10 +173,7 @@ export default function Home() {
 
         {/* Screen 1: Identity */}
         <section id="identity" className="snap-start h-screen md:h-[100dvh] w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
-          {/* 3D Object: Prism on Right for Identity (Adjusted Position) */}
-          <div className="absolute right-10 md:right-[25%] top-1/2 -translate-y-1/2 hidden md:block pointer-events-none">
-            <RotatingPrism scale={8.5} />
-          </div>
+
 
           <motion.div
             className="w-full max-w-5xl relative text-left"
