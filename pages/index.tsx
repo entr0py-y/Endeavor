@@ -146,20 +146,20 @@ export default function Home() {
       />
 
       {/* Navigation Header */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-8 py-6 flex justify-between items-center mix-blend-difference text-white">
-        <div className="font-bold tracking-widest text-4xl md:text-5xl lg:text-6xl">
+      <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start mix-blend-difference text-white">
+        <div className="font-bold tracking-widest text-5xl md:text-7xl lg:text-8xl leading-none">
           &lt;PORTFOLIO/&gt;
         </div>
-        <div className="hidden md:flex gap-8 text-sm tracking-wider">
+        <div className="hidden md:flex flex-col items-end gap-2 text-sm tracking-wider pt-2">
           {sections.map((item, index) => (
             <button
               key={item}
               onClick={() => scrollToSection(item)}
-              className={`hover:text-nothing-red transition-colors relative group uppercase ${currentSectionIndex === index ? 'text-nothing-red' : ''}`}
+              className={`hover:text-nothing-red transition-colors relative group uppercase text-right py-1 ${currentSectionIndex === index ? 'text-nothing-red' : ''}`}
             >
               <span className="opacity-50 mr-2">0{index + 1}.</span>
               {item}
-              <span className={`absolute -bottom-1 left-0 h-px bg-nothing-red transition-all duration-300 ${currentSectionIndex === index ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+              <span className={`absolute bottom-0 right-0 h-px bg-nothing-red transition-all duration-300 ${currentSectionIndex === index ? 'w-full' : 'w-0 group-hover:w-full'}`} />
             </button>
           ))}
         </div>
@@ -174,20 +174,20 @@ export default function Home() {
         {/* Screen 1: Identity */}
         <section id="identity" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
           <motion.div
-            className="w-full max-w-4xl relative text-left"
+            className="w-full max-w-5xl relative text-left"
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            {/* Decorative elements - moved slightly or kept subtle */}
+            {/* Decorative elements */}
             <div className="absolute -top-40 -left-20 opacity-20 pointer-events-none hidden md:block">
               <RotatingPrism scale={0.5} />
             </div>
 
             <div className="flex flex-col justify-center relative items-start">
-              <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-4 font-bold dot-matrix">IDENTITY MODULE</h2>
-              <h1 className="text-5xl md:text-8xl font-light tracking-wider mb-8 text-white font-space-mono drop-shadow-[0_0_35px_rgba(255,255,255,0.8)]">
+              <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-2 font-bold dot-matrix">IDENTITY MODULE</h2>
+              <h1 className="text-6xl md:text-9xl font-bold tracking-tighter mb-6 text-[#A020F0] font-space-mono drop-shadow-[0_0_35px_rgba(160,32,240,0.6)]">
                 {RESUME_DATA.name}
               </h1>
               <div className="h-px w-24 bg-nothing-red mb-8" />
