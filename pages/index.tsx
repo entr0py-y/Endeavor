@@ -29,14 +29,12 @@ const RESUME_DATA = {
     }
   ],
   skills: [
-    "Machine Learning",
-    "Data Science",
-    "Python",
-    "TensorFlow",
-    "React / Next.js",
-    "Tailwind CSS",
-    "Frontend Dev",
-    "Responsive Layouts"
+    { id: "01", name: "PYTON / DATA SCIENCE", desc: "ML pipelines, Pandas, NumPy, Scikit-learn", category: "ML/AI", percent: "85%" },
+    { id: "02", name: "TENSORFLOW / DL", desc: "Neural Networks, Computer Vision, Model Training", category: "ML/AI", percent: "80%" },
+    { id: "03", name: "REACT / NEXT.JS", desc: "Component-based UI, SSR, Interactive Frontends", category: "FRONTEND", percent: "75%" },
+    { id: "04", name: "TYPESCRIPT / JS", desc: "Core logic, async programming, type safety", category: "LANGUAGES", percent: "82%" },
+    { id: "05", name: "SQL / DATABASES", desc: "Query optimization, schema design, data storage", category: "BACKEND", percent: "78%" },
+    { id: "06", name: "GIT / GITHUB", desc: "Version control, collaboration flows", category: "TOOLS", percent: "90%" }
   ],
   stats: {
     level: "YR 1",
@@ -174,8 +172,8 @@ export default function Home() {
       >
 
         {/* Screen 1: Identity */}
-        <section id="identity" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
-          {/* 3D Object: Prism on Right for Identity */}
+        <section id="identity" className="snap-start h-screen md:h-[100dvh] w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
+          {/* 3D Object: Prism on Right for Identity (Adjusted Position) */}
           <div className="absolute right-10 md:right-32 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none">
             <RotatingPrism scale={1.5} />
           </div>
@@ -219,7 +217,7 @@ export default function Home() {
         </section>
 
         {/* Screen 2: Education */}
-        <section id="education" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
+        <section id="education" className="snap-start h-screen md:h-[100dvh] w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
           {/* 3D Object: Cube on Right for Others */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube />
@@ -254,45 +252,64 @@ export default function Home() {
         </section>
 
         {/* Screen 3: Skills */}
-        <section id="skills" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
+        <section id="skills" className="snap-start h-screen md:h-[100dvh] w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
           {/* 3D Object: Cube on Right for Others */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube />
           </div>
 
-          <div className="w-full max-w-6xl">
+          <div className="w-full max-w-5xl">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="text-left"
+              className="text-left w-full"
             >
-              <h3 className="text-4xl font-bold tracking-wider mb-20 flex items-center justify-start gap-4 text-nothing-red dot-matrix">
-                <span className="w-3 h-3 bg-nothing-red rounded-full"></span>
-                SKILL MATRIX
-              </h3>
-
-              <div className="flex flex-wrap justify-start gap-x-12 gap-y-8 max-w-4xl">
-                {/* Skill Items - Just Text */}
-                {RESUME_DATA.skills.map((skill, index) => (
-                  <span key={index} className="text-2xl md:text-3xl text-white/40 tracking-wider hover:text-white transition-all duration-300 cursor-default hover:translate-x-2 font-light block w-full md:w-auto">
-                    {skill}
-                  </span>
-                ))}
+              <div className="mb-12">
+                <h3 className="text-4xl font-bold tracking-wider mb-2 text-white dot-matrix">
+                  02. SKILLS & EXPERTISE
+                </h3>
+                <p className="text-white/60 text-sm tracking-widest font-mono">
+                  &gt; Technologies I actively work with
+                </p>
               </div>
 
-              <div className="mt-24 max-w-3xl">
-                <p className="text-lg text-white/30 tracking-widest leading-relaxed text-left">
-                  "Constant learner with a strong intuition for visual hierarchy and user experience."
-                </p>
+              <div className="flex flex-col gap-8 w-full">
+                {RESUME_DATA.skills.map((skill, index) => (
+                  <div key={index} className="w-full group">
+                    <div className="flex items-end justify-between mb-2">
+                      <div className="flex items-center gap-4">
+                        <span className="text-nothing-red/60 font-mono text-sm">[{skill.id}]</span>
+                        <div className="">
+                          <h4 className="text-xl md:text-2xl text-white font-bold tracking-wide group-hover:text-nothing-red transition-colors">{skill.name}</h4>
+                          <p className="text-white/40 text-xs tracking-wider uppercase hidden md:block">{skill.desc}</p>
+                        </div>
+                      </div>
+                      <div className="text-right flex flex-col items-end">
+                        <span className="text-white/40 text-xs tracking-widest mb-1">{skill.category}</span>
+                        <span className="text-nothing-red font-bold font-mono">{skill.percent}</span>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="w-full h-1 bg-white/10 relative overflow-hidden">
+                      <motion.div
+                        className="absolute top-0 left-0 h-full bg-nothing-red"
+                        initial={{ width: 0 }}
+                        animate={{ width: currentSectionIndex === 2 ? skill.percent : 0 }}
+                        transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.1 }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </motion.div>
           </div>
         </section>
 
         {/* Screen 4: Projects */}
-        <section id="projects" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
+        <section id="projects" className="snap-start h-screen md:h-[100dvh] w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
           {/* 3D Object: Cube on Right for Others */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube />
