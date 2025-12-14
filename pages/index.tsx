@@ -151,6 +151,19 @@ export default function Home() {
           </div>
         </nav>
 
+        {/* Mobile Bottom Dock (Moved Higher + Z-Index Boost) */}
+        <nav className="fixed bottom-6 left-6 right-6 z-[200] md:hidden flex justify-between items-center bg-black/80 backdrop-blur-md border border-white/20 rounded-full px-6 py-4 pointer-events-auto">
+          {sections.map((item, index) => (
+            <button
+              key={item}
+              onClick={() => scrollToSection(item)}
+              className={`text-xs font-bold tracking-widest transition-colors ${currentSectionIndex === index ? 'text-nothing-red' : 'text-white/40'}`}
+            >
+              {item === 'identity' ? 'ID' : item === 'education' ? 'ED' : item === 'skills' ? 'SK' : item === 'projects' ? 'PR' : 'CN'}
+            </button>
+          ))}
+        </nav>
+
         {/* Content Wrapper - Desktop Slider */}
         <div
           className="w-full h-full transition-transform duration-1000 ease-[0.22, 1, 0.36, 1]"
@@ -373,18 +386,6 @@ export default function Home() {
 
         </div>
 
-        {/* Mobile Bottom Dock */}
-        <div className="fixed bottom-6 left-6 right-6 z-50 md:hidden flex justify-between items-center bg-black/80 backdrop-blur-md border border-white/20 rounded-full px-6 py-4">
-          {sections.map((item, index) => (
-            <button
-              key={item}
-              onClick={() => scrollToSection(item)}
-              className={`text-xs font-bold tracking-widest transition-colors ${currentSectionIndex === index ? 'text-nothing-red' : 'text-white/40'}`}
-            >
-              {item === 'identity' ? 'ID' : item === 'education' ? 'ED' : item === 'skills' ? 'SK' : item === 'projects' ? 'PR' : 'CN'}
-            </button>
-          ))}
-        </div>
       </div>
     );
   }
