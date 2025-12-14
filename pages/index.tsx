@@ -146,16 +146,16 @@ export default function Home() {
       />
 
       {/* Navigation Header */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start mix-blend-difference text-white">
-        <div className="font-bold tracking-widest text-5xl md:text-7xl lg:text-8xl leading-none">
+      <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start text-white mix-blend-difference pointer-events-none">
+        <div className="font-bold tracking-widest text-5xl md:text-7xl lg:text-8xl leading-none pointer-events-auto cursor-default">
           &lt;PORTFOLIO/&gt;
         </div>
-        <div className="hidden md:flex flex-col items-end gap-2 text-sm tracking-wider pt-2">
+        <div className="hidden md:flex flex-col items-end gap-2 text-sm tracking-wider pt-2 pointer-events-auto">
           {sections.map((item, index) => (
             <button
               key={item}
               onClick={() => scrollToSection(item)}
-              className={`hover:text-nothing-red transition-colors relative group uppercase text-right py-1 ${currentSectionIndex === index ? 'text-nothing-red' : ''}`}
+              className={`hover:text-nothing-red transition-colors relative group uppercase text-right py-1 cursor-pointer ${currentSectionIndex === index ? 'text-nothing-red' : ''}`}
             >
               <span className="opacity-50 mr-2">0{index + 1}.</span>
               {item}
@@ -187,7 +187,7 @@ export default function Home() {
 
             <div className="flex flex-col justify-center relative items-start">
               <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-2 font-bold dot-matrix">IDENTITY MODULE</h2>
-              <h1 className="text-6xl md:text-9xl font-bold tracking-tighter mb-6 text-[#A020F0] font-space-mono drop-shadow-[0_0_35px_rgba(160,32,240,0.6)]">
+              <h1 className="text-6xl md:text-9xl font-bold tracking-tighter mb-6 text-[#D000FF] font-space-mono drop-shadow-[0_0_50px_rgba(208,0,255,0.8)]">
                 {RESUME_DATA.name}
               </h1>
               <div className="h-px w-24 bg-nothing-red mb-8" />
@@ -201,7 +201,7 @@ export default function Home() {
               <div className="flex flex-col md:flex-row gap-8 w-full max-w-md">
                 <button
                   onClick={() => scrollToSection('education')}
-                  className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold"
+                  className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold cursor-pointer"
                 >
                   VIEW EDUCATION
                 </button>
