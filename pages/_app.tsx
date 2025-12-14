@@ -1,12 +1,19 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import ClickTesseract from '@/components/ClickTesseract'
+
+const LoadingScreen = dynamic(() => import('@/components/LoadingScreen'), { ssr: false });
 
 export default function App({ Component, pageProps }: AppProps) {
   const [clickEffect, setClickEffect] = useState<{x: number, y: number, id: number} | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    
     // Preload Ndot55 font
     if (typeof window !== 'undefined') {
       const link = document.createElement('link');
@@ -27,6 +34,14 @@ export default function App({ Component, pageProps }: AppProps) {
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  if (isLoading) {
+    return <LoadingScreen onComplete={() => setIsLoading(false)} />;
+  }
 
   return (
     <>
