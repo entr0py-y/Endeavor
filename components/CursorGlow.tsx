@@ -21,7 +21,7 @@ export default function CursorGlow() {
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
       setIsMoving(true);
-      
+
       clearTimeout(moveTimeout);
       moveTimeout = setTimeout(() => {
         setIsMoving(false);
@@ -73,9 +73,9 @@ export default function CursorGlow() {
         <div
           className="w-full h-full rounded-full"
           style={{
-            background: `radial-gradient(circle, rgba(255,0,0,${intensity * 0.8}) 0%, rgba(255,0,0,${intensity * 0.5}) 20%, rgba(255,0,0,${intensity * 0.3}) 50%, transparent 80%)`,
-            filter: 'blur(18px)',
-            boxShadow: `0 0 40px rgba(255,0,0,${intensity * 0.6}), 0 0 70px rgba(255,0,0,${intensity * 0.3})`,
+            background: `radial-gradient(circle, rgba(255,255,255,${intensity * 0.6}) 0%, rgba(255,255,255,${intensity * 0.3}) 20%, rgba(255,255,255,${intensity * 0.1}) 50%, transparent 80%)`,
+            filter: 'blur(15px)',
+            boxShadow: `0 0 30px rgba(255,255,255,${intensity * 0.4}), 0 0 60px rgba(255,255,255,${intensity * 0.2})`,
           }}
         />
       </motion.div>
