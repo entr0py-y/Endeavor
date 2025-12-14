@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import CursorGlow from '@/components/CursorGlow';
-import CosmicClouds from '@/components/CosmicClouds';
+import RotatingCube from '@/components/RotatingCube';
+import FollowCube from '@/components/FollowCube';
+import RedBars from '@/components/RedBars';
 import Card from '@/components/Card';
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
@@ -11,7 +13,9 @@ export default function SupportPage() {
 
   return (
     <div className="min-h-screen w-full bg-nothing-black">
-      <CosmicClouds />
+      <RotatingCube />
+      <FollowCube />
+      <RedBars />
       <CursorGlow />
       
       <header className="border-b border-white/15 sticky top-0 bg-nothing-black z-40">

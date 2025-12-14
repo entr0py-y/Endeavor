@@ -1,8 +1,11 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import ClickTesseract from '@/components/ClickTesseract'
 
 export default function App({ Component, pageProps }: AppProps) {
+  const [clickEffect, setClickEffect] = useState<{x: number, y: number, id: number} | null>(null);
+
   useEffect(() => {
     // Preload Ndot55 font
     if (typeof window !== 'undefined') {
@@ -14,7 +17,21 @@ export default function App({ Component, pageProps }: AppProps) {
       link.crossOrigin = 'anonymous';
       document.head.appendChild(link);
     }
+
+    // Global click handler for tesseract effect
+    const handleClick = (e: MouseEvent) => {
+      setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
+      setTimeout(() => setClickEffect(null), 800);
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
   }, []);
 
-  return <Component {...pageProps} />
+  return (
+    <>
+      {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
+      <Component {...pageProps} />
+    </>
+  )
 }
