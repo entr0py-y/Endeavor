@@ -97,7 +97,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen w-full bg-nothing-black font-space-mono overflow-y-scroll snap-y snap-mandatory scroll-smooth relative no-scrollbar">
+    <div className="h-screen w-full bg-nothing-black font-space-mono overflow-y-scroll snap-y snap-mandatory scroll-smooth relative no-scrollbar cursor-none">
       {/* Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <RotatingCube />
@@ -127,6 +127,27 @@ export default function Home() {
         }}
       />
 
+      {/* Navigation Header */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-8 py-6 flex justify-between items-center mix-blend-difference text-white">
+        <div className="font-bold tracking-widest text-lg">
+          &lt;PORTFOLIO/&gt;
+        </div>
+        <div className="hidden md:flex gap-8 text-sm tracking-wider">
+          {['IDENTITY', 'EDUCATION', 'SKILLS', 'PROJECTS', 'CONNECT'].map((item, index) => (
+            <button
+              key={item}
+              onClick={() => scrollToSection(item.toLowerCase())}
+              className="hover:text-nothing-red transition-colors relative group"
+            >
+              <span className="opacity-50 mr-2">0{index + 1}.</span>
+              {item}
+              <span className="absolute -bottom-1 left-0 w-0 h-px bg-nothing-red group-hover:w-full transition-all duration-300" />
+            </button>
+          ))}
+        </div>
+      </nav>
+
+
       {/* Screen 1: Merged Identity (Hero) */}
       <section id="identity" className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
         <motion.div
@@ -149,7 +170,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="nothing-card p-8 md:p-12 flex flex-col justify-center relative overflow-hidden">
+          <div className="nothing-card p-8 md:p-12 flex flex-col justify-center relative overflow-hidden bg-black/40 backdrop-blur-xl border-white/10">
             {/* Background decoration */}
             <div className="absolute top-0 right-0 p-8 opacity-10">
               <svg width="200" height="200" viewBox="0 0 100 100" fill="none" stroke="white" strokeWidth="1">
@@ -158,7 +179,7 @@ export default function Home() {
               </svg>
             </div>
             <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-4 font-bold dot-matrix">IDENTITY MODULE</h2>
-            <h1 className="text-4xl md:text-6xl font-light tracking-wider mb-6 text-white font-space-mono drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">
+            <h1 className="text-4xl md:text-6xl font-light tracking-wider mb-6 text-white font-space-mono drop-shadow-[0_0_25px_rgba(255,255,255,0.8)]">
               {RESUME_DATA.name}
             </h1>
             <div className="h-px w-24 bg-nothing-red mb-6" />
@@ -193,39 +214,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Screen 2: Stats */}
-      <section className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
-        <div className="w-full max-w-5xl">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
-              <Card>
-                <div className="text-center py-8">
-                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix font-space-mono">{RESUME_DATA.stats.level}</h2>
-                  <p className="text-white/60 text-sm tracking-wider">CURRENT YEAR</p>
-                </div>
-              </Card>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
-              <Card>
-                <div className="text-center py-8">
-                  <h2 className="text-4xl font-bold text-white mb-2 dot-matrix pt-2 font-space-mono">{RESUME_DATA.stats.focus}</h2>
-                  <p className="text-white/60 text-sm tracking-wider">PRIMARY FOCUS</p>
-                </div>
-              </Card>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}>
-              <Card>
-                <div className="text-center py-8">
-                  <h2 className="text-4xl font-bold text-green-500 mb-2 dot-matrix pt-2 font-space-mono">{RESUME_DATA.stats.status}</h2>
-                  <p className="text-white/60 text-sm tracking-wider">AVAILABILITY</p>
-                </div>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Screen 3: Education */}
+      {/* Screen 2: Education */}
       <section id="education" className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
         <div className="w-full max-w-4xl">
           <motion.div
@@ -255,8 +244,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Screen 4: Skills */}
-      <section className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
+      {/* Screen 3: Skills */}
+      <section id="skills" className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
         <div className="w-full max-w-4xl">
           <motion.div
             initial={{ opacity: 0 }}
@@ -287,8 +276,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Screen 5: Projects */}
-      <section className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
+      {/* Screen 4: Projects */}
+      <section id="projects" className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
         <div className="w-full max-w-4xl">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -304,7 +293,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Screen 6: Connect */}
+      {/* Screen 5: Connect */}
       <section id="connect" className="snap-start h-screen w-full flex flex-col items-center justify-center p-6 relative z-10">
         <div className="w-full max-w-4xl flex flex-col justify-between h-full py-12">
           <div className="flex-1 flex flex-col justify-center">
