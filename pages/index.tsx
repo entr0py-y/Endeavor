@@ -46,9 +46,8 @@ export default function LandingPage() {
         {/* Enter Card */}
         <div className="nothing-card p-12 hover:border-nothing-red/50 transition-colors duration-500">
           <div className="text-center space-y-8">
-            <p className="font-space-mono text-nothing-red text-sm tracking-wide">
-              ML DS focused CS Undergraduate
-            </p>
+
+
 
             <button
               onClick={handleEnter}

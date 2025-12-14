@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import CursorGlow from '@/components/CursorGlow';
 import RotatingCube from '@/components/RotatingCube';
@@ -50,6 +50,34 @@ export default function Dashboard() {
   const router = useRouter();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let lastTrigger = 0;
+
+    const handleScroll = () => {
+      const isMobile = window.innerWidth < 768;
+      if (!isMobile) return;
+
+      const currentScrollY = window.scrollY;
+      const now = Date.now();
+
+      // Trigger effect on significant scroll delta (>50px) and cooldown (500ms)
+      if (Math.abs(currentScrollY - lastScrollY) > 50 && now - lastTrigger > 500) {
+        setClickEffect({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          id: now
+        });
+        setTimeout(() => setClickEffect(null), 800);
+        lastScrollY = currentScrollY;
+        lastTrigger = now;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleMenuClick = (e: React.MouseEvent, route: string) => {
     const rect = (e.target as HTMLElement).getBoundingClientRect();
@@ -129,7 +157,7 @@ export default function Dashboard() {
             >
               <Card>
                 <div className="text-center">
-                  <h2 className="text-4xl font-bold text-white mb-2 dot-matrix pt-2">{RESUME_DATA.stats.focus}</h2>
+                  <h2 className="text-4xl font-bold text-white mb-2 dot-matrix pt-2 font-space-mono">{RESUME_DATA.stats.focus}</h2>
                   <p className="text-white/60 text-sm tracking-wider">PRIMARY FOCUS</p>
                 </div>
               </Card>

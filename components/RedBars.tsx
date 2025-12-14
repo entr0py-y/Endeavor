@@ -13,11 +13,8 @@ export default function RedBars() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      setIsVisible(false);
-      return;
-    }
+    // Mobile check removed to enable effect on all devices
+    setIsVisible(true);
 
     setIsVisible(true);
     let barId = 0;
@@ -42,8 +39,10 @@ export default function RedBars() {
     };
 
     window.addEventListener('click', handleClick);
+    window.addEventListener('touchstart', (e) => handleClick(e as unknown as MouseEvent), { passive: true });
     return () => {
       window.removeEventListener('click', handleClick);
+      window.removeEventListener('touchstart', (e) => handleClick(e as unknown as MouseEvent));
     };
   }, []);
 
@@ -57,7 +56,7 @@ export default function RedBars() {
           let style: React.CSSProperties = {};
           let initial: any = {};
           let animate: any = {};
-          
+
           if (direction === 0) {
             // Right
             style = { left: bar.x, top: bar.y - 1, height: '2px', width: '100vw', transformOrigin: '0 center' };
@@ -88,7 +87,7 @@ export default function RedBars() {
               initial={initial}
               animate={animate}
               exit={{ opacity: 0 }}
-              transition={{ 
+              transition={{
                 scaleX: { duration: 0.6, ease: 'easeOut' },
                 scaleY: { duration: 0.6, ease: 'easeOut' },
                 opacity: { duration: 1.5, ease: 'easeOut' }
@@ -97,7 +96,7 @@ export default function RedBars() {
               <div
                 className="w-full h-full"
                 style={{
-                  background: direction < 2 
+                  background: direction < 2
                     ? 'linear-gradient(90deg, rgba(255,0,0,0.8) 0%, rgba(255,0,0,0.8) 80%, transparent 100%)'
                     : 'linear-gradient(180deg, rgba(255,0,0,0.8) 0%, rgba(255,0,0,0.8) 80%, transparent 100%)',
                   boxShadow: '0 0 10px 2px rgba(255,0,0,0.6), 0 0 20px 4px rgba(255,0,0,0.3)',
