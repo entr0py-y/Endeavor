@@ -29,7 +29,7 @@ const RESUME_DATA = {
     }
   ],
   skills: [
-    { id: "01", name: "PYTON / DATA SCIENCE", desc: "ML pipelines, Pandas, NumPy, Scikit-learn", category: "ML/AI", percent: "85%" },
+    { id: "01", name: "PYTHON / DATA SCIENCE", desc: "ML pipelines, Pandas, NumPy, Scikit-learn", category: "ML/AI", percent: "85%" },
     { id: "02", name: "TENSORFLOW / DL", desc: "Neural Networks, Computer Vision, Model Training", category: "ML/AI", percent: "80%" },
     { id: "03", name: "REACT / NEXT.JS", desc: "Component-based UI, SSR, Interactive Frontends", category: "FRONTEND", percent: "75%" },
     { id: "04", name: "TYPESCRIPT / JS", desc: "Core logic, async programming, type safety", category: "LANGUAGES", percent: "82%" },
@@ -151,8 +151,8 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Mobile Bottom Dock (Moved Higher + Z-Index Boost) */}
-        <nav className="fixed bottom-6 left-6 right-6 z-[200] md:hidden flex justify-between items-center bg-black/80 backdrop-blur-md border border-white/20 rounded-full px-6 py-4 pointer-events-auto">
+        {/* Mobile Bottom Dock (Hyper-Visible) */}
+        <nav className="fixed !bottom-8 !left-4 !right-4 z-[9999] md:hidden flex justify-between items-center bg-black border border-white/30 rounded-full px-6 py-4 pointer-events-auto shadow-[0_0_20px_rgba(220,20,60,0.3)]">
           {sections.map((item, index) => (
             <button
               key={item}
