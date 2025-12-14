@@ -151,8 +151,8 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Mobile Bottom Dock (Hyper-Visible) */}
-        <nav className="fixed !bottom-8 !left-4 !right-4 z-[9999] md:hidden flex justify-between items-center bg-black border border-white/30 rounded-full px-6 py-4 pointer-events-auto shadow-[0_0_20px_rgba(220,20,60,0.3)]">
+        {/* Mobile Bottom Dock (Hyper-Visible - DEBUG MODE) */}
+        <nav className="fixed !bottom-8 !left-4 !right-4 z-[9999] flex justify-between items-center bg-black border border-white/30 rounded-full px-6 py-4 pointer-events-auto shadow-[0_0_20px_rgba(220,20,60,0.3)]">
           {sections.map((item, index) => (
             <button
               key={item}
