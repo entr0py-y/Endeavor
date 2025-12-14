@@ -172,7 +172,12 @@ export default function Home() {
       >
 
         {/* Screen 1: Identity */}
-        <section id="identity" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
+        <section id="identity" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
+          {/* 3D Object: Prism on Right for Identity */}
+          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none">
+            <RotatingPrism scale={1.5} />
+          </div>
+
           <motion.div
             className="w-full max-w-5xl relative text-left"
             initial={{ opacity: 0, x: -50 }}
@@ -180,11 +185,6 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            {/* Decorative elements */}
-            <div className="absolute -top-40 -left-20 opacity-20 pointer-events-none hidden md:block">
-              <RotatingPrism scale={0.5} />
-            </div>
-
             <div className="flex flex-col justify-center relative items-start">
               <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-2 font-bold dot-matrix">IDENTITY MODULE</h2>
               <h1 className="text-6xl md:text-9xl font-bold tracking-tighter mb-6 text-[#00FFFF] font-space-mono drop-shadow-[0_0_50px_rgba(0,255,255,0.8)]">
@@ -207,7 +207,7 @@ export default function Home() {
                 </button>
                 <button
                   onClick={() => scrollToSection('connect')}
-                  className="bg-transparent text-white/50 hover:text-white w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold border border-transparent hover:border-white/50"
+                  className="bg-transparent border border-nothing-red text-nothing-red w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-nothing-red hover:text-white cursor-pointer"
                 >
                   GET IN TOUCH
                 </button>
@@ -217,7 +217,12 @@ export default function Home() {
         </section>
 
         {/* Screen 2: Education */}
-        <section id="education" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
+        <section id="education" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
+          {/* 3D Object: Cube on Right for Others */}
+          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
+            <RotatingCube />
+          </div>
+
           <div className="w-full max-w-5xl">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -247,7 +252,12 @@ export default function Home() {
         </section>
 
         {/* Screen 3: Skills */}
-        <section id="skills" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
+        <section id="skills" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
+          {/* 3D Object: Cube on Right for Others */}
+          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
+            <RotatingCube />
+          </div>
+
           <div className="w-full max-w-6xl">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -280,7 +290,12 @@ export default function Home() {
         </section>
 
         {/* Screen 4: Projects */}
-        <section id="projects" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
+        <section id="projects" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
+          {/* 3D Object: Cube on Right for Others */}
+          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
+            <RotatingCube />
+          </div>
+
           <div className="w-full max-w-4xl text-left">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -299,7 +314,12 @@ export default function Home() {
         </section>
 
         {/* Screen 5: Connect */}
-        <section id="connect" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10">
+        <section id="connect" className="snap-start h-screen w-full flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden">
+          {/* 3D Object: Cube on Right for Others */}
+          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
+            <RotatingCube />
+          </div>
+
           <div className="w-full max-w-5xl h-full flex flex-col justify-center py-20">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
