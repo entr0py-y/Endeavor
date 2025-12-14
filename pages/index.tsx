@@ -147,7 +147,7 @@ export default function Home() {
 
       {/* Navigation Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start text-white mix-blend-difference pointer-events-none">
-        <div className="font-bold tracking-widest text-5xl md:text-7xl lg:text-8xl leading-none pointer-events-auto cursor-default">
+        <div className={`font-bold tracking-widest text-5xl md:text-7xl lg:text-8xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
           &lt;PORTFOLIO/&gt;
         </div>
         <div className="hidden md:flex flex-col items-end gap-2 text-sm tracking-wider pt-2 pointer-events-auto">
@@ -187,7 +187,7 @@ export default function Home() {
 
             <div className="flex flex-col justify-center relative items-start">
               <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-2 font-bold dot-matrix">IDENTITY MODULE</h2>
-              <h1 className="text-6xl md:text-9xl font-bold tracking-tighter mb-6 text-[#D000FF] font-space-mono drop-shadow-[0_0_50px_rgba(208,0,255,0.8)]">
+              <h1 className="text-6xl md:text-9xl font-bold tracking-tighter mb-6 text-[#00FFFF] font-space-mono drop-shadow-[0_0_50px_rgba(0,255,255,0.8)]">
                 {RESUME_DATA.name}
               </h1>
               <div className="h-px w-24 bg-nothing-red mb-8" />
