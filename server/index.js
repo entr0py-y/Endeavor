@@ -15,7 +15,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://localhost:3000', 'http://localhost:3002'],
+    origin: ['http://localhost:3000', 'http://localhost:3002', 'http://localhost:3001'],
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -23,7 +23,7 @@ const io = new Server(server, {
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3002'],
+  origin: ['http://localhost:3000', 'http://localhost:3002', 'http://localhost:3001'],
   credentials: true
 }));
 app.use(express.json({ limit: '50mb' }));
@@ -31,11 +31,11 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/sweepx', {})
-.then(() => console.log('✓ Connected to MongoDB'))
-.catch(err => {
-  console.log('⚠ MongoDB not connected - using in-memory storage');
-  console.log('  Install MongoDB with: brew install mongodb-community');
-});
+  .then(() => console.log('✓ Connected to MongoDB'))
+  .catch(err => {
+    console.log('⚠ MongoDB not connected - using in-memory storage');
+    console.log('  Install MongoDB with: brew install mongodb-community');
+  });
 
 // Make io accessible to routes
 app.set('io', io);

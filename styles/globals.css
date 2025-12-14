@@ -1,7 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 @font-face {
-  font-family: 'Ndot55';
-  src: local('Ndot55'), url('/fonts/ndot-55.otf') format('opentype');
+  font-family: 'ntype82';
+  src: local('ntype82'), url('/fonts/ndot-55.otf') format('opentype');
   font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+/* ... existing code ... */
+
+/* Space Mono Font Utility */
+.font-space-mono {
+  font-family: 'Space Mono', monospace !important;
+}
+
+/* Dot matrix text effect */
+
+@font-face {
+  font-family: 'ntype82';
+  src: local('ntype82-bold'), url('/fonts/ndot-57.otf') format('opentype');
+  font-weight: bold;
   font-style: normal;
   font-display: block;
 }
@@ -26,7 +45,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   letter-spacing: 0.05em;
 }
@@ -135,15 +159,13 @@ body {
 }
 
 .nothing-card {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(255, 255, 255, 0.03) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      rgba(255, 255, 255, 0.03) 100%);
   backdrop-filter: blur(20px) saturate(180%) brightness(1.15);
   -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow: 
+  box-shadow:
     0 8px 32px 0 rgba(0, 0, 0, 0.3),
     0 4px 20px 0 rgba(255, 255, 255, 0.1),
     inset 0 0 0 1px rgba(255, 255, 255, 0.2),
@@ -161,31 +183,27 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.15) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.15) 50%,
+      transparent 100%);
   opacity: 0.3;
 }
 
 .nothing-card:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0.04) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.04) 100%);
   backdrop-filter: blur(24px) saturate(200%) brightness(1.2);
   -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.2);
   border-color: rgba(255, 40, 60, 0.5);
-  box-shadow: 
+  box-shadow:
     0 12px 40px 0 rgba(0, 0, 0, 0.4),
     0 6px 24px 0 rgba(255, 255, 255, 0.15),
     inset 0 0 0 1px rgba(255, 255, 255, 0.3),
     inset 0 2px 6px 0 rgba(255, 255, 255, 0.3),
     0 0 80px 0 rgba(220, 20, 60, 0.1);
-  box-shadow: 
+  box-shadow:
     0 12px 48px 0 rgba(255, 0, 0, 0.28),
     0 4px 24px 0 rgba(255, 255, 255, 0.12),
     inset 0 0 0 1px rgba(255, 255, 255, 0.2),
@@ -198,7 +216,7 @@ body {
   border: 1px solid #FFFFFF;
   color: #FFFFFF;
   padding: 0.75rem 2rem;
-  font-family: 'Ndot55', sans-serif;
+  font-family: 'ntype82', sans-serif;
   font-size: 0.875rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -234,7 +252,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: #FFFFFF;
   padding: 1rem 1.5rem;
-  font-family: 'Ndot55', sans-serif;
+  font-family: 'ntype82', sans-serif;
   font-size: 0.875rem;
   outline: none;
   transition: border-color 0.3s ease;
@@ -250,7 +268,7 @@ body {
 
 /* Dot matrix text effect */
 .dot-matrix {
-  font-family: 'Ndot55', sans-serif !important;
+  font-family: 'ntype82', sans-serif !important;
   font-weight: 400;
   letter-spacing: 0.1em;
   text-rendering: geometricPrecision;
@@ -259,7 +277,7 @@ body {
 /* Leaflet map fixes */
 .leaflet-container {
   background: #000000;
-  font-family: 'Ndot55', sans-serif;
+  font-family: 'ntype82', sans-serif;
 }
 
 .leaflet-popup-content-wrapper {
@@ -278,6 +296,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -288,15 +307,19 @@ body {
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0);
   }
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }

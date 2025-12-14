@@ -55,43 +55,43 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
     const rotate4D = (point: number[], angles: any) => {
       let [x, y, z, w] = point;
-      
+
       let cos = Math.cos(angles.xy);
       let sin = Math.sin(angles.xy);
       let nx = x * cos - y * sin;
       let ny = x * sin + y * cos;
       x = nx; y = ny;
-      
+
       cos = Math.cos(angles.xz);
       sin = Math.sin(angles.xz);
       nx = x * cos - z * sin;
       let nz = x * sin + z * cos;
       x = nx; z = nz;
-      
+
       cos = Math.cos(angles.xw);
       sin = Math.sin(angles.xw);
       nx = x * cos - w * sin;
       let nw = x * sin + w * cos;
       x = nx; w = nw;
-      
+
       cos = Math.cos(angles.yz);
       sin = Math.sin(angles.yz);
       ny = y * cos - z * sin;
       nz = y * sin + z * cos;
       y = ny; z = nz;
-      
+
       cos = Math.cos(angles.yw);
       sin = Math.sin(angles.yw);
       ny = y * cos - w * sin;
       nw = y * sin + w * cos;
       y = ny; w = nw;
-      
+
       cos = Math.cos(angles.zw);
       sin = Math.sin(angles.zw);
       nz = z * cos - w * sin;
       nw = z * sin + w * cos;
       z = nz; w = nw;
-      
+
       return [x, y, z, w];
     };
 
@@ -127,12 +127,12 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       const elapsed = Date.now() - startTime.current;
       const currentCycle = Math.floor(elapsed / cycleDuration);
       const cycleProgress = (elapsed % cycleDuration) / cycleDuration;
-      
+
       // Reset if starting a new cycle
       if (currentCycle > cycleCount && cycleCount < totalCycles) {
         cycleCount = currentCycle;
       }
-      
+
       // Speed up rotation and fade out (same as click effect)
       const speedMultiplier = 1 + cycleProgress * 4;
       rotationRef.current.xy += 0.03 * speedMultiplier;
@@ -219,6 +219,11 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         }}
       />
 
+      {/* Text */}
+      <div className="absolute mt-64 font-space-mono text-nothing-red text-sm tracking-widest uppercase animate-pulse">
+        loading<span className="loading-dots"></span>
+      </div>
+
       <style jsx>{`
         @keyframes spin {
           from {
@@ -227,6 +232,18 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           to {
             transform: rotate(360deg);
           }
+        }
+        
+        .loading-dots::after {
+          content: ' .';
+          animation: dots 1.5s steps(5, end) infinite;
+        }
+
+        @keyframes dots {
+          0%, 20% { content: ''; }
+          40% { content: '.'; }
+          60% { content: '..'; }
+          80%, 100% { content: '...'; }
         }
       `}</style>
     </div>

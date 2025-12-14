@@ -1,8 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import dynamic from 'next/dynamic';
-import { useAuthStore } from '@/store';
-import { api } from '@/lib/api';
 import CursorGlow from '@/components/CursorGlow';
 import RotatingCube from '@/components/RotatingCube';
 import FollowCube from '@/components/FollowCube';
@@ -10,125 +7,74 @@ import RedBars from '@/components/RedBars';
 import RotatingPrism from '@/components/RotatingPrism';
 import RotatingSmallCube from '@/components/RotatingSmallCube';
 import Card from '@/components/Card';
-import Footer from '@/components/Footer';
+
 import ClickTesseract from '@/components/ClickTesseract';
 import { motion } from 'framer-motion';
 
-const MapComponent = dynamic(() => import('@/components/Map'), { ssr: false });
+const RESUME_DATA = {
+  name: "PUSHKAR JHA",
+  role: "ML & DATA SCIENCE UNDERGRADUATE",
+  tagline: "Data-driven developer & researcher in progress",
+  education: [
+    {
+      title: "B.TECH IN COMPUTER SCIENCE (DATA SCIENCE)",
+      institution: "Indraprastha University, New Delhi",
+      year: "2025 - 2029",
+      status: "IN PROGRESS"
+    },
+    {
+      title: "SECONDARY SCHOOLING (10TH & 12TH)",
+      institution: "Jawahar Navodaya Vidyalaya (JNV), Delhi-2",
+      year: "COMPLETED",
+      status: "DONE"
+    }
+  ],
+  skills: [
+    "Machine Learning",
+    "Data Science",
+    "Python",
+    "TensorFlow",
+    "React / Next.js",
+    "Tailwind CSS",
+    "Frontend Dev",
+    "Responsive Layouts"
+  ],
+  stats: {
+    level: "YR 1",
+    focus: "ML & DS",
+    status: "ONLINE"
+  }
+};
 
 export default function Dashboard() {
   const router = useRouter();
-  const { user, token, isAuthenticated, logout } = useAuthStore();
-  const [quests, setQuests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showPostModal, setShowPostModal] = useState(false);
-  const [relocating, setRelocating] = useState(false);
-  const [mapCenter, setMapCenter] = useState<[number, number]>([37.7749, -122.4194]);
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-  const [chatMessage, setChatMessage] = useState<string>('');
-  const [chatMessages, setChatMessages] = useState<Array<{username: string, message: string, timestamp: Date}>>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [clickEffect, setClickEffect] = useState<{x: number, y: number, id: number} | null>(null);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/');
-      return;
-    }
-    loadQuests();
-  }, [isAuthenticated]);
-
-  const loadQuests = async () => {
-    try {
-      const result = await api.getQuests(token!, { status: 'open' });
-      if (result.quests) {
-        setQuests(result.quests);
-      }
-    } catch (err) {
-      console.error('Failed to load quests');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    router.push('/');
-  };
-
-  const handleRelocate = () => {
-    if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
-      return;
-    }
-
-    setRelocating(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const coords: [number, number] = [
-          position.coords.latitude,
-          position.coords.longitude
-        ];
-        setMapCenter(coords);
-        setUserLocation(coords);
-        setRelocating(false);
-      },
-      (error) => {
-        // Silently handle error and use default location
-        setMapCenter([37.7749, -122.4194]);
-        setUserLocation([37.7749, -122.4194]);
-        setRelocating(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 0
-      }
-    );
-  };
-
-  const handleSendMessage = () => {
-    if (!chatMessage.trim()) return;
-    
-    // Add message to chat display
-    const newMessage = {
-      username: user?.username || 'You',
-      message: chatMessage,
-      timestamp: new Date()
-    };
-    setChatMessages(prev => [...prev, newMessage]);
-    setChatMessage(''); // Clear input after sending
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
+  const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
 
   const handleMenuClick = (e: React.MouseEvent, route: string) => {
     const rect = (e.target as HTMLElement).getBoundingClientRect();
     setClickEffect({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, id: Date.now() });
     setTimeout(() => setClickEffect(null), 800);
-    router.push(route);
+    // For now, since it's a single page app experience, we can just scroll or do nothing for some links
+    if (route === '/') router.push('/');
     setShowMobileMenu(false);
   };
 
   return (
-    <div className="min-h-screen w-full bg-nothing-black">
+    <div className="min-h-screen w-full bg-nothing-black font-space-mono">
       <RotatingCube />
       <FollowCube />
       <CursorGlow />
       <RedBars />
-      
+
       {/* Click Effect */}
       {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
-      
+
       {/* Header */}
       <header className="border-b border-white/15 sticky top-0 bg-nothing-black z-40">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="relative inline-block">
+            <div className="relative inline-block cursor-pointer" onClick={() => router.push('/')}>
               <div className="hidden md:block">
                 <RotatingSmallCube position="left" scale={0.3} offset={10} />
                 <RotatingPrism scale={0.3} />
@@ -139,559 +85,240 @@ export default function Dashboard() {
                 <RotatingPrism scale={0.15} />
                 <RotatingSmallCube position="right" scale={0.15} offset={5} />
               </div>
-              <h1 className="text-lg md:text-2xl font-light tracking-[0.25em] relative z-10" style={{ fontWeight: 300 }}>SWEEPX</h1>
+              <h1 className="text-lg md:text-2xl font-light tracking-[0.25em] relative z-10 dot-matrix" style={{ fontWeight: 300 }}>MY RESUME</h1>
             </div>
-            
-            {/* Desktop Navigation */}
+
             <nav className="hidden md:flex items-center gap-8">
+              <span className="text-sm tracking-widest text-white/40">SYSTEM: ONLINE</span>
               <button
-                onClick={(e) => handleMenuClick(e, '/dashboard')}
-                className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
-              >
-                HOME
-              </button>
-              <button
-                onClick={(e) => handleMenuClick(e, '/leaderboard')}
-                className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
-              >
-                LEADERBOARD
-              </button>
-              <button
-                onClick={(e) => handleMenuClick(e, '/friends')}
-                className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
-              >
-                FRIENDS
-              </button>
-              <button
-                onClick={(e) => handleMenuClick(e, '/profile')}
-                className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
-              >
-                PROFILE
-              </button>
-              <button
-                onClick={(e) => handleMenuClick(e, '/support')}
-                className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
-              >
-                SUPPORT
-              </button>
-              <button
-                onClick={handleLogout}
+                onClick={(e) => handleMenuClick(e, '/')}
                 className="nothing-button text-xs px-4 py-2 dot-matrix"
               >
-                LOG OUT
+                EXIT SYSTEM
               </button>
             </nav>
 
-            {/* Mobile Navigation */}
-            <div className="md:hidden flex items-center gap-3">
-              <button
-                onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="text-white p-2 hover:bg-white/10 rounded transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                </svg>
-              </button>
-              <button
-                onClick={handleLogout}
-                className="nothing-button text-xs px-3 py-2 dot-matrix"
-              >
-                LOG OUT
-              </button>
+            <div className="md:hidden">
+              <span className="text-xs tracking-widest text-white/40">SYS: ONLINE</span>
             </div>
           </div>
         </div>
-
-        {/* Mobile Menu Dropdown */}
-        {showMobileMenu && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="md:hidden border-t border-white/15 bg-nothing-black"
-          >
-            <div className="max-w-7xl mx-auto px-6 py-4 space-y-2">
-              <button
-                onClick={(e) => handleMenuClick(e, '/dashboard')}
-                className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
-              >
-                HOME
-              </button>
-              <button
-                onClick={(e) => handleMenuClick(e, '/leaderboard')}
-                className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
-              >
-                LEADERBOARD
-              </button>
-              <button
-                onClick={(e) => handleMenuClick(e, '/friends')}
-                className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
-              >
-                FRIENDS
-              </button>
-              <button
-                onClick={(e) => handleMenuClick(e, '/profile')}
-                className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
-              >
-                PROFILE
-              </button>
-              <button
-                onClick={(e) => handleMenuClick(e, '/support')}
-                className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
-              >
-                SUPPORT
-              </button>
-            </div>
-          </motion.div>
-        )}
       </header>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* User Stats */}
+        {/* User Stats - Reimagined as Status Indicators */}
         <div className="mb-16">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
             >
               <Card>
                 <div className="text-center">
-                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.xp || 0}</h2>
-                  <p className="text-white/60 text-sm tracking-wider">TOTAL XP</p>
+                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{RESUME_DATA.stats.level}</h2>
+                  <p className="text-white/60 text-sm tracking-wider">CURRENT YEAR</p>
                 </div>
               </Card>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1], delay: 0.15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.15 }}
             >
               <Card>
                 <div className="text-center">
-                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.level || 1}</h2>
-                  <p className="text-white/60 text-sm tracking-wider">LEVEL</p>
+                  <h2 className="text-4xl font-bold text-white mb-2 dot-matrix pt-2">{RESUME_DATA.stats.focus}</h2>
+                  <p className="text-white/60 text-sm tracking-wider">PRIMARY FOCUS</p>
                 </div>
               </Card>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
             >
               <Card>
                 <div className="text-center">
-                  <h2 className="text-5xl font-bold text-nothing-red mb-2 dot-matrix">{user?.questsCompleted || 0}</h2>
-                  <p className="text-white/60 text-sm tracking-wider">COMPLETED</p>
+                  <h2 className="text-4xl font-bold text-green-500 mb-2 dot-matrix pt-2">{RESUME_DATA.stats.status}</h2>
+                  <p className="text-white/60 text-sm tracking-wider">AVAILABILITY</p>
                 </div>
               </Card>
             </motion.div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="mb-16">
+        {/* Primary Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+
+          {/* Identity Section (Large) */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-            className="cursor-pointer"
-            onClick={() => setShowPostModal(true)}
+            className="lg:col-span-2"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <Card hover>
-              <div className="text-center py-8">
-                <div className="mb-4 flex justify-center">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="2" y="6" width="20" height="14" rx="2" stroke="#DC143C" strokeWidth="1.5"/>
-                    <circle cx="12" cy="13" r="3" stroke="#DC143C" strokeWidth="1.5"/>
-                    <path d="M8 6L9 3H15L16 6" stroke="#DC143C" strokeWidth="1.5"/>
-                    <circle cx="17" cy="9" r="0.5" fill="#DC143C"/>
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold dot-matrix tracking-wider mb-2">POST A QUEST</h3>
-                <p className="text-white/60 text-sm">Found some trash? Let others help clean it up</p>
+            <div className="nothing-card p-8 h-full min-h-[400px] flex flex-col justify-center relative overflow-hidden">
+              {/* Background decoration */}
+              <div className="absolute top-0 right-0 p-8 opacity-10">
+                <svg width="200" height="200" viewBox="0 0 100 100" fill="none" stroke="white" strokeWidth="1">
+                  <circle cx="50" cy="50" r="40" />
+                  <path d="M50 10 V90 M10 50 H90" />
+                </svg>
               </div>
-            </Card>
+
+              <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-4 font-bold dot-matrix">IDENTITY MODULE</h2>
+              <h1 className="text-4xl md:text-6xl font-light tracking-wider mb-6 text-white font-space-mono">
+                {RESUME_DATA.name}
+              </h1>
+              <div className="h-px w-24 bg-nothing-red mb-6" />
+              <p className="text-xl text-white/80 tracking-wide font-light mb-2">
+                {RESUME_DATA.role}
+              </p>
+              <p className="text-white/50 tracking-wide max-w-xl">
+                {RESUME_DATA.tagline}
+              </p>
+            </div>
           </motion.div>
+
+          {/* Skills Section */}
+          <motion.div
+            className="lg:col-span-1"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+          >
+            <div className="nothing-card p-8 h-full bg-white/5">
+              <h3 className="text-lg font-bold tracking-wider mb-6 flex items-center gap-2 text-nothing-red dot-matrix">
+                <span className="w-2 h-2 bg-nothing-red rounded-full"></span>
+                SKILL MATRIX
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {RESUME_DATA.skills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 border border-white/20 rounded-full text-xs text-white/70 tracking-wider hover:border-nothing-red hover:text-white transition-colors cursor-default"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-8 pt-8 border-t border-white/10">
+                <p className="text-xs text-white/40 tracking-wider leading-relaxed">
+                  Constant learner with a strong intuition for visual hierarchy and user experience. Building polished, human-centric interfaces.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
         </div>
 
-        {/* Three Column Section: Open Quests, Global Chat, History */}
-        <div className="mb-16">
-          <h2 className="text-2xl font-bold tracking-wider mb-8">DASHBOARD</h2>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Open Quests Column */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-              className="nothing-card p-6"
-            >
-              <h3 className="text-xl font-bold tracking-wider mb-6">OPEN QUESTS</h3>
-              {loading ? (
-                <div className="text-center py-8">
-                  <p className="text-white/60 animate-pulse">Loading...</p>
-                </div>
-              ) : quests.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-white/60 text-sm">No open quests</p>
-                </div>
-              ) : (
-                <div className="space-y-4 max-h-[400px] overflow-y-auto">
-                  {quests.slice(0, 6).map((quest: any) => (
-                    <div 
-                      key={quest._id} 
-                      onClick={() => router.push(`/quest/${quest._id}`)}
-                      className="border border-white/10 rounded-lg p-4 hover:border-red-500/50 cursor-pointer transition-all"
-                    >
-                      {quest.beforePhoto && (
-                        <div className="aspect-video bg-white/5 rounded overflow-hidden mb-3">
-                          <img src={quest.beforePhoto} alt={quest.title} className="w-full h-full object-cover" />
-                        </div>
-                      )}
-                      <h4 className="font-bold text-sm mb-2">{quest.title}</h4>
-                      <p className="text-white/60 text-xs line-clamp-2 mb-3">{quest.description}</p>
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-red-500">+{quest.xpReward} XP</span>
-                        <span className="text-white/40">by {quest.postedBy?.username}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-
-            {/* Global Chat Column */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1], delay: 0.15 }}
-              className="nothing-card p-6"
-            >
-              <h3 className="text-xl font-bold tracking-wider mb-6">GLOBAL CHAT</h3>
-              <div className="flex flex-col h-[400px]">
-                <div className="flex-1 overflow-y-auto space-y-3 mb-4">
-                  {chatMessages.length === 0 ? (
-                    <div className="text-center py-8 text-white/40 text-sm">
-                      No messages yet. Start a conversation!
-                    </div>
-                  ) : (
-                    chatMessages.map((msg, idx) => (
-                      <div key={idx} className="text-sm">
-                        <div className="flex items-start gap-2 mb-2">
-                          <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                            <span className="text-red-500 text-xs">{msg.username[0].toUpperCase()}</span>
-                          </div>
-                          <div>
-                            <p className="text-white/80 text-xs mb-1"><span className="font-bold">{msg.username}</span></p>
-                            <p className="text-white/60 text-xs">{msg.message}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-                <div className="border-t border-white/10 pt-4">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={chatMessage}
-                      onChange={(e) => setChatMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Type a message..."
-                      className="flex-1 bg-white/5 border border-white/10 rounded px-4 py-2 text-sm focus:outline-none focus:border-red-500/50"
-                    />
-                    <button 
-                      onClick={handleSendMessage}
-                      className="nothing-button px-6 py-2 text-sm"
-                    >
-                      SEND
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* History Column */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
-              className="nothing-card p-6"
-            >
-              <h3 className="text-xl font-bold tracking-wider mb-6">HISTORY</h3>
-              <div className="space-y-3 max-h-[400px] overflow-y-auto">
-                {/* Sample history items - replace with real data */}
-                <div className="border border-white/10 rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-green-500 text-xs font-bold">✓ COMPLETED</span>
-                    <span className="text-white/40 text-xs">2 hours ago</span>
-                  </div>
-                  <p className="text-white/80 text-sm mb-1">Beach Cleanup</p>
-                  <p className="text-red-500 text-xs">+50 XP</p>
-                </div>
-                
-                <div className="border border-white/10 rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-yellow-500 text-xs font-bold">⚡ ACCEPTED</span>
-                    <span className="text-white/40 text-xs">5 hours ago</span>
-                  </div>
-                  <p className="text-white/80 text-sm mb-1">Park Trail Cleanup</p>
-                  <p className="text-red-500 text-xs">+75 XP</p>
-                </div>
-
-                <div className="text-center py-8 text-white/40 text-sm">
-                  Your quest history will appear here
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Map Section */}
+        {/* Education Section */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
           className="mb-16"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold tracking-wider">EXPLORE NEARBY QUESTS</h2>
-            <button
-              onClick={handleRelocate}
-              disabled={relocating}
-              className="nothing-button text-xs px-4 py-2 flex items-center gap-2"
-              title="Relocate to current position"
-            >
-              <span>{relocating ? '📍' : '🎯'}</span>
-              {relocating ? 'LOCATING...' : 'RELOCATE'}
-            </button>
-          </div>
-          <div className="nothing-card overflow-hidden" style={{ height: '500px' }}>
-            <MapComponent quests={quests} center={mapCenter} userLocation={userLocation} />
+          <h2 className="text-2xl font-bold tracking-wider mb-8 text-nothing-red dot-matrix">EDUCATION LOGS</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {RESUME_DATA.education.map((edu, index) => (
+              <div key={index} className="nothing-card p-6 hover:bg-white/5 transition-colors group">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-bold tracking-wide text-white group-hover:text-nothing-red transition-colors font-space-mono">
+                    {edu.institution}
+                  </h3>
+                  <span className="text-xs border border-white/20 px-2 py-1 rounded text-white/50">
+                    {edu.status}
+                  </span>
+                </div>
+                <p className="text-white/80 text-sm tracking-wider mb-2">{edu.title}</p>
+                <p className="text-white/40 text-xs font-mono">{edu.year}</p>
+              </div>
+            ))}
           </div>
         </motion.div>
-      </main>
 
-      <Footer />
-
-      {/* Modals */}
-      {showPostModal && (
-        <PostQuestModal onClose={() => setShowPostModal(false)} onSuccess={() => { setShowPostModal(false); loadQuests(); }} />
-      )}
-    </div>
-  );
-}
-
-// Post Quest Modal Component
-function PostQuestModal({ onClose, onSuccess }: any) {
-  const { token } = useAuthStore();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string>('');
-  const [loading, setLoading] = useState(false);
-  const [location, setLocation] = useState<any>(null);
-
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-        },
-        (error) => {
-          // If location access is denied or unavailable, use a default location
-          console.log('Location access issue:', error.message);
-          setLocation({ lat: 37.7749, lng: -122.4194 }); // Default: San Francisco
-        },
-        {
-          enableHighAccuracy: false,
-          timeout: 10000,
-          maximumAge: 60000
-        }
-      );
-    } else {
-      // Geolocation not supported, use default location
-      setLocation({ lat: 37.7749, lng: -122.4194 });
-    }
-  }, []);
-
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Check file size (limit to 2MB to avoid payload issues)
-      if (file.size > 2 * 1024 * 1024) {
-        alert('Image too large. Please select an image under 2MB.');
-        return;
-      }
-      
-      setPhoto(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // Compress image if needed
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-          
-          // Resize if too large
-          const maxDimension = 800;
-          if (width > maxDimension || height > maxDimension) {
-            if (width > height) {
-              height = (height / width) * maxDimension;
-              width = maxDimension;
-            } else {
-              width = (width / height) * maxDimension;
-              height = maxDimension;
-            }
-          }
-          
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-          
-          // Convert to compressed base64
-          const compressedData = canvas.toDataURL('image/jpeg', 0.7);
-          setPhotoPreview(compressedData);
-        };
-        img.src = reader.result as string;
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!location) {
-      alert('Please enable location access');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const result = await api.createQuest({
-        title,
-        description,
-        location,
-        beforePhoto: photoPreview || 'https://via.placeholder.com/400x300?text=Quest+Photo',
-        address: ''
-      }, token!);
-
-      if (result && result.quest) {
-        alert(result.message || 'Quest posted!');
-        onSuccess();
-      } else if (result && result.error) {
-        alert(result.error);
-      } else {
-        alert('Quest posted successfully!');
-        onSuccess();
-      }
-    } catch (err: any) {
-      console.error('Quest post error:', err);
-      alert('Failed to post quest: ' + (err.message || 'Unknown error'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center px-6" onClick={onClose}>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="nothing-card p-12 max-w-lg w-full"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 className="text-2xl font-bold tracking-wider mb-8">POST A QUEST</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-xs dot-matrix tracking-wider text-white/60 mb-2">
-              PHOTO
-            </label>
-            <div className="border border-white/15 rounded p-4 text-center">
-              {photoPreview ? (
-                <div className="relative">
-                  <img src={photoPreview} alt="Preview" className="w-full h-48 object-cover rounded mb-2" />
-                  <button
-                    type="button"
-                    onClick={() => { setPhoto(null); setPhotoPreview(''); }}
-                    className="text-nothing-red text-xs hover:underline"
-                  >
-                    Remove Photo
-                  </button>
-                </div>
-              ) : (
-                <label className="cursor-pointer block">
-                  <div className="py-8">
-                    <div className="text-4xl mb-2">📸</div>
-                    <p className="text-white/60 text-sm">Click to upload photo</p>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handlePhotoChange}
-                    className="hidden"
-                  />
-                </label>
-              )}
+        {/* Project Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mb-16"
+        >
+          <h2 className="text-2xl font-bold tracking-wider mb-8 text-nothing-red dot-matrix">PROJECT MODULE</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="nothing-card p-12 flex items-center justify-center md:col-span-2 min-h-[160px]">
+              <p className="text-white/60 text-lg tracking-wide">will update later</p>
             </div>
           </div>
-          <div>
-            <label className="block text-xs dot-matrix tracking-wider text-white/60 mb-2">
-              TITLE
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="nothing-input w-full"
-              placeholder="What needs cleaning?"
-              required
-              maxLength={100}
-            />
-          </div>
-          <div>
-            <label className="block text-xs dot-matrix tracking-wider text-white/60 mb-2">
-              DESCRIPTION
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="nothing-input w-full min-h-[120px] resize-none"
-              placeholder="Describe the cleanup needed..."
-              required
-              maxLength={500}
-            />
-          </div>
-          <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="nothing-button flex-1 py-3"
-            >
-              CANCEL
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="nothing-button-primary flex-1 py-3 disabled:opacity-50"
-            >
-              {loading ? 'POSTING...' : 'POST QUEST'}
-            </button>
-          </div>
-        </form>
-      </motion.div>
+        </motion.div>
+
+      </main>
+
+      {/* Connect Section */}
+      <div className="max-w-7xl mx-auto px-6 pb-24">
+        <h2 className="text-2xl font-bold tracking-wider mb-8 text-nothing-red dot-matrix">CONNECT MODULE</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <a
+            href="https://instagram.com/endeavv0r"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group"
+          >
+            <Card hover>
+              <div className="flex items-center justify-between p-2">
+                <div>
+                  <h3 className="text-xl font-bold tracking-wider text-white group-hover:text-nothing-red transition-colors">INSTAGRAM</h3>
+                  <p className="text-white/40 text-xs">@endeavv0r</p>
+                </div>
+                <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center group-hover:border-nothing-red transition-colors">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                </div>
+              </div>
+            </Card>
+          </a>
+
+          <a
+            href="https://www.linkedin.com/in/pushkar-jha-4a1258381"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group"
+          >
+            <Card hover>
+              <div className="flex items-center justify-between p-2">
+                <div>
+                  <h3 className="text-xl font-bold tracking-wider text-white group-hover:text-nothing-red transition-colors">LINKEDIN</h3>
+                  <p className="text-white/40 text-xs">Connect professionally</p>
+                </div>
+                <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center group-hover:border-nothing-red transition-colors">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                  </svg>
+                </div>
+              </div>
+            </Card>
+          </a>
+        </div>
+
+        <div className="mt-16 border-t border-white/10 pt-8 text-center">
+          <p className="text-nothing-red text-xs tracking-[0.2em] mb-2 dot-matrix">INSPIRATION</p>
+          <p className="text-white/20 text-xs tracking-wider">
+            UI inspired by iOS 26 liquid glass and Nothing OS 3.0
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
