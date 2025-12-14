@@ -128,8 +128,8 @@ export default function RotatingSmallCube({ scale = 1, position = 'right', offse
   }, [scale]);
 
   const positionStyle = position === 'left'
-    ? { left: `${offset}%`, top: '50%' }
-    : { right: `${offset}%`, top: '50%' };
+    ? { left: `${offset}%`, top: '40%' }
+    : { right: `${offset}%`, top: '40%' };
 
   return (
     <canvas

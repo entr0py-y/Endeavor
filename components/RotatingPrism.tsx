@@ -135,7 +135,7 @@ export default function RotatingPrism({ scale = 1 }: RotatingPrismProps) {
       ref={canvasRef}
       className="absolute pointer-events-none"
       style={{
-        top: '50%',
+        top: '40%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         zIndex: 1,

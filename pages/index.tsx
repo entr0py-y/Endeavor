@@ -82,14 +82,14 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-16 relative">
           <div className="hidden md:block">
-            <RotatingSmallCube position="left" scale={1.4} offset={12} />
-            <RotatingPrism scale={1.3} />
-            <RotatingSmallCube position="right" scale={1.4} offset={12} />
+            <RotatingSmallCube position="left" scale={0.85} offset={60} />
+            <RotatingPrism scale={0.85} />
+            <RotatingSmallCube position="right" scale={0.85} offset={60} />
           </div>
           <div className="md:hidden">
-            <RotatingSmallCube position="left" scale={0.7} offset={8} />
-            <RotatingPrism scale={0.65} />
-            <RotatingSmallCube position="right" scale={0.7} offset={8} />
+            <RotatingSmallCube position="left" scale={0.7} offset={50} />
+            <RotatingPrism scale={0.7} />
+            <RotatingSmallCube position="right" scale={0.7} offset={50} />
           </div>
           <h1 className="text-4xl md:text-6xl font-light tracking-[0.3em] mb-4 text-white relative z-10" style={{ fontWeight: 300 }}>SWEEPX</h1>
           <p className="text-red-500 text-xs md:text-sm tracking-[0.15em] font-light relative z-10">
