@@ -138,7 +138,7 @@ export default function RotatingPrism({ scale = 1 }: RotatingPrismProps) {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        zIndex: 0,
+        zIndex: 1,
         opacity: 0.4,
       }}
     />

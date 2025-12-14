@@ -137,17 +137,18 @@ body {
 .nothing-card {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.008) 0%,
-    rgba(255, 255, 255, 0.004) 100%
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.03) 100%
   );
-  backdrop-filter: blur(12px) saturate(140%) brightness(1.08) contrast(1.1);
-  -webkit-backdrop-filter: blur(12px) saturate(140%) brightness(1.08) contrast(1.1);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(20px) saturate(180%) brightness(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 
-    0 8px 32px 0 rgba(0, 0, 0, 0.2),
-    0 2px 16px 0 rgba(255, 255, 255, 0.06),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-    inset 0 1px 2px 0 rgba(255, 255, 255, 0.18);
+    0 8px 32px 0 rgba(0, 0, 0, 0.3),
+    0 4px 20px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.25),
+    0 0 60px 0 rgba(255, 255, 255, 0.02);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -172,12 +173,18 @@ body {
 .nothing-card:hover {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.015) 0%,
-    rgba(255, 255, 255, 0.008) 100%
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.04) 100%
   );
-  backdrop-filter: blur(18px) saturate(150%) brightness(1.12) contrast(1.15);
-  -webkit-backdrop-filter: blur(18px) saturate(150%) brightness(1.12) contrast(1.15);
-  border-color: rgba(255, 40, 60, 0.45);
+  backdrop-filter: blur(24px) saturate(200%) brightness(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.2);
+  border-color: rgba(255, 40, 60, 0.5);
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 0, 0, 0.4),
+    0 6px 24px 0 rgba(255, 255, 255, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 2px 6px 0 rgba(255, 255, 255, 0.3),
+    0 0 80px 0 rgba(220, 20, 60, 0.1);
   box-shadow: 
     0 12px 48px 0 rgba(255, 0, 0, 0.28),
     0 4px 24px 0 rgba(255, 255, 255, 0.12),

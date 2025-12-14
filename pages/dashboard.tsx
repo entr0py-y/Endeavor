@@ -11,6 +11,7 @@ import RotatingPrism from '@/components/RotatingPrism';
 import RotatingSmallCube from '@/components/RotatingSmallCube';
 import Card from '@/components/Card';
 import Footer from '@/components/Footer';
+import ClickTesseract from '@/components/ClickTesseract';
 import { motion } from 'framer-motion';
 
 const MapComponent = dynamic(() => import('@/components/Map'), { ssr: false });
@@ -27,6 +28,7 @@ export default function Dashboard() {
   const [chatMessage, setChatMessage] = useState<string>('');
   const [chatMessages, setChatMessages] = useState<Array<{username: string, message: string, timestamp: Date}>>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [clickEffect, setClickEffect] = useState<{x: number, y: number, id: number} | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -104,12 +106,23 @@ export default function Dashboard() {
     }
   };
 
+  const handleMenuClick = (e: React.MouseEvent, route: string) => {
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    setClickEffect({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, id: Date.now() });
+    setTimeout(() => setClickEffect(null), 800);
+    router.push(route);
+    setShowMobileMenu(false);
+  };
+
   return (
     <div className="min-h-screen w-full bg-nothing-black">
       <RotatingCube />
       <FollowCube />
       <CursorGlow />
       <RedBars />
+      
+      {/* Click Effect */}
+      {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
       
       {/* Header */}
       <header className="border-b border-white/15 sticky top-0 bg-nothing-black z-40">
@@ -132,31 +145,31 @@ export default function Dashboard() {
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={(e) => handleMenuClick(e, '/dashboard')}
                 className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
               >
                 HOME
               </button>
               <button
-                onClick={() => router.push('/leaderboard')}
+                onClick={(e) => handleMenuClick(e, '/leaderboard')}
                 className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
               >
                 LEADERBOARD
               </button>
               <button
-                onClick={() => router.push('/friends')}
+                onClick={(e) => handleMenuClick(e, '/friends')}
                 className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
               >
                 FRIENDS
               </button>
               <button
-                onClick={() => router.push('/profile')}
+                onClick={(e) => handleMenuClick(e, '/profile')}
                 className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
               >
                 PROFILE
               </button>
               <button
-                onClick={() => router.push('/support')}
+                onClick={(e) => handleMenuClick(e, '/support')}
                 className="text-sm tracking-wider text-white/60 hover:text-white transition-colors"
               >
                 SUPPORT
@@ -198,31 +211,31 @@ export default function Dashboard() {
           >
             <div className="max-w-7xl mx-auto px-6 py-4 space-y-2">
               <button
-                onClick={() => { router.push('/dashboard'); setShowMobileMenu(false); }}
+                onClick={(e) => handleMenuClick(e, '/dashboard')}
                 className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
               >
                 HOME
               </button>
               <button
-                onClick={() => { router.push('/leaderboard'); setShowMobileMenu(false); }}
+                onClick={(e) => handleMenuClick(e, '/leaderboard')}
                 className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
               >
                 LEADERBOARD
               </button>
               <button
-                onClick={() => { router.push('/friends'); setShowMobileMenu(false); }}
+                onClick={(e) => handleMenuClick(e, '/friends')}
                 className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
               >
                 FRIENDS
               </button>
               <button
-                onClick={() => { router.push('/profile'); setShowMobileMenu(false); }}
+                onClick={(e) => handleMenuClick(e, '/profile')}
                 className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
               >
                 PROFILE
               </button>
               <button
-                onClick={() => { router.push('/support'); setShowMobileMenu(false); }}
+                onClick={(e) => handleMenuClick(e, '/support')}
                 className="block w-full text-left text-sm tracking-wider text-white/60 hover:text-white transition-colors py-2"
               >
                 SUPPORT
@@ -443,7 +456,13 @@ export default function Dashboard() {
         </div>
 
         {/* Map Section */}
-        <div className="mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+          className="mb-16"
+        >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold tracking-wider">EXPLORE NEARBY QUESTS</h2>
             <button
@@ -459,7 +478,7 @@ export default function Dashboard() {
           <div className="nothing-card overflow-hidden" style={{ height: '500px' }}>
             <MapComponent quests={quests} center={mapCenter} userLocation={userLocation} />
           </div>
-        </div>
+        </motion.div>
       </main>
 
       <Footer />

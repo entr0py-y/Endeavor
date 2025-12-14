@@ -6,7 +6,7 @@ interface RotatingSmallCubeProps {
   offset?: number;
 }
 
-export default function RotatingSmallCube({ scale = 1, position = 'right', offset = 20 }: RotatingSmallCubeProps) {
+export default function RotatingSmallCube({ scale = 1, position = 'right', offset = 12 }: RotatingSmallCubeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rotationRef = useRef({ x: 0, y: 0, z: 0 });
   const animationRef = useRef<number>();
@@ -128,8 +128,8 @@ export default function RotatingSmallCube({ scale = 1, position = 'right', offse
   }, [scale]);
 
   const positionStyle = position === 'left'
-    ? { left: `-${offset}px`, top: '50%' }
-    : { right: `-${offset}px`, top: '50%' };
+    ? { left: `${offset}%`, top: '50%' }
+    : { right: `${offset}%`, top: '50%' };
 
   return (
     <canvas
@@ -138,7 +138,7 @@ export default function RotatingSmallCube({ scale = 1, position = 'right', offse
       style={{
         ...positionStyle,
         transform: 'translateY(-50%)',
-        zIndex: 0,
+        zIndex: 1,
         opacity: 0.4,
       }}
     />

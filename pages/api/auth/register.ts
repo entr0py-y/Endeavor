@@ -1,5 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '1mb',
+    },
+  },
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -9,18 +17,21 @@ export default async function handler(
   }
 
   try {
-    const { username, email, password } = req.body;
+    const { username, password, displayName } = req.body;
+
+    console.log('Register request:', { username, password: '***', displayName });
 
     // For demo purposes - replace with actual database logic
-    if (!username || !email || !password) {
-      return res.status(400).json({ error: 'All fields required' });
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password required', received: { username: !!username, password: !!password } });
     }
 
     // Mock user creation
     const user = {
       _id: `user_${Date.now()}`,
       username,
-      email,
+      displayName: displayName || username,
+      email: `${username}@example.com`,
       points: 0,
       level: 1,
       badges: [],
@@ -30,7 +41,8 @@ export default async function handler(
 
     return res.status(201).json({
       user,
-      token: `token_${Date.now()}`
+      token: `token_${Date.now()}`,
+      message: 'Account created successfully'
     });
   } catch (error) {
     console.error('Registration error:', error);
