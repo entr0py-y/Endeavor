@@ -50,14 +50,15 @@ export default function Home() {
   const [currentSection, setCurrentSection] = useState({ id: 'identity', x: 0, y: 0 });
   const [isZoomedOut, setIsZoomedOut] = useState(false);
 
-  const sectionsMap = {
+  const sectionsMap: { [key: string]: { x: number, y: number } } = {
     'identity': { x: 0, y: 0 },
     'education': { x: 1, y: 0 },
     'skills': { x: 1, y: 1 },
     'projects': { x: 2, y: 1 },
     'connect': { x: 2, y: 2 }
   };
-  const sectionsList = Object.keys(sectionsMap);
+  const sectionsList = ['identity', 'education', 'skills', 'projects', 'connect'];
+  const allNavItems = [...sectionsList, 'elements'];
 
 
   /* Smooth Scroll / Glow Logic (Retained for Mobile) */
@@ -85,6 +86,10 @@ export default function Home() {
   };
 
   const scrollToSection = (id: string) => {
+    if (id === 'elements') {
+      toggleZoom();
+      return;
+    }
     if (sectionsMap[id]) {
       setCurrentSection({ id, ...sectionsMap[id] });
       setIsZoomedOut(false); // Zoom in when navigating
@@ -111,7 +116,7 @@ export default function Home() {
 
   return (
     <div
-      className="h-[100dvh] w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-hidden snap-none scroll-smooth"
+      className="h-[100vh] w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-hidden snap-none scroll-smooth"
       onClick={handleGlobalClick}
     >
       {/* Background Elements */}
@@ -151,43 +156,31 @@ export default function Home() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex flex-col items-end gap-2 text-sm tracking-wider pt-2 pointer-events-auto">
-          {sectionsList.map((item, index) => (
+          {allNavItems.map((item, index) => (
             <button
               key={item}
               onClick={() => scrollToSection(item)}
-              className={`hover:text-nothing-red transition-colors relative group uppercase text-right py-1 cursor-pointer ${currentSection.id === item ? 'text-nothing-red' : ''}`}
+              className={`hover:text-nothing-red transition-colors relative group uppercase text-right py-1 cursor-pointer ${item === 'elements' ? (isZoomedOut ? 'text-nothing-red' : '') : (currentSection.id === item ? 'text-nothing-red' : '')}`}
             >
               <span className="opacity-50 mr-2">0{index + 1}.</span>
               {item}
-              <span className={`absolute bottom-0 right-0 h-px bg-nothing-red transition-all duration-300 ${currentSection.id === item ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+              <span className={`absolute bottom-0 right-0 h-px bg-nothing-red transition-all duration-300 ${item === 'elements' ? (isZoomedOut ? 'w-full' : 'w-0 group-hover:w-full') : (currentSection.id === item ? 'w-full' : 'w-0 group-hover:w-full')}`} />
             </button>
           ))}
-          <button
-            onClick={toggleZoom}
-            className={`hover:text-nothing-red transition-colors relative group uppercase text-right py-1 cursor-pointer mt-4 ${isZoomedOut ? 'text-nothing-red' : ''}`}
-          >
-            [ ELEMENTS ]
-          </button>
         </div>
       </nav>
 
-      {/* Mobile Bottom Dock (Hyper-Visible - DEBUG MODE) */}
-      <nav className="fixed !bottom-8 !left-4 !right-4 z-[9999] flex justify-between items-center bg-black border border-white/30 rounded-full px-6 py-4 pointer-events-auto shadow-[0_0_20px_rgba(220,20,60,0.3)]">
-        {sectionsList.map((item, index) => (
+      {/* Mobile Bottom Dock */}
+      <nav className="fixed bottom-8 left-4 right-4 z-[9999] md:hidden flex justify-between items-center bg-black border border-white/30 rounded-full px-4 py-3 pointer-events-auto shadow-[0_0_20px_rgba(220,20,60,0.3)]">
+        {allNavItems.map((item) => (
           <button
             key={item}
             onClick={() => scrollToSection(item)}
-            className={`text-xs font-bold tracking-widest transition-colors ${currentSection.id === item ? 'text-nothing-red' : 'text-white/40'}`}
+            className={`text-xs font-bold tracking-widest transition-colors ${item === 'elements' ? (isZoomedOut ? 'text-nothing-red' : 'text-white/40') : (currentSection.id === item ? 'text-nothing-red' : 'text-white/40')}`}
           >
-            {item === 'identity' ? 'ID' : item === 'education' ? 'ED' : item === 'skills' ? 'SK' : item === 'projects' ? 'PR' : 'CN'}
+            {item === 'identity' ? 'ID' : item === 'education' ? 'ED' : item === 'skills' ? 'SK' : item === 'projects' ? 'PR' : item === 'connect' ? 'CN' : 'ALL'}
           </button>
         ))}
-        <button
-          onClick={toggleZoom}
-          className={`text-xs font-bold tracking-widest transition-colors ${isZoomedOut ? 'text-nothing-red' : 'text-white/40'}`}
-        >
-          ALL
-        </button>
       </nav>
 
       {/* Content Wrapper - Zig-Zag Grid */}
@@ -198,7 +191,7 @@ export default function Home() {
           height: '300vh',
           transform: isZoomedOut
             ? `scale(0.2) translate(0, 0)`
-            : `translate(-${currentSection.x * 100}vw, -${currentSection.y * 100}dvh)`,
+            : `translate(-${currentSection.x * 100}vw, -${currentSection.y * 100}vh)`,
           transformOrigin: 'top left'
         }}
       >
@@ -206,7 +199,7 @@ export default function Home() {
         {/* Screen 1: Identity (0,0) */}
         <section
           id="identity"
-          className={`absolute top-0 left-0 w-[100vw] h-[100dvh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
+          className={`absolute top-0 left-0 w-[100vw] h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
           onClick={() => isZoomedOut && scrollToSection('identity')}
         >
           <motion.div
@@ -250,7 +243,7 @@ export default function Home() {
         {/* Screen 2: Education (1,0) - Right of Identity */}
         <section
           id="education"
-          className={`absolute top-0 left-[100vw] w-[100vw] h-[100dvh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
+          className={`absolute top-0 left-[100vw] w-[100vw] h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
           onClick={() => isZoomedOut && scrollToSection('education')}
         >
           {/* 3D Object: Cube on Right for Others */}
@@ -289,7 +282,7 @@ export default function Home() {
         {/* Screen 3: Skills (1,1) - Below Education */}
         <section
           id="skills"
-          className={`absolute top-[100dvh] left-[100vw] w-[100vw] h-[100dvh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
+          className={`absolute top-[100vh] left-[100vw] w-[100vw] h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
           onClick={() => isZoomedOut && scrollToSection('skills')}
         >
           {/* 3D Object: Cube on Right for Others */}
@@ -350,7 +343,7 @@ export default function Home() {
         {/* Screen 4: Projects (2,1) - Right of Skills */}
         <section
           id="projects"
-          className={`absolute top-[100dvh] left-[200vw] w-[100vw] h-[100dvh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
+          className={`absolute top-[100vh] left-[200vw] w-[100vw] h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
           onClick={() => isZoomedOut && scrollToSection('projects')}
         >
           {/* 3D Object: Cube on Right for Others */}
@@ -378,7 +371,7 @@ export default function Home() {
         {/* Screen 5: Connect (2,2) - Below Projects */}
         <section
           id="connect"
-          className={`absolute top-[200dvh] left-[200vw] w-[100vw] h-[100dvh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
+          className={`absolute top-[200vh] left-[200vw] w-[100vw] h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
           onClick={() => isZoomedOut && scrollToSection('connect')}
         >
           {/* 3D Object: Cube on Right for Others */}
