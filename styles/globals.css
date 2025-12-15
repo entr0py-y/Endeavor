@@ -1,6 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Work+Sans:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&family=Teko:wght@400;500;600;700&display=swap');
 
 @font-face {
+  font-family: 'Valorant';
+  src: url('/fonts/Valorant Font.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'ntype82';
   src: local('ntype82'), url('/fonts/ndot-55.otf') format('opentype');
   font-weight: normal;
@@ -30,10 +38,10 @@
   font-family: 'Poppins', sans-serif !important;
 }
 
-/* Valorant Font Utility (using Teko) */
+/* Valorant Font Utility */
 .font-valorant {
-  font-family: 'Teko', sans-serif !important;
-  font-weight: 700;
+  font-family: 'Valorant', 'Teko', sans-serif !important;
+  font-weight: normal;
   letter-spacing: 0.08em;
 }
 
