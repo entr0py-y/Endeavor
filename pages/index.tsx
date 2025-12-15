@@ -129,9 +129,6 @@ export default function Home() {
       window.removeEventListener('touchend', handleTouchEnd);
     };
   }, [sectionsList.length]);
-
-  // Ensure all hooks and blocks are closed before return
-
   return (
     <div
       className="h-[100vh] w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-hidden"
@@ -221,7 +218,7 @@ export default function Home() {
           >
             <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
               <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-2 font-bold dot-matrix">IDENTITY MODULE</h2>
-              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-[#00FFFF] font-space-mono drop-shadow-[0_0_50px_rgba(0,255,255,0.8)]">
+              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-space-mono drop-shadow-[0_0_40px_rgba(255,255,255,0.85)]">
                 {RESUME_DATA.name}
               </h1>
               <div className="h-px w-24 bg-nothing-red mb-4 md:mb-8" />
