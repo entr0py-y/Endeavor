@@ -9,6 +9,7 @@ import RotatingSmallCube from '@/components/RotatingSmallCube';
 import RedBars from '@/components/RedBars';
 import Card from '@/components/Card';
 import ClickTesseract from '@/components/ClickTesseract';
+import ScrollPrism from '@/components/ScrollPrism';
 
 const RESUME_DATA = {
   name: "PUSHKAR JHA",
@@ -92,6 +93,9 @@ export default function Home() {
 
       {/* Click Effect */}
       {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
+
+      {/* Scroll Indicator Prism */}
+      <ScrollPrism currentIndex={currentSectionIndex} totalSections={sectionsList.length} />
 
       {/* Navigation Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start text-white mix-blend-difference pointer-events-none">
