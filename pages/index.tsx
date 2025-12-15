@@ -175,20 +175,21 @@ export default function Home() {
       {currentSectionIndex > 0 && (
         <button
           onClick={goToFirstSection}
-          className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] md:hidden pointer-events-auto"
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] md:hidden pointer-events-auto"
           aria-label="Go to top"
         >
           <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
+            width="56"
+            height="56"
+            viewBox="0 0 32 32"
             fill="none"
-            className="text-nothing-red"
+            className="text-nothing-red drop-shadow-lg"
+            style={{ display: 'block' }}
           >
             <path
-              d="M6 15L12 9L18 15"
+              d="M8 22L16 12L24 22"
               stroke="currentColor"
-              strokeWidth="2.5"
+              strokeWidth="3.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
