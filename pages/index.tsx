@@ -65,18 +65,70 @@ export default function Home() {
     }
   };
 
-  // Prevent manual scroll globally
+  // Navigate to next/previous section (one at a time)
+  const goToNextSection = () => {
+    setCurrentSectionIndex(prev => Math.min(prev + 1, sectionsList.length - 1));
+  };
+
+  const goToPrevSection = () => {
+    setCurrentSectionIndex(prev => Math.max(prev - 1, 0));
+  };
+
+  const goToFirstSection = () => {
+    setCurrentSectionIndex(0);
+  };
+
+  // Handle touch/swipe gestures for mobile (one slide at a time)
   useEffect(() => {
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isTransitioning = false;
+    const transitionDuration = 1200; // Match CSS transition
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (isTransitioning) return;
+
+      touchEndY = e.changedTouches[0].clientY;
+      const deltaY = touchStartY - touchEndY;
+      const threshold = 50; // Minimum swipe distance
+
+      if (Math.abs(deltaY) > threshold) {
+        isTransitioning = true;
+
+        if (deltaY > 0) {
+          // Swipe up - go to next section
+          setCurrentSectionIndex(prev => Math.min(prev + 1, sectionsList.length - 1));
+        } else {
+          // Swipe down - go to previous section
+          setCurrentSectionIndex(prev => Math.max(prev - 1, 0));
+        }
+
+        // Prevent multiple transitions
+        setTimeout(() => {
+          isTransitioning = false;
+        }, transitionDuration);
+      }
+    };
+
+    // Prevent default scroll
     const preventDefault = (e: Event) => e.preventDefault();
 
     window.addEventListener('wheel', preventDefault, { passive: false });
     window.addEventListener('touchmove', preventDefault, { passive: false });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
       window.removeEventListener('wheel', preventDefault);
       window.removeEventListener('touchmove', preventDefault);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, []);
+  }, [sectionsList.length]);
 
   return (
     <div
@@ -119,18 +171,30 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Mobile Bottom Dock */}
-      <nav className="fixed bottom-8 left-4 right-4 z-[9999] md:hidden flex justify-between items-center bg-black border border-white/30 rounded-full px-4 py-3 pointer-events-auto shadow-[0_0_20px_rgba(220,20,60,0.3)]">
-        {sectionsList.map((item, index) => (
-          <button
-            key={item}
-            onClick={() => scrollToSection(item)}
-            className={`text-xs font-bold tracking-widest transition-colors ${currentSectionIndex === index ? 'text-nothing-red' : 'text-white/40'}`}
+      {/* Up Arrow - Return to First Slide (visible on non-first slides, mobile) */}
+      {currentSectionIndex > 0 && (
+        <button
+          onClick={goToFirstSection}
+          className="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] md:hidden pointer-events-auto"
+          aria-label="Go to top"
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            className="text-nothing-red"
           >
-            {item === 'identity' ? 'ID' : item === 'education' ? 'ED' : item === 'skills' ? 'SK' : item === 'projects' ? 'PR' : 'CN'}
-          </button>
-        ))}
-      </nav>
+            <path
+              d="M6 15L12 9L18 15"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      )}
 
       {/* Content Wrapper - Vertical Stacked Sections */}
       <div
