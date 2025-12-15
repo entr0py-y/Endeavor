@@ -385,9 +385,11 @@ export default function Home() {
             >
               <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-nothing-red dot-matrix text-center md:text-left">PROJECT MODULE</h2>
               <div className="py-12 md:py-24 border-y border-white/10 w-full text-center md:text-left">
-                <p className="text-white/40 text-lg md:text-2xl tracking-[0.2em] font-light">
-                            // DEVELOPMENT IN PROGRESS
-                </p>
+                <ol className="list-decimal list-inside text-white/90 text-lg md:text-2xl font-light space-y-4">
+                  <li>
+                    Portfolio: <a href="https://endeavor-tan.vercel.app" target="_blank" rel="noopener noreferrer" className="text-nothing-red underline hover:text-white transition-colors duration-300">https://endeavor-tan.vercel.app</a>
+                  </li>
+                </ol>
               </div>
             </motion.div>
           </div>
