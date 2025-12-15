@@ -83,7 +83,7 @@ export default function Home() {
     let touchStartY = 0;
     let touchEndY = 0;
     let isTransitioning = false;
-    const transitionDuration = 1200; // Match CSS transition
+    const transitionDuration = 1600; // Match CSS transition
 
     const handleTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0].clientY;
@@ -151,7 +151,7 @@ export default function Home() {
       {/* Navigation Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start text-white mix-blend-difference pointer-events-none">
         <div className={`font-bold tracking-widest text-4xl md:text-6xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
-          <span className="text-white">&lt;</span>PORTFOLIO<span className="text-white">/&gt;</span>
+          <span className="text-white glow-white">&lt;</span><span className="dot-matrix glow-red">PORTFOLIO</span><span className="text-white glow-white">/&gt;</span>
         </div>
 
         {/* Desktop Nav */}
@@ -198,7 +198,7 @@ export default function Home() {
 
       {/* Content Wrapper - Vertical Stacked Sections */}
       <div
-        className="absolute top-0 left-0 w-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        className="absolute top-0 left-0 w-full transition-transform duration-[933ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{
           height: `${sectionsList.length * 100}vh`,
           transform: `translateY(-${currentSectionIndex * 100}vh)`
@@ -217,8 +217,8 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
-              <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-2 font-bold dot-matrix">IDENTITY MODULE</h2>
-              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-space-mono drop-shadow-[0_0_40px_rgba(255,255,255,0.85)]">
+              <h2 className="text-base md:text-xl text-nothing-red glow-red tracking-wide mb-3 md:mb-4 font-bold dot-matrix">Hi, I'm</h2>
+              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-poppins glow-white">
                 {RESUME_DATA.name}
               </h1>
               <div className="h-px w-24 bg-nothing-red mb-4 md:mb-8" />
@@ -232,13 +232,13 @@ export default function Home() {
               <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full max-w-md">
                 <button
                   onClick={(e) => { e.stopPropagation(); scrollToSection('education'); }}
-                  className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold cursor-pointer"
+                  className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold cursor-pointer glow-on-hover-white"
                 >
-                  VIEW EDUCATION
+                  MY EDUCATION
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); scrollToSection('connect'); }}
-                  className="bg-transparent border border-nothing-red text-nothing-red w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-nothing-red hover:text-white cursor-pointer"
+                  className="bg-transparent border border-nothing-red text-nothing-red w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-nothing-red hover:text-white cursor-pointer glow-on-hover-red"
                 >
                   GET IN TOUCH
                 </button>
@@ -263,7 +263,7 @@ export default function Home() {
               animate={{ opacity: currentSectionIndex === 1 ? 1 : 0.3, y: currentSectionIndex === 1 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-nothing-red dot-matrix text-center md:text-left">EDUCATION LOGS</h2>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-nothing-red glow-red dot-matrix text-center md:text-left">EDUCATION LOGS</h2>
               <div className="flex flex-col gap-12">
                 {RESUME_DATA.education.map((edu, index) => (
                   <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-nothing-red transition-colors group w-full">
@@ -302,7 +302,7 @@ export default function Home() {
               className="text-left w-full"
             >
               <div className="mb-6 md:mb-12 text-center md:text-left">
-                <h3 className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-white dot-matrix">
+                <h3 className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-nothing-red glow-red dot-matrix">
                   02. SKILLS & EXPERTISE
                 </h3>
                 <p className="text-white/60 text-sm tracking-widest font-mono">
@@ -315,7 +315,7 @@ export default function Home() {
                   <div key={index} className="w-full group">
                     <div className="flex items-end justify-between mb-2">
                       <div className="flex items-center gap-4">
-                        <span className="text-nothing-red/60 font-mono text-sm">[{skill.id}]</span>
+                        <span className="text-nothing-red/60 glow-red font-mono text-sm">[{skill.id}]</span>
                         <div className="">
                           <h4 className="text-xl md:text-2xl text-white font-bold tracking-wide group-hover:text-nothing-red transition-colors">{skill.name}</h4>
                           <p className="text-white/40 text-xs tracking-wider uppercase hidden md:block">{skill.desc}</p>
@@ -323,7 +323,7 @@ export default function Home() {
                       </div>
                       <div className="text-right flex flex-col items-end">
                         <span className="text-white/40 text-xs tracking-widest mb-1">{skill.category}</span>
-                        <span className="text-nothing-red font-bold font-mono">{skill.percent}</span>
+                        <span className="text-nothing-red glow-red font-bold font-mono">{skill.percent}</span>
                       </div>
                     </div>
 

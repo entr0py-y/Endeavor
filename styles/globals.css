@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Work+Sans:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap');
 
 @font-face {
   font-family: 'ntype82';
@@ -13,6 +13,21 @@
 /* Space Mono Font Utility */
 .font-space-mono {
   font-family: 'Space Mono', monospace !important;
+}
+
+/* Work Sans Font Utility */
+.font-work-sans {
+  font-family: 'Work Sans', sans-serif !important;
+}
+
+/* NType82 Font Utility */
+.font-ntype82 {
+  font-family: 'ntype82', sans-serif !important;
+}
+
+/* Poppins Font Utility */
+.font-poppins {
+  font-family: 'Poppins', sans-serif !important;
 }
 
 /* Dot matrix text effect */
@@ -335,4 +350,36 @@ body {
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Red Glow Effect for Headings */
+.glow-red {
+  text-shadow:
+    0 0 10px rgba(255, 0, 60, 0.6),
+    0 0 20px rgba(255, 0, 60, 0.4),
+    0 0 30px rgba(255, 0, 60, 0.2);
+}
+
+/* White Glow Effect for White Text */
+.glow-white {
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.6),
+    0 0 20px rgba(255, 255, 255, 0.4),
+    0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+/* Button Hover Glow Effect - Red */
+.glow-on-hover-red:hover {
+  box-shadow:
+    0 0 10px rgba(255, 0, 60, 0.6),
+    0 0 20px rgba(255, 0, 60, 0.4),
+    0 0 30px rgba(255, 0, 60, 0.2);
+}
+
+/* Button Hover Glow Effect - White */
+.glow-on-hover-white:hover {
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.6),
+    0 0 20px rgba(255, 255, 255, 0.4),
+    0 0 30px rgba(255, 255, 255, 0.2);
 }

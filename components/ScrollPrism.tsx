@@ -130,10 +130,11 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
         <div
             className={
                 // Lower on mobile, higher on desktop
-                'fixed bottom-2 md:bottom-6 z-50 pointer-events-none'
+                'fixed z-50 pointer-events-none'
             }
             style={{
                 left: `${xPosition}%`,
+                bottom: window.innerWidth >= 768 ? '-20px' : '-30px',
                 transform: 'translateX(-50%)',
                 transition: 'left 1.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
             }}
