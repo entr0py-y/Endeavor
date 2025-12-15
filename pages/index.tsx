@@ -130,6 +130,8 @@ export default function Home() {
     };
   }, [sectionsList.length]);
 
+  // Ensure all hooks and blocks are closed before return
+
   return (
     <div
       className="h-[100vh] w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-hidden"
