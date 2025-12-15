@@ -54,6 +54,30 @@ export default function Home() {
   /* Click Effect State */
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
 
+  /* Glitchy Portfolio Text */
+  const [portfolioText, setPortfolioText] = useState('PORTFOLIO');
+  const originalText = 'PORTFOLIO';
+  const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+  useEffect(() => {
+    const glitchInterval = setInterval(() => {
+      if (Math.random() < 0.15) { // 15% chance to glitch
+        const glitchedText = originalText.split('').map((char, index) => {
+          if (Math.random() < 0.3) { // 30% chance each letter glitches
+            return glitchChars[Math.floor(Math.random() * glitchChars.length)];
+          }
+          return char;
+        }).join('');
+        setPortfolioText(glitchedText);
+        
+        // Reset after short delay
+        setTimeout(() => setPortfolioText(originalText), 50 + Math.random() * 100);
+      }
+    }, 150);
+
+    return () => clearInterval(glitchInterval);
+  }, []);
+
   const handleGlobalClick = (e: React.MouseEvent) => {
     setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
   };
@@ -151,7 +175,7 @@ export default function Home() {
       {/* Navigation Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start text-white mix-blend-difference pointer-events-none">
         <div className={`font-bold tracking-widest text-4xl md:text-6xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
-          <span className="text-white glow-white">&lt;</span><span className="dot-matrix glow-red">PORTFOLIO</span><span className="text-white glow-white">/&gt;</span>
+          <span className="text-white glow-white">&lt;</span><span className="font-space-mono glow-red neon-flicker">{portfolioText}</span><span className="text-white glow-white">/&gt;</span>
         </div>
 
         {/* Desktop Nav */}
@@ -420,8 +444,11 @@ export default function Home() {
             </motion.div>
 
             <div className="mt-auto text-left pt-12">
-              <p className="text-white/20 text-xs tracking-[0.3em]">
+              <p className="text-nothing-red/80 text-xs tracking-[0.3em] glow-red">
                 DESIGNED BY PUSHKAR JHA
+              </p>
+              <p className="text-white/40 text-xs tracking-[0.3em] mt-2">
+                UI/UX INSPIRED BY iOS 26 AND NOTHING OS 3.0
               </p>
             </div>
           </div>
