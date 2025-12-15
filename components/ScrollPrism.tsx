@@ -17,8 +17,10 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
         const ctx = canvas.getContext('2d', { alpha: true });
         if (!ctx) return;
 
-        const scale = 1.0;
-        const size = 200 * scale;
+        // Responsive scale: larger on desktop, smaller on mobile
+        const isDesktop = window.innerWidth >= 768;
+        const scale = isDesktop ? 1.4 : 1.0;
+        const size = isDesktop ? 260 : 200;
         canvas.width = size * 2;
         canvas.height = size * 2;
 
@@ -126,7 +128,10 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
 
     return (
         <div
-            className="fixed bottom-6 md:bottom-4 z-50 pointer-events-none"
+            className={
+                // Lower on mobile, higher on desktop
+                'fixed bottom-2 md:bottom-6 z-50 pointer-events-none'
+            }
             style={{
                 left: `${xPosition}%`,
                 transform: 'translateX(-50%)',
@@ -136,8 +141,8 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
             <canvas
                 ref={canvasRef}
                 style={{
-                    width: '140px',
-                    height: '140px',
+                    width: window.innerWidth >= 768 ? '180px' : '140px',
+                    height: window.innerWidth >= 768 ? '180px' : '140px',
                 }}
             />
             {/* Track line */}
