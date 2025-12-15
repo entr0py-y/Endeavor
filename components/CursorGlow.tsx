@@ -1,96 +1,108 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
 
 export default function CursorGlow() {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isVisible, setIsVisible] = useState(false);
-  const [intensity, setIntensity] = useState(0.5);
-  const [isMoving, setIsMoving] = useState(false);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
+  const positionRef = useRef({ x: 0, y: 0 });
+  const intensityRef = useRef(0.5);
+  const isMovingRef = useRef(false);
+  const animationRef = useRef<number>();
 
   useEffect(() => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      setIsVisible(false);
-      return;
-    }
+    if (isMobile) return;
 
-    setIsVisible(true);
+    const glow = glowRef.current;
+    const dot = dotRef.current;
+    if (!glow || !dot) return;
 
-    let moveTimeout: NodeJS.Timeout;
+    let lastMoveTime = 0;
+    let moveTimeout: number;
 
     const handleMouseMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-      setIsMoving(true);
+      positionRef.current.x = e.clientX;
+      positionRef.current.y = e.clientY;
+      lastMoveTime = performance.now();
+      isMovingRef.current = true;
 
       clearTimeout(moveTimeout);
-      moveTimeout = setTimeout(() => {
-        setIsMoving(false);
+      moveTimeout = window.setTimeout(() => {
+        isMovingRef.current = false;
       }, 150);
     };
 
-    // Animate intensity based on movement
-    const pulseInterval = setInterval(() => {
-      setIntensity(prev => {
-        const target = isMoving ? 0.8 : 0.5;
-        const diff = target - prev;
-        return prev + diff * 0.3;
-      });
-    }, 50);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
-    window.addEventListener('mousemove', handleMouseMove);
+    // Single RAF loop for all cursor updates
+    const animate = () => {
+      const pos = positionRef.current;
+
+      // Smooth intensity transition
+      const targetIntensity = isMovingRef.current ? 0.8 : 0.5;
+      intensityRef.current += (targetIntensity - intensityRef.current) * 0.15;
+      const intensity = intensityRef.current;
+
+      // Update positions using transform (GPU accelerated)
+      glow.style.transform = `translate3d(${pos.x - 30}px, ${pos.y - 30}px, 0)`;
+      glow.style.opacity = String(intensity);
+
+      dot.style.transform = `translate3d(${pos.x - 3}px, ${pos.y - 3}px, 0)`;
+
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      clearInterval(pulseInterval);
       clearTimeout(moveTimeout);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
-  }, [isMoving]);
+  }, []);
 
-  if (!isVisible) return null;
+  // Check for mobile on mount
+  if (typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    return null;
+  }
 
   return (
     <>
-      <motion.div
+      <div
+        ref={glowRef}
         className="fixed pointer-events-none z-50 mix-blend-screen"
         style={{
-          left: position.x - 30,
-          top: position.y - 30,
           width: '60px',
           height: '60px',
-        }}
-        animate={{
-          x: 0,
-          y: 0,
-          opacity: intensity,
-        }}
-        transition={{
-          type: 'spring',
-          damping: 30,
-          stiffness: 200,
-          mass: 0.5,
-          opacity: { duration: 0.3, ease: 'easeInOut' }
+          willChange: 'transform, opacity',
+          left: 0,
+          top: 0,
         }}
       >
         <div
           className="w-full h-full rounded-full"
           style={{
-            background: `radial-gradient(circle, rgba(220, 20, 60,${intensity * 0.9}) 0%, rgba(220, 20, 60,${intensity * 0.5}) 30%, rgba(220, 20, 60,${intensity * 0.2}) 60%, transparent 80%)`,
+            background: 'radial-gradient(circle, rgba(220, 20, 60, 0.7) 0%, rgba(220, 20, 60, 0.4) 30%, rgba(220, 20, 60, 0.15) 60%, transparent 80%)',
             filter: 'blur(20px)',
-            boxShadow: `0 0 50px rgba(220, 20, 60,${intensity * 0.6}), 0 0 90px rgba(220, 20, 60,${intensity * 0.3})`,
+            boxShadow: '0 0 50px rgba(220, 20, 60, 0.48), 0 0 90px rgba(220, 20, 60, 0.24)',
           }}
         />
-      </motion.div>
+      </div>
 
-      <motion.div
+      <div
+        ref={dotRef}
         className="fixed pointer-events-none z-50"
         style={{
-          left: position.x - 3,
-          top: position.y - 3,
           width: '6px',
           height: '6px',
+          willChange: 'transform',
+          left: 0,
+          top: 0,
         }}
       >
         <div className="w-full h-full rounded-full bg-white" />
-      </motion.div>
+      </div>
     </>
   );
 }

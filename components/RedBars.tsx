@@ -1,111 +1,110 @@
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useRef } from 'react';
 
 interface Bar {
   id: number;
   x: number;
   y: number;
-  delay: number;
+  startTime: number;
+  direction: number;
 }
 
 export default function RedBars() {
-  const [bars, setBars] = useState<Bar[]>([]);
-  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const barsRef = useRef<Bar[]>([]);
+  const animationRef = useRef<number>();
+  const barIdRef = useRef(0);
 
   useEffect(() => {
-    // Mobile check removed to enable effect on all devices
-    setIsVisible(true);
+    const container = containerRef.current;
+    if (!container) return;
 
-    setIsVisible(true);
-    let barId = 0;
+    const handleClick = (e: MouseEvent | TouchEvent) => {
+      const clientX = 'touches' in e ? e.touches[0]?.clientX ?? 0 : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0]?.clientY ?? 0 : e.clientY;
+      const now = performance.now();
 
-    const handleClick = (e: MouseEvent) => {
       // Create 4 bars going in all directions
-      const newBars: Bar[] = [
-        { id: barId++, x: e.clientX, y: e.clientY, delay: 0 }, // right
-        { id: barId++, x: e.clientX, y: e.clientY, delay: 0 }, // left
-        { id: barId++, x: e.clientX, y: e.clientY, delay: 0 }, // up
-        { id: barId++, x: e.clientX, y: e.clientY, delay: 0 }, // down
-      ];
+      for (let i = 0; i < 4; i++) {
+        barsRef.current.push({
+          id: barIdRef.current++,
+          x: clientX,
+          y: clientY,
+          startTime: now,
+          direction: i
+        });
+      }
 
-      setBars(prev => {
-        const combined = [...prev, ...newBars];
-        return combined.length > 20 ? combined.slice(-20) : combined;
-      });
-
-      setTimeout(() => {
-        setBars(prev => prev.filter(bar => !newBars.find(nb => nb.id === bar.id)));
-      }, 1500);
+      // Limit total bars
+      if (barsRef.current.length > 20) {
+        barsRef.current = barsRef.current.slice(-20);
+      }
     };
 
     window.addEventListener('click', handleClick);
-    window.addEventListener('touchstart', (e) => handleClick(e as unknown as MouseEvent), { passive: true });
+    window.addEventListener('touchstart', handleClick, { passive: true });
+
+    // Animation loop
+    const animate = (timestamp: number) => {
+      // Remove expired bars
+      barsRef.current = barsRef.current.filter(bar => timestamp - bar.startTime < 1500);
+
+      // Update DOM
+      let html = '';
+      for (const bar of barsRef.current) {
+        const elapsed = timestamp - bar.startTime;
+        const scaleProgress = Math.min(elapsed / 600, 1);
+        const opacityProgress = Math.min(elapsed / 1500, 1);
+        const opacity = 0.8 * (1 - opacityProgress);
+
+        let style = '';
+        let transform = '';
+
+        if (bar.direction === 0) {
+          // Right
+          style = `left:${bar.x}px;top:${bar.y - 1}px;height:2px;width:100vw;transform-origin:0 center;`;
+          transform = `scaleX(${scaleProgress})`;
+        } else if (bar.direction === 1) {
+          // Left
+          style = `right:${window.innerWidth - bar.x}px;top:${bar.y - 1}px;height:2px;width:100vw;transform-origin:100% center;`;
+          transform = `scaleX(${scaleProgress})`;
+        } else if (bar.direction === 2) {
+          // Up
+          style = `left:${bar.x - 1}px;bottom:${window.innerHeight - bar.y}px;width:2px;height:100vh;transform-origin:center 100%;`;
+          transform = `scaleY(${scaleProgress})`;
+        } else {
+          // Down
+          style = `left:${bar.x - 1}px;top:${bar.y}px;width:2px;height:100vh;transform-origin:center 0;`;
+          transform = `scaleY(${scaleProgress})`;
+        }
+
+        const gradient = bar.direction < 2
+          ? 'linear-gradient(90deg, rgba(255,0,0,0.8) 0%, rgba(255,0,0,0.8) 80%, transparent 100%)'
+          : 'linear-gradient(180deg, rgba(255,0,0,0.8) 0%, rgba(255,0,0,0.8) 80%, transparent 100%)';
+
+        html += `<div style="position:absolute;${style}transform:${transform};opacity:${opacity};will-change:transform,opacity;">
+          <div style="width:100%;height:100%;background:${gradient};box-shadow:0 0 10px 2px rgba(255,0,0,0.6), 0 0 20px 4px rgba(255,0,0,0.3);"></div>
+        </div>`;
+      }
+
+      container.innerHTML = html;
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
     return () => {
       window.removeEventListener('click', handleClick);
-      window.removeEventListener('touchstart', (e) => handleClick(e as unknown as MouseEvent));
+      window.removeEventListener('touchstart', handleClick);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
     };
   }, []);
 
-  if (!isVisible) return null;
-
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      <AnimatePresence>
-        {bars.map((bar, index) => {
-          const direction = index % 4;
-          let style: React.CSSProperties = {};
-          let initial: any = {};
-          let animate: any = {};
-
-          if (direction === 0) {
-            // Right
-            style = { left: bar.x, top: bar.y - 1, height: '2px', width: '100vw', transformOrigin: '0 center' };
-            initial = { scaleX: 0, opacity: 0.8 };
-            animate = { scaleX: 1, opacity: 0 };
-          } else if (direction === 1) {
-            // Left
-            style = { right: window.innerWidth - bar.x, top: bar.y - 1, height: '2px', width: '100vw', transformOrigin: '100% center' };
-            initial = { scaleX: 0, opacity: 0.8 };
-            animate = { scaleX: 1, opacity: 0 };
-          } else if (direction === 2) {
-            // Up
-            style = { left: bar.x - 1, bottom: window.innerHeight - bar.y, width: '2px', height: '100vh', transformOrigin: 'center 100%' };
-            initial = { scaleY: 0, opacity: 0.8 };
-            animate = { scaleY: 1, opacity: 0 };
-          } else {
-            // Down
-            style = { left: bar.x - 1, top: bar.y, width: '2px', height: '100vh', transformOrigin: 'center 0' };
-            initial = { scaleY: 0, opacity: 0.8 };
-            animate = { scaleY: 1, opacity: 0 };
-          }
-
-          return (
-            <motion.div
-              key={bar.id}
-              className="absolute"
-              style={style}
-              initial={initial}
-              animate={animate}
-              exit={{ opacity: 0 }}
-              transition={{
-                scaleX: { duration: 0.6, ease: 'easeOut' },
-                scaleY: { duration: 0.6, ease: 'easeOut' },
-                opacity: { duration: 1.5, ease: 'easeOut' }
-              }}
-            >
-              <div
-                className="w-full h-full"
-                style={{
-                  background: direction < 2
-                    ? 'linear-gradient(90deg, rgba(255,0,0,0.8) 0%, rgba(255,0,0,0.8) 80%, transparent 100%)'
-                    : 'linear-gradient(180deg, rgba(255,0,0,0.8) 0%, rgba(255,0,0,0.8) 80%, transparent 100%)',
-                  boxShadow: '0 0 10px 2px rgba(255,0,0,0.6), 0 0 20px 4px rgba(255,0,0,0.3)',
-                }}
-              />
-            </motion.div>
-          );
-        })}
-      </AnimatePresence>
-    </div>
+    <div
+      ref={containerRef}
+      className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+    />
   );
 }

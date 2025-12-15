@@ -1,10 +1,35 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 
 export default function RotatingCube() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const rotationRef = useRef({ xy: 0, xz: 0, xw: 0, yz: 0, yw: 0, zw: 0 });
   const animationRef = useRef<number>();
+
+  // Pre-calculate vertices and edges once
+  const { vertices4D, edges } = useMemo(() => {
+    const verts: number[][] = [];
+    for (let i = 0; i < 16; i++) {
+      verts.push([
+        (i & 1) ? 1 : -1,
+        (i & 2) ? 1 : -1,
+        (i & 4) ? 1 : -1,
+        (i & 8) ? 1 : -1
+      ]);
+    }
+
+    const edgeList: number[][] = [];
+    for (let i = 0; i < 16; i++) {
+      for (let j = i + 1; j < 16; j++) {
+        const diff = i ^ j;
+        if (diff && !(diff & (diff - 1))) {
+          edgeList.push([i, j]);
+        }
+      }
+    }
+
+    return { vertices4D: verts, edges: edgeList };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -13,197 +38,162 @@ export default function RotatingCube() {
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    // Set canvas size
+    let width = 0;
+    let height = 0;
+
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
     };
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Mouse move handler
+    // Throttled mouse handler
+    let lastMouseUpdate = 0;
     const handleMouseMove = (e: MouseEvent) => {
+      const now = performance.now();
+      if (now - lastMouseUpdate < 16) return; // ~60fps throttle
+      lastMouseUpdate = now;
       mouseRef.current = {
-        x: (e.clientX / window.innerWidth) * 2 - 1,
-        y: (e.clientY / window.innerHeight) * 2 - 1
+        x: (e.clientX / width) * 2 - 1,
+        y: (e.clientY / height) * 2 - 1
       };
     };
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
-    // 4D rotation matrices
-    const rotate4D = (point: number[], angles: any) => {
-      let [x, y, z, w] = point;
-      
-      // Rotate in XY plane
-      let cos = Math.cos(angles.xy);
-      let sin = Math.sin(angles.xy);
-      let nx = x * cos - y * sin;
-      let ny = x * sin + y * cos;
+    // Pre-allocate arrays for performance
+    const projectedVertices: number[][] = new Array(16).fill(null).map(() => [0, 0, 0]);
+    const rotated = [0, 0, 0, 0];
+    const proj3D = [0, 0, 0];
+
+    // Optimized 4D rotation - inline calculations
+    const rotate4DAndProject = (vIdx: number, centerX: number, centerY: number, scale: number) => {
+      const v = vertices4D[vIdx];
+      let x = v[0], y = v[1], z = v[2], w = v[3];
+      const angles = rotationRef.current;
+
+      // XY rotation
+      let cos = Math.cos(angles.xy), sin = Math.sin(angles.xy);
+      let nx = x * cos - y * sin, ny = x * sin + y * cos;
       x = nx; y = ny;
-      
-      // Rotate in XZ plane
-      cos = Math.cos(angles.xz);
-      sin = Math.sin(angles.xz);
+
+      // XZ rotation
+      cos = Math.cos(angles.xz); sin = Math.sin(angles.xz);
       nx = x * cos - z * sin;
       let nz = x * sin + z * cos;
       x = nx; z = nz;
-      
-      // Rotate in XW plane
-      cos = Math.cos(angles.xw);
-      sin = Math.sin(angles.xw);
+
+      // XW rotation
+      cos = Math.cos(angles.xw); sin = Math.sin(angles.xw);
       nx = x * cos - w * sin;
       let nw = x * sin + w * cos;
       x = nx; w = nw;
-      
-      // Rotate in YZ plane
-      cos = Math.cos(angles.yz);
-      sin = Math.sin(angles.yz);
+
+      // YZ rotation
+      cos = Math.cos(angles.yz); sin = Math.sin(angles.yz);
       ny = y * cos - z * sin;
       nz = y * sin + z * cos;
       y = ny; z = nz;
-      
-      // Rotate in YW plane
-      cos = Math.cos(angles.yw);
-      sin = Math.sin(angles.yw);
+
+      // YW rotation
+      cos = Math.cos(angles.yw); sin = Math.sin(angles.yw);
       ny = y * cos - w * sin;
       nw = y * sin + w * cos;
       y = ny; w = nw;
-      
-      // Rotate in ZW plane
-      cos = Math.cos(angles.zw);
-      sin = Math.sin(angles.zw);
+
+      // ZW rotation
+      cos = Math.cos(angles.zw); sin = Math.sin(angles.zw);
       nz = z * cos - w * sin;
       nw = z * sin + w * cos;
       z = nz; w = nw;
-      
-      return [x, y, z, w];
+
+      // Project 4D to 3D
+      const factor4D = 2 / (2 - w);
+      const px = x * factor4D, py = y * factor4D, pz = z * factor4D;
+
+      // Project 3D to 2D
+      const factor3D = 3 / (3 - pz);
+      projectedVertices[vIdx][0] = centerX + px * factor3D * scale;
+      projectedVertices[vIdx][1] = centerY + py * factor3D * scale;
+      projectedVertices[vIdx][2] = pz;
     };
 
-    // Project 4D to 3D
-    const project4Dto3D = (point: number[]) => {
-      const distance = 2;
-      const [x, y, z, w] = point;
-      const factor = distance / (distance - w);
-      return [x * factor, y * factor, z * factor];
-    };
+    let lastFrame = 0;
+    const targetFrameTime = 1000 / 60; // 60fps
 
-    // Project 3D to 2D
-    const project3Dto2D = (point: number[], centerX: number, centerY: number, scale: number) => {
-      const distance = 3;
-      const [x, y, z] = point;
-      const factor = distance / (distance - z);
-      return [
-        centerX + x * factor * scale,
-        centerY + y * factor * scale,
-        z
-      ];
-    };
+    const drawTesseract = (timestamp: number) => {
+      // Frame limiting for consistent 60fps
+      const deltaTime = timestamp - lastFrame;
+      if (deltaTime < targetFrameTime * 0.9) {
+        animationRef.current = requestAnimationFrame(drawTesseract);
+        return;
+      }
+      lastFrame = timestamp;
 
-    // Draw tesseract
-    const drawTesseract = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, width, height);
 
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const size = Math.min(canvas.width, canvas.height) * 0.2;
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const size = Math.min(width, height) * 0.2;
 
-      // Smooth rotation based on mouse position
-      const targetXY = mouseRef.current.x * 0.3;
-      const targetXZ = mouseRef.current.y * 0.3;
-      const targetXW = mouseRef.current.x * 0.2;
-      
-      rotationRef.current.xy += (targetXY - rotationRef.current.xy) * 0.05;
-      rotationRef.current.xz += (targetXZ - rotationRef.current.xz) * 0.05;
-      rotationRef.current.xw += (targetXW - rotationRef.current.xw) * 0.05;
-      rotationRef.current.yz += 0.005;
-      rotationRef.current.yw += 0.003;
-      rotationRef.current.zw += 0.002;
+      // Smooth rotation updates
+      const rot = rotationRef.current;
+      const mouse = mouseRef.current;
+      rot.xy += (mouse.x * 0.3 - rot.xy) * 0.05;
+      rot.xz += (mouse.y * 0.3 - rot.xz) * 0.05;
+      rot.xw += (mouse.x * 0.2 - rot.xw) * 0.05;
+      rot.yz += 0.005;
+      rot.yw += 0.003;
+      rot.zw += 0.002;
 
-      // Define tesseract vertices (4D hypercube)
-      const vertices4D: number[][] = [];
+      // Project all vertices
       for (let i = 0; i < 16; i++) {
-        vertices4D.push([
-          (i & 1) ? 1 : -1,
-          (i & 2) ? 1 : -1,
-          (i & 4) ? 1 : -1,
-          (i & 8) ? 1 : -1
-        ]);
+        rotate4DAndProject(i, centerX, centerY, size);
       }
 
-      // Rotate and project vertices
-      const projectedVertices = vertices4D.map(v => {
-        const rotated = rotate4D(v, rotationRef.current);
-        const proj3D = project4Dto3D(rotated);
-        return project3Dto2D(proj3D, centerX, centerY, size);
-      });
-
-      // Define edges connecting vertices
-      const edges = [];
-      for (let i = 0; i < 16; i++) {
-        for (let j = i + 1; j < 16; j++) {
-          // Check if vertices differ by exactly one bit (connected in hypercube)
-          const diff = i ^ j;
-          if (diff && !(diff & (diff - 1))) {
-            edges.push([i, j]);
-          }
-        }
-      }
-
-      // Sort edges by average depth
-      const edgesWithDepth = edges.map(([a, b]) => {
+      // Draw edges (skip sorting for performance - use simple depth check)
+      ctx.lineWidth = 2;
+      for (let i = 0; i < edges.length; i++) {
+        const [a, b] = edges[i];
         const avgZ = (projectedVertices[a][2] + projectedVertices[b][2]) / 2;
-        return { edge: [a, b], depth: avgZ };
-      });
-      edgesWithDepth.sort((a, b) => a.depth - b.depth);
+        const opacity = 0.2 + (avgZ + 1) * 0.15;
 
-      // Draw edges with varying opacity based on depth
-      edgesWithDepth.forEach(({ edge, depth }) => {
-        const [a, b] = edge;
-        const opacity = 0.2 + (depth + 1) * 0.15;
-        
+        const color4D = (vertices4D[a][3] + 1) * 0.5;
+        const red = Math.floor(180 + color4D * 60);
+        const green = Math.floor(16 + color4D * 10);
+        const blue = Math.floor(48 + color4D * 15);
+
+        ctx.strokeStyle = `rgba(${red},${green},${blue},${opacity})`;
         ctx.beginPath();
         ctx.moveTo(projectedVertices[a][0], projectedVertices[a][1]);
         ctx.lineTo(projectedVertices[b][0], projectedVertices[b][1]);
-        
-        // Gradient color based on position in 4D space
-        const color4D = (vertices4D[a][3] + 1) * 0.5;
-        const red = 180 + color4D * 60;
-        const green = 16 + color4D * 10;
-        const blue = 48 + color4D * 15;
-        
-        ctx.strokeStyle = `rgba(${red}, ${green}, ${blue}, ${opacity})`;
-        ctx.lineWidth = 2;
         ctx.stroke();
-      });
+      }
 
-      // Draw vertices
-      projectedVertices.forEach((v, idx) => {
-        const [x, y, z] = v;
+      // Draw vertices with batched fills
+      for (let i = 0; i < 16; i++) {
+        const [x, y, z] = projectedVertices[i];
         const radius = Math.max(1, 3 + (z + 1) * 2);
         const opacity = Math.max(0.1, Math.min(0.7, 0.3 + (z + 1) * 0.2));
-        
-        // Color based on 4D W coordinate
-        const color4D = (vertices4D[idx][3] + 1) * 0.5;
-        const red = 200 + color4D * 40;
-        const green = 18 + color4D * 10;
-        const blue = 54 + color4D * 15;
-        
+
+        const color4D = (vertices4D[i][3] + 1) * 0.5;
+        const red = Math.floor(200 + color4D * 40);
+        const green = Math.floor(18 + color4D * 10);
+        const blue = Math.floor(54 + color4D * 15);
+
+        ctx.fillStyle = `rgba(${red},${green},${blue},${opacity})`;
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${opacity})`;
         ctx.fill();
-      });
+      }
+
+      animationRef.current = requestAnimationFrame(drawTesseract);
     };
 
-    // Animation loop
-    const animate = () => {
-      drawTesseract();
-      animationRef.current = requestAnimationFrame(animate);
-    };
+    animationRef.current = requestAnimationFrame(drawTesseract);
 
-    animate();
-
-    // Cleanup
     return () => {
       window.removeEventListener('resize', resizeCanvas);
       window.removeEventListener('mousemove', handleMouseMove);
@@ -211,12 +201,13 @@ export default function RotatingCube() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [vertices4D, edges]);
 
   return (
     <canvas
       ref={canvasRef}
       className="fixed inset-0 pointer-events-none z-0"
+      style={{ willChange: 'transform' }}
     />
   );
 }

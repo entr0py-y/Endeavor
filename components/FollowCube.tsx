@@ -7,24 +7,28 @@ export default function FollowCube() {
   const animationRef = useRef<number>();
 
   useEffect(() => {
+    const cube = cubeRef.current;
+    if (!cube) return;
+
     const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
+      mouseRef.current.x = e.clientX;
+      mouseRef.current.y = e.clientY;
     };
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     const animate = () => {
-      if (cubeRef.current) {
-        // Smooth follow with easing
-        const ease = 0.08;
-        currentPosRef.current.x += (mouseRef.current.x - currentPosRef.current.x) * ease;
-        currentPosRef.current.y += (mouseRef.current.y - currentPosRef.current.y) * ease;
+      // Smooth follow with easing
+      const ease = 0.08;
+      currentPosRef.current.x += (mouseRef.current.x - currentPosRef.current.x) * ease;
+      currentPosRef.current.y += (mouseRef.current.y - currentPosRef.current.y) * ease;
 
-        cubeRef.current.style.transform = `translate(${currentPosRef.current.x}px, ${currentPosRef.current.y}px)`;
-      }
+      // Use transform3d for GPU acceleration
+      cube.style.transform = `translate3d(${currentPosRef.current.x - 50}px, ${currentPosRef.current.y - 50}px, 0)`;
+
       animationRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    animationRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -39,31 +43,22 @@ export default function FollowCube() {
       ref={cubeRef}
       className="fixed pointer-events-none z-0"
       style={{
-        top: '-50px',
-        left: '-50px',
         width: '100px',
         height: '100px',
+        willChange: 'transform',
+        left: 0,
+        top: 0,
       }}
     >
       <div
-        className="w-full h-full"
+        className="w-full h-full animate-spin"
         style={{
           background: 'rgba(220, 20, 60, 0.15)',
           border: '2px solid rgba(220, 20, 60, 0.4)',
           boxShadow: '0 0 20px rgba(220, 20, 60, 0.3)',
-          animation: 'spin 4s linear infinite',
+          animationDuration: '4s',
         }}
       />
-      <style jsx>{`
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </div>
   );
 }

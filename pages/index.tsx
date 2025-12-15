@@ -140,7 +140,7 @@ export default function Home() {
         {/* Section 1: Identity */}
         <section
           id="identity"
-          className="w-full h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
         >
           <motion.div
             className="w-full max-w-5xl relative text-left"
@@ -148,20 +148,20 @@ export default function Home() {
             animate={{ opacity: currentSectionIndex === 0 ? 1 : 0.3, y: currentSectionIndex === 0 ? 0 : 20 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="flex flex-col justify-center relative items-start">
+            <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
               <h2 className="text-xs text-nothing-red tracking-[0.3em] mb-2 font-bold dot-matrix">IDENTITY MODULE</h2>
-              <h1 className="text-6xl md:text-9xl font-bold tracking-tighter mb-6 text-[#00FFFF] font-space-mono drop-shadow-[0_0_50px_rgba(0,255,255,0.8)]">
+              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-[#00FFFF] font-space-mono drop-shadow-[0_0_50px_rgba(0,255,255,0.8)]">
                 {RESUME_DATA.name}
               </h1>
-              <div className="h-px w-24 bg-nothing-red mb-8" />
-              <p className="text-2xl text-white/90 tracking-wide font-light mb-4">
+              <div className="h-px w-24 bg-nothing-red mb-4 md:mb-8" />
+              <p className="text-lg md:text-2xl text-white/90 tracking-wide font-light mb-2 md:mb-4">
                 {RESUME_DATA.role}
               </p>
-              <p className="text-white/60 tracking-wide max-w-2xl text-lg mb-12 text-left">
+              <p className="text-white/60 tracking-wide max-w-2xl text-sm md:text-lg mb-8 md:mb-12">
                 {RESUME_DATA.tagline}
               </p>
 
-              <div className="flex flex-col md:flex-row gap-8 w-full max-w-md">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full max-w-md">
                 <button
                   onClick={(e) => { e.stopPropagation(); scrollToSection('education'); }}
                   className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold cursor-pointer"
@@ -182,7 +182,7 @@ export default function Home() {
         {/* Section 2: Education */}
         <section
           id="education"
-          className="w-full h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
         >
           {/* 3D Object */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
@@ -195,12 +195,12 @@ export default function Home() {
               animate={{ opacity: currentSectionIndex === 1 ? 1 : 0.3, y: currentSectionIndex === 1 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl font-bold tracking-wider mb-16 text-nothing-red dot-matrix text-left">EDUCATION LOGS</h2>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-nothing-red dot-matrix text-center md:text-left">EDUCATION LOGS</h2>
               <div className="flex flex-col gap-12">
                 {RESUME_DATA.education.map((edu, index) => (
                   <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-nothing-red transition-colors group w-full">
                     <div className="text-left">
-                      <h3 className="text-3xl font-bold tracking-wide text-white group-hover:text-nothing-red transition-colors font-space-mono mb-2">
+                      <h3 className="text-xl md:text-3xl font-bold tracking-wide text-white group-hover:text-nothing-red transition-colors font-space-mono mb-2">
                         {edu.institution}
                       </h3>
                       <p className="text-white/80 text-lg tracking-wider">{edu.title}</p>
@@ -219,7 +219,7 @@ export default function Home() {
         {/* Section 3: Skills */}
         <section
           id="skills"
-          className="w-full h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
         >
           {/* 3D Object */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
@@ -233,8 +233,8 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="text-left w-full"
             >
-              <div className="mb-12">
-                <h3 className="text-4xl font-bold tracking-wider mb-2 text-white dot-matrix">
+              <div className="mb-6 md:mb-12 text-center md:text-left">
+                <h3 className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-white dot-matrix">
                   02. SKILLS & EXPERTISE
                 </h3>
                 <p className="text-white/60 text-sm tracking-widest font-mono">
@@ -278,7 +278,7 @@ export default function Home() {
         {/* Section 4: Projects */}
         <section
           id="projects"
-          className="w-full h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
         >
           {/* 3D Object */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
@@ -291,9 +291,9 @@ export default function Home() {
               animate={{ opacity: currentSectionIndex === 3 ? 1 : 0.3, y: currentSectionIndex === 3 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl font-bold tracking-wider mb-12 text-nothing-red dot-matrix">PROJECT MODULE</h2>
-              <div className="py-24 border-y border-white/10 w-full text-left">
-                <p className="text-white/40 text-2xl tracking-[0.2em] font-light">
+              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-nothing-red dot-matrix text-center md:text-left">PROJECT MODULE</h2>
+              <div className="py-12 md:py-24 border-y border-white/10 w-full text-center md:text-left">
+                <p className="text-white/40 text-lg md:text-2xl tracking-[0.2em] font-light">
                             // DEVELOPMENT IN PROGRESS
                 </p>
               </div>
@@ -304,7 +304,7 @@ export default function Home() {
         {/* Section 5: Connect */}
         <section
           id="connect"
-          className="w-full h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
         >
           {/* 3D Object */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
@@ -316,9 +316,9 @@ export default function Home() {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: currentSectionIndex === 4 ? 1 : 0.3, y: currentSectionIndex === 4 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
-              className="flex-1 flex flex-col justify-center items-start"
+              className="flex-1 flex flex-col justify-center items-center md:items-start"
             >
-              <h2 className="text-4xl font-bold tracking-wider mb-24 text-nothing-red dot-matrix text-left">CONNECT MODULE</h2>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-12 md:mb-24 text-nothing-red dot-matrix text-center md:text-left">CONNECT MODULE</h2>
 
               <div className="flex flex-col gap-16 items-start justify-start w-full">
                 <a href="https://instagram.com/endeavv0r" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-8">
