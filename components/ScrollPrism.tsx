@@ -126,7 +126,7 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
 
     return (
         <div
-            className="fixed bottom-20 md:bottom-12 z-50 pointer-events-none"
+            className="fixed bottom-6 md:bottom-4 z-50 pointer-events-none"
             style={{
                 left: `${xPosition}%`,
                 transform: 'translateX(-50%)',
