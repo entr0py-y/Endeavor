@@ -46,65 +46,28 @@ const RESUME_DATA = {
 export default function Home() {
   const router = useRouter();
 
-  /* State for Zig-Zag Navigation & Zoom */
-  const [currentSection, setCurrentSection] = useState({ id: 'identity', x: 0, y: 0 });
-  const [isZoomedOut, setIsZoomedOut] = useState(false);
-
-  const sectionsMap: { [key: string]: { x: number, y: number } } = {
-    'identity': { x: 0, y: 0 },
-    'education': { x: 1, y: 0 },
-    'skills': { x: 1, y: 1 },
-    'projects': { x: 2, y: 1 },
-    'connect': { x: 2, y: 2 }
-  };
+  /* Simple Vertical Navigation State */
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const sectionsList = ['identity', 'education', 'skills', 'projects', 'connect'];
-  const allNavItems = [...sectionsList, 'elements'];
 
-
-  /* Smooth Scroll / Glow Logic (Retained for Mobile) */
+  /* Click Effect State */
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
-  const [scrollGlow, setScrollGlow] = useState<'top' | 'bottom' | null>(null);
-
-  // Scroll Glow Logic (Mobile Only)
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-
-      if (scrollY < 100) setScrollGlow('top');
-      else if (windowHeight + scrollY >= documentHeight - 100) setScrollGlow('bottom');
-      else setScrollGlow(null);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleGlobalClick = (e: React.MouseEvent) => {
     setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
   };
 
   const scrollToSection = (id: string) => {
-    if (id === 'elements') {
-      toggleZoom();
-      return;
+    const index = sectionsList.indexOf(id);
+    if (index !== -1) {
+      setCurrentSectionIndex(index);
     }
-    if (sectionsMap[id]) {
-      setCurrentSection({ id, ...sectionsMap[id] });
-      setIsZoomedOut(false); // Zoom in when navigating
-    }
-  };
-
-  const toggleZoom = () => {
-    setIsZoomedOut(!isZoomedOut);
   };
 
   // Prevent manual scroll globally
   useEffect(() => {
     const preventDefault = (e: Event) => e.preventDefault();
 
-    // Add listeners to lock scroll
     window.addEventListener('wheel', preventDefault, { passive: false });
     window.addEventListener('touchmove', preventDefault, { passive: false });
 
@@ -116,7 +79,7 @@ export default function Home() {
 
   return (
     <div
-      className="h-[100vh] w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-hidden snap-none scroll-smooth"
+      className="h-[100vh] w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-hidden"
       onClick={handleGlobalClick}
     >
       {/* Background Elements */}
@@ -130,41 +93,23 @@ export default function Home() {
       {/* Click Effect */}
       {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
 
-      {/* Irregular Scroll Glow Effects (Mobile Only) */}
-      <div
-        className={`fixed top-0 left-0 right-0 h-40 pointer-events-none z-50 transition-opacity duration-500 ease-out md:hidden ${scrollGlow === 'top' ? 'opacity-100' : 'opacity-0'}`}
-        style={{
-          background: 'radial-gradient(ellipse at center top, rgba(220, 20, 60, 0.5) 0%, transparent 70%)',
-          maskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, black 50%, transparent 100%)'
-        }}
-      />
-      <div
-        className={`fixed bottom-0 left-0 right-0 h-40 pointer-events-none z-50 transition-opacity duration-500 ease-out md:hidden ${scrollGlow === 'bottom' ? 'opacity-100' : 'opacity-0'}`}
-        style={{
-          background: 'radial-gradient(ellipse at center bottom, rgba(220, 20, 60, 0.5) 0%, transparent 70%)',
-          maskImage: 'linear-gradient(to top, black 50%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to top, black 50%, transparent 100%)'
-        }}
-      />
-
       {/* Navigation Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start text-white mix-blend-difference pointer-events-none">
-        <div className={`font-bold tracking-widest text-4xl md:text-6xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSection.id === 'identity' ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`font-bold tracking-widest text-4xl md:text-6xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
           <span className="text-white">&lt;</span>PORTFOLIO<span className="text-white">/&gt;</span>
         </div>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex flex-col items-end gap-2 text-sm tracking-wider pt-2 pointer-events-auto">
-          {allNavItems.map((item, index) => (
+          {sectionsList.map((item, index) => (
             <button
               key={item}
               onClick={() => scrollToSection(item)}
-              className={`hover:text-nothing-red transition-colors relative group uppercase text-right py-1 cursor-pointer ${item === 'elements' ? (isZoomedOut ? 'text-nothing-red' : '') : (currentSection.id === item ? 'text-nothing-red' : '')}`}
+              className={`hover:text-nothing-red transition-colors relative group uppercase text-right py-1 cursor-pointer ${currentSectionIndex === index ? 'text-nothing-red' : ''}`}
             >
               <span className="opacity-50 mr-2">0{index + 1}.</span>
               {item}
-              <span className={`absolute bottom-0 right-0 h-px bg-nothing-red transition-all duration-300 ${item === 'elements' ? (isZoomedOut ? 'w-full' : 'w-0 group-hover:w-full') : (currentSection.id === item ? 'w-full' : 'w-0 group-hover:w-full')}`} />
+              <span className={`absolute bottom-0 right-0 h-px bg-nothing-red transition-all duration-300 ${currentSectionIndex === index ? 'w-full' : 'w-0 group-hover:w-full'}`} />
             </button>
           ))}
         </div>
@@ -172,41 +117,35 @@ export default function Home() {
 
       {/* Mobile Bottom Dock */}
       <nav className="fixed bottom-8 left-4 right-4 z-[9999] md:hidden flex justify-between items-center bg-black border border-white/30 rounded-full px-4 py-3 pointer-events-auto shadow-[0_0_20px_rgba(220,20,60,0.3)]">
-        {allNavItems.map((item) => (
+        {sectionsList.map((item, index) => (
           <button
             key={item}
             onClick={() => scrollToSection(item)}
-            className={`text-xs font-bold tracking-widest transition-colors ${item === 'elements' ? (isZoomedOut ? 'text-nothing-red' : 'text-white/40') : (currentSection.id === item ? 'text-nothing-red' : 'text-white/40')}`}
+            className={`text-xs font-bold tracking-widest transition-colors ${currentSectionIndex === index ? 'text-nothing-red' : 'text-white/40'}`}
           >
-            {item === 'identity' ? 'ID' : item === 'education' ? 'ED' : item === 'skills' ? 'SK' : item === 'projects' ? 'PR' : item === 'connect' ? 'CN' : 'ALL'}
+            {item === 'identity' ? 'ID' : item === 'education' ? 'ED' : item === 'skills' ? 'SK' : item === 'projects' ? 'PR' : 'CN'}
           </button>
         ))}
       </nav>
 
-      {/* Content Wrapper - Zig-Zag Grid */}
+      {/* Content Wrapper - Vertical Stacked Sections */}
       <div
-        className="absolute top-0 left-0 transition-transform duration-1000 ease-[0.22, 1, 0.36, 1]"
+        className="absolute top-0 left-0 w-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{
-          width: '300vw',
-          height: '300vh',
-          transform: isZoomedOut
-            ? `scale(0.2) translate(0, 0)`
-            : `translate(-${currentSection.x * 100}vw, -${currentSection.y * 100}vh)`,
-          transformOrigin: 'top left'
+          height: `${sectionsList.length * 100}vh`,
+          transform: `translateY(-${currentSectionIndex * 100}vh)`
         }}
       >
 
-        {/* Screen 1: Identity (0,0) */}
+        {/* Section 1: Identity */}
         <section
           id="identity"
-          className={`absolute top-0 left-0 w-[100vw] h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
-          onClick={() => isZoomedOut && scrollToSection('identity')}
+          className="w-full h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden"
         >
           <motion.div
             className="w-full max-w-5xl relative text-left"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: currentSectionIndex === 0 ? 1 : 0.3, y: currentSectionIndex === 0 ? 0 : 20 }}
             transition={{ duration: 0.6 }}
           >
             <div className="flex flex-col justify-center relative items-start">
@@ -240,22 +179,20 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* Screen 2: Education (1,0) - Right of Identity */}
+        {/* Section 2: Education */}
         <section
           id="education"
-          className={`absolute top-0 left-[100vw] w-[100vw] h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
-          onClick={() => isZoomedOut && scrollToSection('education')}
+          className="w-full h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden"
         >
-          {/* 3D Object: Cube on Right for Others */}
+          {/* 3D Object */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube />
           </div>
 
           <div className="w-full max-w-5xl">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: currentSectionIndex === 1 ? 1 : 0.3, y: currentSectionIndex === 1 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
               <h2 className="text-4xl font-bold tracking-wider mb-16 text-nothing-red dot-matrix text-left">EDUCATION LOGS</h2>
@@ -279,22 +216,20 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Screen 3: Skills (1,1) - Below Education */}
+        {/* Section 3: Skills */}
         <section
           id="skills"
-          className={`absolute top-[100vh] left-[100vw] w-[100vw] h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
-          onClick={() => isZoomedOut && scrollToSection('skills')}
+          className="w-full h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden"
         >
-          {/* 3D Object: Cube on Right for Others */}
+          {/* 3D Object */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube />
           </div>
 
           <div className="w-full max-w-6xl">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: currentSectionIndex === 2 ? 1 : 0.3, y: currentSectionIndex === 2 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
               className="text-left w-full"
             >
@@ -329,7 +264,7 @@ export default function Home() {
                       <motion.div
                         className="absolute top-0 left-0 h-full bg-nothing-red"
                         initial={{ width: 0 }}
-                        animate={{ width: currentSection.id === 'skills' ? skill.percent : 0 }}
+                        animate={{ width: currentSectionIndex === 2 ? skill.percent : 0 }}
                         transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.1 }}
                       />
                     </div>
@@ -340,22 +275,20 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Screen 4: Projects (2,1) - Right of Skills */}
+        {/* Section 4: Projects */}
         <section
           id="projects"
-          className={`absolute top-[100vh] left-[200vw] w-[100vw] h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
-          onClick={() => isZoomedOut && scrollToSection('projects')}
+          className="w-full h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden"
         >
-          {/* 3D Object: Cube on Right for Others */}
+          {/* 3D Object */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube />
           </div>
 
           <div className="w-full max-w-4xl text-left">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: currentSectionIndex === 3 ? 1 : 0.3, y: currentSectionIndex === 3 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
               <h2 className="text-4xl font-bold tracking-wider mb-12 text-nothing-red dot-matrix">PROJECT MODULE</h2>
@@ -368,22 +301,20 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Screen 5: Connect (2,2) - Below Projects */}
+        {/* Section 5: Connect */}
         <section
           id="connect"
-          className={`absolute top-[200vh] left-[200vw] w-[100vw] h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden ${isZoomedOut ? 'cursor-pointer hover:brightness-125 transition-all' : ''}`}
-          onClick={() => isZoomedOut && scrollToSection('connect')}
+          className="w-full h-[100vh] flex flex-col items-start justify-center p-6 md:pl-32 relative z-10 overflow-hidden"
         >
-          {/* 3D Object: Cube on Right for Others */}
+          {/* 3D Object */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube />
           </div>
 
           <div className="w-full max-w-5xl h-full flex flex-col justify-center py-20">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: currentSectionIndex === 4 ? 1 : 0.3, y: currentSectionIndex === 4 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
               className="flex-1 flex flex-col justify-center items-start"
             >
