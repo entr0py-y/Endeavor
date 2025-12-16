@@ -69,7 +69,7 @@ export default function Home() {
           return char;
         }).join('');
         setPortfolioText(glitchedText);
-        
+
         // Reset after short delay
         setTimeout(() => setPortfolioText(originalText), 50 + Math.random() * 100);
       }
@@ -241,7 +241,7 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
-              <h2 className="text-base md:text-xl text-nothing-red glow-red tracking-wide mb-3 md:mb-4 font-bold dot-matrix">Hi, I'm</h2>
+              <h2 className="text-base md:text-xl text-nothing-red glow-red tracking-wide mb-3 md:mb-4 font-bold font-space-mono">Hi, I'm</h2>
               <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-poppins glow-white">
                 {RESUME_DATA.name}
               </h1>
@@ -287,7 +287,7 @@ export default function Home() {
               animate={{ opacity: currentSectionIndex === 1 ? 1 : 0.3, y: currentSectionIndex === 1 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-nothing-red glow-red dot-matrix text-center md:text-left">EDUCATION LOGS</h2>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-nothing-red glow-red font-valorant text-center md:text-left">EDUCATION LOGS</h2>
               <div className="flex flex-col gap-12">
                 {RESUME_DATA.education.map((edu, index) => (
                   <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-nothing-red transition-colors group w-full">
@@ -326,7 +326,7 @@ export default function Home() {
               className="text-left w-full"
             >
               <div className="mb-6 md:mb-12 text-center md:text-left">
-                <h3 className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-nothing-red glow-red dot-matrix">
+                <h3 className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-nothing-red glow-red font-valorant">
                   SKILLS & EXPERTISE
                 </h3>
                 <p className="text-white/60 text-sm tracking-widest font-mono">
@@ -383,7 +383,7 @@ export default function Home() {
               animate={{ opacity: currentSectionIndex === 3 ? 1 : 0.3, y: currentSectionIndex === 3 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-nothing-red dot-matrix text-center md:text-left">PROJECT MODULE</h2>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-nothing-red font-valorant text-center md:text-left">PROJECT MODULE</h2>
               <div className="py-12 md:py-24 border-y border-white/10 w-full text-center md:text-left">
                 <ol className="list-decimal list-inside text-white/90 text-lg md:text-2xl font-light space-y-4">
                   <li>
@@ -412,7 +412,7 @@ export default function Home() {
               transition={{ duration: 0.8 }}
               className="flex-1 flex flex-col justify-center items-center md:items-start"
             >
-              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-12 md:mb-24 text-nothing-red dot-matrix text-center md:text-left">CONNECT MODULE</h2>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-12 md:mb-24 text-nothing-red font-valorant text-center md:text-left">CONNECT MODULE</h2>
 
               <div className="flex flex-col gap-16 items-start justify-start w-full">
                 <a href="https://instagram.com/endeavv0r" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-8">
