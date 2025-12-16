@@ -178,17 +178,20 @@ export default function Home() {
 
       {/* Navigation Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start text-white mix-blend-difference pointer-events-none">
-        <div className={`font-bold tracking-widest text-4xl md:text-6xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`font-bold tracking-widest text-lg md:text-3xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
           <span className="text-white glow-white">&lt;</span>
           <span className="font-space-mono glow-red text-nothing-red inline-flex">
             {'PORTFOLIO'.split('').map((char, index) => {
               // Chaotic random delays to avoid patterns
               const randomDelays = [0.1, 2.4, 0.8, 3.2, 1.5, 0.3, 2.9, 1.2, 0.6];
+              // Only flicker specific letters as requested
+              const shouldFlicker = ['P', 'R', 'T', 'F', 'L'].includes(char);
+
               return (
                 <span
                   key={index}
-                  className="neon-flicker"
-                  style={{ animationDelay: `${randomDelays[index % randomDelays.length]}s` }}
+                  className={shouldFlicker ? "neon-flicker" : ""}
+                  style={shouldFlicker ? { animationDelay: `${randomDelays[index % randomDelays.length]}s` } : {}}
                 >
                   {char}
                 </span>

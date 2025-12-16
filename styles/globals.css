@@ -427,7 +427,7 @@ body {
 }
 
 .neon-flicker {
-  animation: neon-flicker 4s infinite;
+  animation: neon-flicker 12s infinite;
 }
 
 /* Neon Flicker Animation - White */
@@ -458,5 +458,5 @@ body {
 }
 
 .neon-flicker-white {
-  animation: neon-flicker-white 4s infinite;
+  animation: neon-flicker-white 12s infinite;
 }
