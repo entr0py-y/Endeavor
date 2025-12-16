@@ -54,28 +54,32 @@ export default function Home() {
   /* Click Effect State */
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
 
-  /* Glitchy Portfolio Text */
-  const [portfolioText, setPortfolioText] = useState('PORTFOLIO');
-  const originalText = 'PORTFOLIO';
+  /* Glitchy Name Text */
+  const [nameText, setNameText] = useState(RESUME_DATA.name);
+  const originalName = RESUME_DATA.name;
+
   const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
 
   useEffect(() => {
-    const glitchInterval = setInterval(() => {
+    const nameGlitchInterval = setInterval(() => {
       if (Math.random() < 0.15) { // 15% chance to glitch
-        const glitchedText = originalText.split('').map((char, index) => {
+        const glitchedName = originalName.split('').map((char, index) => {
+          if (char === ' ') return ' '; // Preserve spaces
           if (Math.random() < 0.3) { // 30% chance each letter glitches
             return glitchChars[Math.floor(Math.random() * glitchChars.length)];
           }
           return char;
         }).join('');
-        setPortfolioText(glitchedText);
+        setNameText(glitchedName);
 
         // Reset after short delay
-        setTimeout(() => setPortfolioText(originalText), 50 + Math.random() * 100);
+        setTimeout(() => setNameText(originalName), 50 + Math.random() * 100);
       }
     }, 150);
 
-    return () => clearInterval(glitchInterval);
+    return () => {
+      clearInterval(nameGlitchInterval);
+    };
   }, []);
 
   const handleGlobalClick = (e: React.MouseEvent) => {
@@ -175,7 +179,7 @@ export default function Home() {
       {/* Navigation Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start text-white mix-blend-difference pointer-events-none">
         <div className={`font-bold tracking-widest text-4xl md:text-6xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
-          <span className="text-white glow-white">&lt;</span><span className="font-valorant glow-red text-nothing-red">{portfolioText}</span><span className="text-white glow-white">/&gt;</span>
+          <span className="text-white glow-white">&lt;</span><span className="font-space-mono glow-red text-nothing-red">PORTFOLIO</span><span className="text-white glow-white">/&gt;</span>
         </div>
 
         {/* Desktop Nav */}
@@ -242,8 +246,8 @@ export default function Home() {
           >
             <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
               <h2 className="text-base md:text-xl text-nothing-red glow-red tracking-wide mb-3 md:mb-4 font-bold font-space-mono">Hi, I'm</h2>
-              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-poppins glow-white neon-flicker">
-                {RESUME_DATA.name}
+              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant glow-white">
+                {nameText}
               </h1>
               <div className="h-px w-24 bg-nothing-red mb-4 md:mb-8" />
               <p className="text-lg md:text-2xl text-white/90 tracking-wide font-light mb-2 md:mb-4">
