@@ -181,22 +181,7 @@ export default function Home() {
         <div className={`font-bold tracking-widest text-lg md:text-3xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
           <span className="text-white glow-white">&lt;</span>
           <span className="font-space-mono glow-red text-nothing-red inline-flex">
-            {'PORTFOLIO'.split('').map((char, index) => {
-              // Chaotic random delays to avoid patterns
-              const randomDelays = [0.1, 2.4, 0.8, 3.2, 1.5, 0.3, 2.9, 1.2, 0.6];
-              // Only flicker specific letters as requested
-              const shouldFlicker = ['P', 'R', 'T', 'F', 'L'].includes(char);
-
-              return (
-                <span
-                  key={index}
-                  className={shouldFlicker ? "neon-flicker" : ""}
-                  style={shouldFlicker ? { animationDelay: `${randomDelays[index % randomDelays.length]}s` } : {}}
-                >
-                  {char}
-                </span>
-              );
-            })}
+            PORTFOLIO
           </span>
           <span className="text-white glow-white">/&gt;</span>
         </div>
