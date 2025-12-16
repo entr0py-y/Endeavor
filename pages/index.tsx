@@ -106,13 +106,41 @@ export default function Home() {
     setCurrentSectionIndex(0);
   };
 
-  // Handle touch/swipe gestures for mobile (one slide at a time)
+  // Handle wheel (desktop) and touch/swipe gestures (mobile) for section navigation
   useEffect(() => {
     let touchStartY = 0;
     let touchEndY = 0;
     let isTransitioning = false;
-    const transitionDuration = 1600; // Match CSS transition
+    const transitionDuration = 1000; // Match CSS transition duration
 
+    // Handle mouse wheel on desktop
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+
+      if (isTransitioning) return;
+
+      // Threshold to prevent accidental triggers
+      const threshold = 30;
+
+      if (Math.abs(e.deltaY) > threshold) {
+        isTransitioning = true;
+
+        if (e.deltaY > 0) {
+          // Scroll down - go to next section
+          setCurrentSectionIndex(prev => Math.min(prev + 1, sectionsList.length - 1));
+        } else {
+          // Scroll up - go to previous section
+          setCurrentSectionIndex(prev => Math.max(prev - 1, 0));
+        }
+
+        // Prevent multiple transitions
+        setTimeout(() => {
+          isTransitioning = false;
+        }, transitionDuration);
+      }
+    };
+
+    // Handle touch gestures on mobile
     const handleTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0].clientY;
     };
@@ -142,17 +170,17 @@ export default function Home() {
       }
     };
 
-    // Prevent default scroll
-    const preventDefault = (e: Event) => e.preventDefault();
+    // Prevent default touchmove scroll
+    const preventTouchMove = (e: TouchEvent) => e.preventDefault();
 
-    window.addEventListener('wheel', preventDefault, { passive: false });
-    window.addEventListener('touchmove', preventDefault, { passive: false });
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    window.addEventListener('touchmove', preventTouchMove, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
-      window.removeEventListener('wheel', preventDefault);
-      window.removeEventListener('touchmove', preventDefault);
+      window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('touchmove', preventTouchMove);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
     };
