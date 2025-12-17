@@ -6,6 +6,8 @@ import ClickTesseract from '@/components/ClickTesseract'
 
 const LoadingScreen = dynamic(() => import('@/components/LoadingScreen'), { ssr: false });
 
+const CursorTrail = dynamic(() => import('@/components/CursorTrail'), { ssr: false });
+
 export default function App({ Component, pageProps }: AppProps) {
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +47,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
+      <CursorTrail />
       {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
       <Component {...pageProps} />
     </>
