@@ -76,25 +76,59 @@ export default function DotGridBackground() {
         const animate = () => {
             const elapsed = (Date.now() - startTime) * waveSpeed;
 
-            // Create dynamic gradient background (moving fog)
-            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            // Clear canvas to show 3D background (Torus) behind
+            ctx.clearRect(0, 0, width, height);
 
-            // Animate gradient colors slightly for breathing effect
-            const t = elapsed * 0.5;
-            const topColor = `hsl(210, 15%, ${65 + Math.sin(t) * 5}%)`;   // #8e9eab range
-            const midColor = `hsl(220, 15%, ${60 + Math.sin(t + 2) * 5}%)`; // #8693ab range
-            const botColor = `hsl(210, 15%, ${40 + Math.sin(t + 4) * 5}%)`; // #5d6d7e range
+            if (!spotsRef.current) {
+                // Initialize spots as clusters (Clouds)
+                // Each spot has a main position and multiple sub-blobs to form irregular shape
+                spotsRef.current = Array.from({ length: 3 }).map(() => {
+                    const radius = 1000 + Math.random() * 1000;
+                    return {
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - 0.5) * 0.15,
+                        vy: (Math.random() - 0.5) * 0.15,
+                        radius: radius, // Base radius
+                        // Create 3-5 sub-blobs per cloud
+                        subSpots: Array.from({ length: 3 + Math.floor(Math.random() * 3) }).map(() => ({
+                            offsetX: (Math.random() - 0.5) * radius * 1.2,
+                            offsetY: (Math.random() - 0.5) * radius * 1.2,
+                            r: radius * (0.6 + Math.random() * 0.6)
+                        }))
+                    };
+                });
+            }
 
-            gradient.addColorStop(0, topColor);
-            gradient.addColorStop(0.5, midColor);
-            gradient.addColorStop(1, botColor);
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
+            // Update and draw spots
+            spotsRef.current?.forEach((spot: any) => {
+                spot.x += spot.vx;
+                spot.y += spot.vy;
 
-            const mx = mouseRef.current.x;
-            const my = mouseRef.current.y;
+                // Bounce/Wrap (Loose bounds for large clouds)
+                const margin = spot.radius * 2;
+                if (spot.x < -margin) spot.x = width + margin;
+                if (spot.x > width + margin) spot.x = -margin;
+                if (spot.y < -margin) spot.y = height + margin;
+                if (spot.y > height + margin) spot.y = -margin;
 
-            // Draw dots
+                // Draw sub-spots
+                spot.subSpots.forEach((sub: any) => {
+                    const px = spot.x + sub.offsetX;
+                    const py = spot.y + sub.offsetY;
+
+                    const gradient = ctx.createRadialGradient(px, py, 0, px, py, sub.r);
+                    gradient.addColorStop(0, 'rgba(0,0,0,0.3)'); // Soft dark center
+                    gradient.addColorStop(1, 'rgba(0,0,0,0)'); // Fade out
+
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(px, py, sub.r, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            });
+
+            // Draw dots (Near Cursor Only)
             ctx.fillStyle = '#1a1a1a'; // Dark grey dots
 
             dots.forEach((dot, i) => {

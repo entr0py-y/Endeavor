@@ -11,6 +11,7 @@ import BackgroundMusic from '@/components/BackgroundMusic'
 // though standard import is fine. dynamic import used for others.
 const CursorTrail = dynamic(() => import('@/components/CursorTrail'), { ssr: false });
 const DotGridBackground = dynamic(() => import('@/components/DotGridBackground'), { ssr: false });
+const AmbientTorus = dynamic(() => import('@/components/AmbientTorus'), { ssr: false });
 
 export default function App({ Component, pageProps }: AppProps) {
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
