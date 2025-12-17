@@ -35,6 +35,11 @@ export default function App({ Component, pageProps }: AppProps) {
     const handleClick = (e: MouseEvent) => {
       setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
       setTimeout(() => setClickEffect(null), 800);
+
+      // Play global click sound
+      const audio = new Audio('/audio/click-10.mp3');
+      audio.volume = 0.4;
+      audio.play().catch(() => { });
     };
 
     document.addEventListener('click', handleClick);
