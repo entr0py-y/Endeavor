@@ -15,8 +15,6 @@ export default function FollowCube() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  if (isMobile) return null;
-
   useEffect(() => {
     const cube = cubeRef.current;
     if (!cube) return;
@@ -47,7 +45,11 @@ export default function FollowCube() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, []); // Run effect always, but can exit early if isMobile inside?
+  // Actually, better to just let it run or add isMobile dependency. 
+  // But strictly, simply returning null at the end is safest for Hook rules.
+
+  if (isMobile) return null;
 
   return (
     <div
