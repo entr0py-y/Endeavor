@@ -126,7 +126,13 @@ export default function DotGridBackground() {
                 const pulseT = elapsed * 0.5 + (i * 0.1);
 
                 // Smaller dots: Base 1.2px, varying +/- 0.4px
-                const currentRadius = 1.2 + Math.sin(pulseT) * 0.4;
+                let currentRadius = 1.2 + Math.sin(pulseT) * 0.4;
+
+                // Magnification near cursor
+                if (dist < cursorRadius) {
+                    const magFactor = (1 - dist / cursorRadius); // 0 to 1
+                    currentRadius += magFactor * 3; // Add up to 3px
+                }
 
                 // Opacity pulsing combined with visibility mask
                 // Base pulse 0.4 +/- 0.2, multiplied by visibility factor
