@@ -10,6 +10,7 @@ import RedBars from '@/components/RedBars';
 import Card from '@/components/Card';
 import ClickTesseract from '@/components/ClickTesseract';
 import ScrollPrism from '@/components/ScrollPrism';
+import ScrambleText from '@/components/ScrambleText';
 
 const RESUME_DATA = {
   name: "PUSHKAR JHA",
@@ -211,7 +212,7 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
         <div className={`font-bold tracking-widest text-lg md:text-3xl leading-none pointer-events-auto cursor-default text-black transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
           <span className="text-white">&lt;</span>
           <span className="font-space-mono text-black inline-flex">
-            PORTFOLIO
+            <ScrambleText text="PORTFOLIO" as="span" duration={250} />
           </span>
           <span className="text-white">/&gt;</span>
         </div>
@@ -225,7 +226,7 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
               className={`hover:text-black transition-colors relative group uppercase text-right py-1 cursor-pointer ${currentSectionIndex === index ? 'text-black' : ''}`}
             >
               <span className="opacity-50 mr-2">0{index + 1}.</span>
-              {item}
+              <ScrambleText text={item} as="span" duration={250} />
               <span className={`absolute bottom-0 right-0 h-px bg-black transition-all duration-300 ${currentSectionIndex === index ? 'w-full' : 'w-0 group-hover:w-full'}`} />
             </button>
           ))}
@@ -296,13 +297,13 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
                   onClick={(e) => { e.stopPropagation(); scrollToSection('education'); }}
                   className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold cursor-pointer"
                 >
-                  MY EDUCATION
+                  <ScrambleText text="MY EDUCATION" as="span" duration={250} />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); scrollToSection('connect'); }}
                   className="bg-transparent border border-black text-black w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-black hover:text-white cursor-pointer"
                 >
-                  GET IN TOUCH
+                  <ScrambleText text="GET IN TOUCH" as="span" duration={250} />
                 </button>
               </div>
             </div>
@@ -325,7 +326,12 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
               animate={{ opacity: currentSectionIndex === 1 ? 1 : 0.3, y: currentSectionIndex === 1 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-black font-valorant text-center md:text-left">EDUCATION LOGS</h2>
+              <ScrambleText
+                text="EDUCATION LOGS"
+                as="h2"
+                duration={250}
+                className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-black font-valorant text-center md:text-left"
+              />
               <div className="flex flex-col gap-12">
                 {RESUME_DATA.education.map((edu, index) => (
                   <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-black transition-colors group w-full">
@@ -364,9 +370,12 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
               className="text-left w-full"
             >
               <div className="mb-6 md:mb-12 text-center md:text-left">
-                <h3 className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-black font-valorant">
-                  SKILLS & EXPERTISE
-                </h3>
+                <ScrambleText
+                  text="SKILLS & EXPERTISE"
+                  as="h3"
+                  duration={250}
+                  className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-black font-valorant"
+                />
                 <p className="text-white/60 text-sm tracking-widest font-mono">
                   &gt; Technologies I actively work with
                 </p>
@@ -421,7 +430,12 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
               animate={{ opacity: currentSectionIndex === 3 ? 1 : 0.3, y: currentSectionIndex === 3 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-black font-valorant text-center md:text-left">PROJECT MODULE</h2>
+              <ScrambleText
+                text="PROJECT MODULE"
+                as="h2"
+                duration={250}
+                className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-black font-valorant text-center md:text-left"
+              />
               <div className="py-12 md:py-24 border-y border-white/10 w-full text-center md:text-left">
                 <ol className="list-decimal list-inside text-white/90 text-lg md:text-2xl font-light space-y-4">
                   <li>
@@ -450,7 +464,12 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
               transition={{ duration: 0.8 }}
               className="flex-1 flex flex-col justify-center items-center md:items-start"
             >
-              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-12 md:mb-24 text-black font-valorant text-center md:text-left">CONNECT MODULE</h2>
+              <ScrambleText
+                text="CONNECT MODULE"
+                as="h2"
+                duration={250}
+                className="text-2xl md:text-4xl font-bold tracking-wider mb-12 md:mb-24 text-black font-valorant text-center md:text-left"
+              />
 
               <div className="flex flex-col gap-16 items-start justify-start w-full">
                 <a href="https://instagram.com/endeavv0r" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-8">
@@ -462,7 +481,12 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono">INSTAGRAM</h3>
+                    <ScrambleText
+                      text="INSTAGRAM"
+                      as="h3"
+                      duration={250}
+                      className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono"
+                    />
                     <p className="text-white/40 text-sm mt-2 tracking-wider">@endeavv0r</p>
                   </div>
                 </a>
@@ -476,7 +500,12 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono">LINKEDIN</h3>
+                    <ScrambleText
+                      text="LINKEDIN"
+                      as="h3"
+                      duration={250}
+                      className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono"
+                    />
                     <p className="text-white/40 text-sm mt-2 tracking-wider">Connect Professionally</p>
                   </div>
                 </a>
