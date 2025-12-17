@@ -16,6 +16,10 @@ export default function App({ Component, pageProps }: AppProps) {
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
   const [hasEntered, setHasEntered] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [currentSection, setCurrentSection] = useState(0);
+
+  // Theme is inverted when on Identity slide (index 0), Skills slide (index 2), or Connect slide (index 4)
+  const isInverted = currentSection === 0 || currentSection === 2 || currentSection === 4;
 
   // Correct implementation with Refs to avoid stale closures
   const bufferRef = useRef<AudioBuffer | null>(null);
@@ -54,7 +58,13 @@ export default function App({ Component, pageProps }: AppProps) {
       }
     };
 
+    // Listen for section changes from index.tsx
+    const handleSectionChange = (e: CustomEvent) => {
+      setCurrentSection(e.detail);
+    };
+
     document.addEventListener('click', handleGlobalClick, true);
+    window.addEventListener('sectionChange', handleSectionChange as EventListener);
 
     // Font preload
     if (typeof window !== 'undefined') {
@@ -67,7 +77,10 @@ export default function App({ Component, pageProps }: AppProps) {
       document.head.appendChild(link);
     }
 
-    return () => document.removeEventListener('click', handleGlobalClick, true);
+    return () => {
+      document.removeEventListener('click', handleGlobalClick, true);
+      window.removeEventListener('sectionChange', handleSectionChange as EventListener);
+    };
   }, []);
 
   if (!mounted) {
@@ -76,20 +89,20 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      <DotGridBackground />
+      <DotGridBackground isInverted={isInverted} />
       {/* Main Content with Blur Transition */}
       <div
         className={`relative w-full min-h-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${!hasEntered ? 'blur-md scale-105 brightness-75 pointer-events-none overflow-hidden h-screen' : 'blur-0 scale-100 brightness-100'
           }`}
       >
-        <Component {...pageProps} hasEntered={hasEntered} />
+        <Component {...pageProps} hasEntered={hasEntered} isInverted={isInverted} />
       </div>
 
       <CursorTrail />
       {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
 
       {/* Background Music - starts after Enter */}
-      <BackgroundMusic shouldPlay={hasEntered} />
+      <BackgroundMusic shouldPlay={hasEntered} isInverted={isInverted} />
 
       {/* Enter Screen Overlay */}
       <AnimatePresence>

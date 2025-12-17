@@ -1,9 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 
-export default function DotGridBackground() {
+interface DotGridBackgroundProps {
+    isInverted?: boolean;
+}
+
+export default function DotGridBackground({ isInverted = false }: DotGridBackgroundProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const mouseRef = useRef({ x: -1000, y: -1000 });
     const animationRef = useRef<number>();
+    const isInvertedRef = useRef(isInverted);
+    const transitionProgress = useRef(isInverted ? 1 : 0); // 0 = normal, 1 = inverted
+
+    // Update ref when prop changes
+    useEffect(() => {
+        isInvertedRef.current = isInverted;
+    }, [isInverted]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -15,12 +26,13 @@ export default function DotGridBackground() {
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         // Configuration
-        const dotSpacing = 115; // Increased spacing for ~50% density reduction
+        const dotSpacing = 115;
         const dotRadius = 0.8;
         const waveSpeed = 0.0005;
         const waveAmplitude = 2;
         const cursorRadius = 100;
         const cursorStrength = 8;
+        const transitionSpeed = 0.02; // Speed of theme transition (higher = faster)
 
         let cols = 0;
         let rows = 0;
@@ -36,6 +48,9 @@ export default function DotGridBackground() {
             );
         };
 
+        // Lerp function for smooth interpolation
+        const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
         const resize = () => {
             const dpr = Math.min(window.devicePixelRatio, 2);
             width = window.innerWidth;
@@ -46,7 +61,6 @@ export default function DotGridBackground() {
             canvas.style.height = `${height}px`;
             ctx.scale(dpr, dpr);
 
-            // Grid configuration
             cols = Math.floor(width / dotSpacing);
             rows = Math.floor(height / dotSpacing) + 2;
 
@@ -75,27 +89,41 @@ export default function DotGridBackground() {
 
         const animate = () => {
             const elapsed = (Date.now() - startTime) * waveSpeed;
+            const targetProgress = isInvertedRef.current ? 1 : 0;
+
+            // Smooth transition towards target
+            transitionProgress.current += (targetProgress - transitionProgress.current) * transitionSpeed;
+            const progress = transitionProgress.current;
 
             // Create dynamic gradient background (moving fog)
             const gradient = ctx.createLinearGradient(0, 0, 0, height);
 
             // Animate gradient colors slightly for breathing effect
             const t = elapsed * 0.5;
-            const topColor = `hsl(210, 15%, ${65 + Math.sin(t) * 5}%)`;   // #8e9eab range
-            const midColor = `hsl(220, 15%, ${60 + Math.sin(t + 2) * 5}%)`; // #8693ab range
-            const botColor = `hsl(210, 15%, ${40 + Math.sin(t + 4) * 5}%)`; // #5d6d7e range
+
+            // Lerp between normal and inverted theme colors based on progress
+            // Normal: light grey (65/60/40), Inverted: mid grey (55/50/45)
+            const topLightness = lerp(65 + Math.sin(t) * 5, 55 + Math.sin(t) * 3, progress);
+            const midLightness = lerp(60 + Math.sin(t + 2) * 5, 50 + Math.sin(t + 2) * 3, progress);
+            const botLightness = lerp(40 + Math.sin(t + 4) * 5, 45 + Math.sin(t + 4) * 3, progress);
+            const saturation = lerp(15, 12, progress);
+
+            const topColor = `hsl(210, ${saturation}%, ${topLightness}%)`;
+            const midColor = `hsl(220, ${saturation}%, ${midLightness}%)`;
+            const botColor = `hsl(210, ${saturation}%, ${botLightness}%)`;
 
             gradient.addColorStop(0, topColor);
             gradient.addColorStop(0.5, midColor);
             gradient.addColorStop(1, botColor);
+
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
             const mx = mouseRef.current.x;
             const my = mouseRef.current.y;
 
-            // Draw dots
-            ctx.fillStyle = '#000000'; // Black dots
+            // Draw dots - always white on all slides
+            ctx.fillStyle = '#FFFFFF';
 
             dots.forEach((dot, i) => {
                 // Calculate wave displacement
@@ -166,8 +194,9 @@ export default function DotGridBackground() {
     return (
         <canvas
             ref={canvasRef}
-            className="fixed inset-0 z-[-1] pointer-events-none"
+            className="fixed inset-0 z-[-1] pointer-events-none transition-colors duration-500"
             aria-hidden="true"
         />
     );
 }
+

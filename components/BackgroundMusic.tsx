@@ -4,9 +4,10 @@ import ScrambleText from './ScrambleText';
 
 interface BackgroundMusicProps {
     shouldPlay: boolean;
+    isInverted?: boolean;
 }
 
-export default function BackgroundMusic({ shouldPlay }: BackgroundMusicProps) {
+export default function BackgroundMusic({ shouldPlay, isInverted = false }: BackgroundMusicProps) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -125,10 +126,25 @@ export default function BackgroundMusic({ shouldPlay }: BackgroundMusicProps) {
 
     if (!shouldPlay) return null;
 
+    // Dynamic styling based on inverted theme
+    const baseClasses = `fixed top-8 right-8 md:top-auto md:bottom-[6.5rem] md:right-8 z-[9999] cursor-pointer font-space-mono text-xs md:text-sm tracking-[0.3em] transition-all duration-500 bg-transparent border-none outline-none`;
+    const visibilityClasses = isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none';
+
+    let colorClasses = '';
+    if (isInverted) {
+        // Inverted theme: white text with glow
+        colorClasses = isPlaying
+            ? 'text-red-500'
+            : 'text-white hover:text-red-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]';
+    } else {
+        // Normal theme: black/red text
+        colorClasses = isPlaying ? 'text-red-500' : 'text-black hover:text-red-500';
+    }
+
     return (
         <button
             onClick={toggleMusic}
-            className={`fixed top-8 right-8 md:top-auto md:bottom-[6.5rem] md:right-8 z-[9999] cursor-pointer font-space-mono text-xs md:text-sm tracking-[0.3em] transition-all duration-300 bg-transparent border-none outline-none ${isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} ${isPlaying ? 'text-red-500' : 'text-black hover:text-red-500'}`}
+            className={`${baseClasses} ${visibilityClasses} ${colorClasses}`}
         >
             {isPlaying ?
                 <ScrambleText text="<MUSIC ON/>" as="span" duration={250} /> :
@@ -137,3 +153,4 @@ export default function BackgroundMusic({ shouldPlay }: BackgroundMusicProps) {
         </button>
     );
 }
+

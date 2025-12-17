@@ -1,10 +1,20 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 
-export default function RotatingCube() {
+interface RotatingCubeProps {
+  isInverted?: boolean;
+}
+
+export default function RotatingCube({ isInverted = false }: RotatingCubeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const rotationRef = useRef({ xy: 0, xz: 0, xw: 0, yz: 0, yw: 0, zw: 0 });
   const animationRef = useRef<number>();
+  const isInvertedRef = useRef(isInverted);
+
+  // Update ref when prop changes
+  useEffect(() => {
+    isInvertedRef.current = isInverted;
+  }, [isInverted]);
 
   // Pre-calculate vertices and edges once
   const { vertices4D, edges } = useMemo(() => {
@@ -123,6 +133,11 @@ export default function RotatingCube() {
     let lastFrame = 0;
     const targetFrameTime = 1000 / 60; // 60fps
 
+    // Lerp function and transition state
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    let transitionProgress = isInvertedRef.current ? 1 : 0;
+    const transitionSpeed = 0.03;
+
     const drawTesseract = (timestamp: number) => {
       // Frame limiting for consistent 60fps
       const deltaTime = timestamp - lastFrame;
@@ -131,6 +146,15 @@ export default function RotatingCube() {
         return;
       }
       lastFrame = timestamp;
+
+      // Smooth theme transition
+      const targetProgress = isInvertedRef.current ? 1 : 0;
+      transitionProgress += (targetProgress - transitionProgress) * transitionSpeed;
+      const progress = transitionProgress;
+
+      // Lerp color value: 0 = inverted (black), 1 = normal (white)
+      // Note: For tesseract, we want white when normal (progress=0), black when inverted (progress=1)
+      const colorValue = Math.round(lerp(255, 0, progress));
 
       ctx.clearRect(0, 0, width, height);
 
@@ -160,13 +184,7 @@ export default function RotatingCube() {
         const avgZ = (projectedVertices[a][2] + projectedVertices[b][2]) / 2;
         const opacity = 0.2 + (avgZ + 1) * 0.15;
 
-        const color4D = (vertices4D[a][3] + 1) * 0.5;
-        // White color, only opacity varies
-        const red = 255;
-        const green = 255;
-        const blue = 255;
-
-        ctx.strokeStyle = `rgba(${red},${green},${blue},${opacity})`;
+        ctx.strokeStyle = `rgba(${colorValue},${colorValue},${colorValue},${opacity})`;
         ctx.beginPath();
         ctx.moveTo(projectedVertices[a][0], projectedVertices[a][1]);
         ctx.lineTo(projectedVertices[b][0], projectedVertices[b][1]);
@@ -179,13 +197,7 @@ export default function RotatingCube() {
         const radius = Math.max(1, 3 + (z + 1) * 2);
         const opacity = Math.max(0.1, Math.min(0.7, 0.3 + (z + 1) * 0.2));
 
-        const color4D = (vertices4D[i][3] + 1) * 0.5;
-        // White color
-        const red = 255;
-        const green = 255;
-        const blue = 255;
-
-        ctx.fillStyle = `rgba(${red},${green},${blue},${opacity})`;
+        ctx.fillStyle = `rgba(${colorValue},${colorValue},${colorValue},${opacity})`;
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -195,8 +207,8 @@ export default function RotatingCube() {
           // Smaller font size calculation
           const fontSize = Math.max(6, 8 + (z + 1) * 2);
           ctx.font = `${fontSize}px "Space Mono", monospace`;
-          // Dark Grey color for text
-          const greyVal = 50;
+          // Text color - lerp between dark grey (50) and light grey (200)
+          const greyVal = Math.round(lerp(50, 200, progress));
           ctx.fillStyle = `rgba(${greyVal}, ${greyVal}, ${greyVal}, ${opacity * 0.8})`;
           ctx.fillText(`[${Math.round(x)}, ${Math.round(y)}]`, x + radius + 4, y + 4);
         }
@@ -224,3 +236,4 @@ export default function RotatingCube() {
     />
   );
 }
+
