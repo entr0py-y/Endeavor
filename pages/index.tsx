@@ -187,7 +187,7 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
   }, [sectionsList.length, hasEntered]);
   return (
     <div
-      className="h-[100vh] w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-hidden"
+      className="h-[100vh] w-full bg-transparent font-space-mono relative no-scrollbar cursor-none overflow-hidden"
       onClick={handleGlobalClick}
     >
       {/* Background Elements */}
@@ -206,9 +206,9 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
 
       {/* Navigation Header */}
       <nav className="fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start text-white mix-blend-difference pointer-events-none">
-        <div className={`font-bold tracking-widest text-lg md:text-3xl leading-none pointer-events-auto cursor-default text-nothing-red transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`font-bold tracking-widest text-lg md:text-3xl leading-none pointer-events-auto cursor-default text-black transition-opacity duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
           <span className="text-white glow-white">&lt;</span>
-          <span className="font-space-mono glow-red text-nothing-red inline-flex">
+          <span className="font-space-mono glow-white text-black inline-flex">
             PORTFOLIO
           </span>
           <span className="text-white glow-white">/&gt;</span>
@@ -220,11 +220,11 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
             <button
               key={item}
               onClick={() => scrollToSection(item)}
-              className={`hover:text-nothing-red transition-colors relative group uppercase text-right py-1 cursor-pointer ${currentSectionIndex === index ? 'text-nothing-red' : ''}`}
+              className={`hover:text-black transition-colors relative group uppercase text-right py-1 cursor-pointer ${currentSectionIndex === index ? 'text-black' : ''}`}
             >
               <span className="opacity-50 mr-2">0{index + 1}.</span>
               {item}
-              <span className={`absolute bottom-0 right-0 h-px bg-nothing-red transition-all duration-300 ${currentSectionIndex === index ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+              <span className={`absolute bottom-0 right-0 h-px bg-black transition-all duration-300 ${currentSectionIndex === index ? 'w-full' : 'w-0 group-hover:w-full'}`} />
             </button>
           ))}
         </div>
@@ -242,7 +242,7 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
             height="56"
             viewBox="0 0 32 32"
             fill="none"
-            className="text-nothing-red drop-shadow-lg"
+            className="text-black drop-shadow-lg"
             style={{ display: 'block' }}
           >
             <path
@@ -277,11 +277,11 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
             transition={{ duration: 0.6 }}
           >
             <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
-              <h2 className="text-base md:text-xl text-nothing-red glow-red tracking-wide mb-3 md:mb-4 font-bold font-space-mono">Hi, I'm</h2>
+              <h2 className="text-base md:text-xl text-black glow-white tracking-wide mb-3 md:mb-4 font-bold font-space-mono">Hi, I'm</h2>
               <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant glow-white">
                 {nameText}
               </h1>
-              <div className="h-px w-24 bg-nothing-red mb-4 md:mb-8" />
+              <div className="h-px w-24 bg-black mb-4 md:mb-8" />
               <p className="text-lg md:text-2xl text-white/90 tracking-wide font-light mb-2 md:mb-4">
                 {RESUME_DATA.role}
               </p>
@@ -298,7 +298,7 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); scrollToSection('connect'); }}
-                  className="bg-transparent border border-nothing-red text-nothing-red w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-nothing-red hover:text-white cursor-pointer glow-on-hover-red"
+                  className="bg-transparent border border-black text-black w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-black hover:text-white cursor-pointer glow-on-hover-white"
                 >
                   GET IN TOUCH
                 </button>
@@ -323,18 +323,18 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
               animate={{ opacity: currentSectionIndex === 1 ? 1 : 0.3, y: currentSectionIndex === 1 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-nothing-red glow-red font-valorant text-center md:text-left">EDUCATION LOGS</h2>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-black glow-white font-valorant text-center md:text-left">EDUCATION LOGS</h2>
               <div className="flex flex-col gap-12">
                 {RESUME_DATA.education.map((edu, index) => (
-                  <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-nothing-red transition-colors group w-full">
+                  <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-black transition-colors group w-full">
                     <div className="text-left">
-                      <h3 className="text-xl md:text-3xl font-bold tracking-wide text-white group-hover:text-nothing-red transition-colors font-space-mono mb-2">
+                      <h3 className="text-xl md:text-3xl font-bold tracking-wide text-white group-hover:text-black transition-colors font-space-mono mb-2">
                         {edu.institution}
                       </h3>
                       <p className="text-white/80 text-lg tracking-wider">{edu.title}</p>
                     </div>
                     <div className="mt-4 md:mt-0 text-left md:text-right w-full md:w-auto">
-                      <span className="block text-nothing-red text-sm tracking-widest mb-1">{edu.status}</span>
+                      <span className="block text-black text-sm tracking-widest mb-1">{edu.status}</span>
                       <p className="text-white/40 text-sm font-mono">{edu.year}</p>
                     </div>
                   </div>
@@ -362,7 +362,7 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
               className="text-left w-full"
             >
               <div className="mb-6 md:mb-12 text-center md:text-left">
-                <h3 className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-nothing-red glow-red font-valorant">
+                <h3 className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-black glow-white font-valorant">
                   SKILLS & EXPERTISE
                 </h3>
                 <p className="text-white/60 text-sm tracking-widest font-mono">
@@ -375,22 +375,22 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
                   <div key={index} className="w-full group">
                     <div className="flex items-end justify-between mb-2">
                       <div className="flex items-center gap-4">
-                        <span className="text-nothing-red/60 glow-red font-mono text-sm">[{skill.id}]</span>
+                        <span className="text-black/60 glow-white font-mono text-sm">[{skill.id}]</span>
                         <div className="">
-                          <h4 className="text-xl md:text-2xl text-white font-bold tracking-wide group-hover:text-nothing-red transition-colors">{skill.name}</h4>
+                          <h4 className="text-xl md:text-2xl text-white font-bold tracking-wide group-hover:text-black transition-colors">{skill.name}</h4>
                           <p className="text-white/40 text-xs tracking-wider uppercase hidden md:block">{skill.desc}</p>
                         </div>
                       </div>
                       <div className="text-right flex flex-col items-end">
                         <span className="text-white/40 text-xs tracking-widest mb-1">{skill.category}</span>
-                        <span className="text-nothing-red glow-red font-bold font-mono">{skill.percent}</span>
+                        <span className="text-black glow-white font-bold font-mono">{skill.percent}</span>
                       </div>
                     </div>
 
                     {/* Progress Bar */}
                     <div className="w-full h-1 bg-white/10 relative overflow-hidden">
                       <motion.div
-                        className="absolute top-0 left-0 h-full bg-nothing-red"
+                        className="absolute top-0 left-0 h-full bg-black"
                         initial={{ width: 0 }}
                         animate={{ width: currentSectionIndex === 2 ? skill.percent : 0 }}
                         transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.1 }}
@@ -419,11 +419,11 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
               animate={{ opacity: currentSectionIndex === 3 ? 1 : 0.3, y: currentSectionIndex === 3 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-nothing-red font-valorant text-center md:text-left">PROJECT MODULE</h2>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-black font-valorant text-center md:text-left">PROJECT MODULE</h2>
               <div className="py-12 md:py-24 border-y border-white/10 w-full text-center md:text-left">
                 <ol className="list-decimal list-inside text-white/90 text-lg md:text-2xl font-light space-y-4">
                   <li>
-                    Portfolio: <a href="https://endeavor-tan.vercel.app" target="_blank" rel="noopener noreferrer" className="text-nothing-red underline hover:text-white transition-colors duration-300">https://endeavor-tan.vercel.app</a>
+                    Portfolio: <a href="https://endeavor-tan.vercel.app" target="_blank" rel="noopener noreferrer" className="text-black underline hover:text-white transition-colors duration-300">https://endeavor-tan.vercel.app</a>
                   </li>
                 </ol>
               </div>
@@ -448,11 +448,11 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
               transition={{ duration: 0.8 }}
               className="flex-1 flex flex-col justify-center items-center md:items-start"
             >
-              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-12 md:mb-24 text-nothing-red font-valorant text-center md:text-left">CONNECT MODULE</h2>
+              <h2 className="text-2xl md:text-4xl font-bold tracking-wider mb-12 md:mb-24 text-black font-valorant text-center md:text-left">CONNECT MODULE</h2>
 
               <div className="flex flex-col gap-16 items-start justify-start w-full">
                 <a href="https://instagram.com/endeavv0r" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-8">
-                  <div className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center group-hover:border-nothing-red group-hover:bg-nothing-red/10 transition-all duration-500">
+                  <div className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center group-hover:border-black group-hover:bg-black/10 transition-all duration-500">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                       <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
@@ -460,13 +460,13 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold tracking-widest text-white group-hover:text-nothing-red transition-colors font-space-mono">INSTAGRAM</h3>
+                    <h3 className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono">INSTAGRAM</h3>
                     <p className="text-white/40 text-sm mt-2 tracking-wider">@endeavv0r</p>
                   </div>
                 </a>
 
                 <a href="https://www.linkedin.com/in/pushkar-jha-4a1258381" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-8">
-                  <div className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center group-hover:border-nothing-red group-hover:bg-nothing-red/10 transition-all duration-500">
+                  <div className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center group-hover:border-black group-hover:bg-black/10 transition-all duration-500">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                       <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                       <rect x="2" y="9" width="4" height="12"></rect>
@@ -474,7 +474,7 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold tracking-widest text-white group-hover:text-nothing-red transition-colors font-space-mono">LINKEDIN</h3>
+                    <h3 className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono">LINKEDIN</h3>
                     <p className="text-white/40 text-sm mt-2 tracking-wider">Connect Professionally</p>
                   </div>
                 </a>
@@ -482,7 +482,7 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
             </motion.div>
 
             <div className="mt-auto text-left pt-12">
-              <p className="text-nothing-red/80 text-xs tracking-[0.3em] glow-red">
+              <p className="text-black/80 text-xs tracking-[0.3em] glow-white">
                 DESIGNED BY PUSHKAR JHA
               </p>
               <p className="text-white/40 text-xs tracking-[0.3em] mt-2">

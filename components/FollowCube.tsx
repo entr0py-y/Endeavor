@@ -53,9 +53,9 @@ export default function FollowCube() {
       <div
         className="w-full h-full animate-spin"
         style={{
-          background: 'rgba(220, 20, 60, 0.15)',
-          border: '2px solid rgba(220, 20, 60, 0.4)',
-          boxShadow: '0 0 20px rgba(220, 20, 60, 0.3)',
+          background: 'rgba(255, 255, 255, 0.15)',
+          border: '2px solid rgba(255, 255, 255, 0.6)',
+          boxShadow: '0 0 20px rgba(255, 255, 255, 0.4)',
           animationDuration: '4s',
         }}
       />

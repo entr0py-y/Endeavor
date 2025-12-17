@@ -116,7 +116,7 @@ export default function ClickTesseract({ x, y }: ClickTesseractProps) {
 
       // Draw edges
       const opacity = 1 - progress;
-      ctx.strokeStyle = `rgba(220, 20, 60, ${opacity * 0.6})`;
+      ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.8})`;
       ctx.lineWidth = 2;
 
       ctx.beginPath();

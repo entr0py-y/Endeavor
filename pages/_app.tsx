@@ -10,6 +10,7 @@ import BackgroundMusic from '@/components/BackgroundMusic'
 // Use lazy loading for EnterScreen to ensure client-side rendering if needed, 
 // though standard import is fine. dynamic import used for others.
 const CursorTrail = dynamic(() => import('@/components/CursorTrail'), { ssr: false });
+const DotGridBackground = dynamic(() => import('@/components/DotGridBackground'), { ssr: false });
 
 export default function App({ Component, pageProps }: AppProps) {
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
@@ -46,6 +47,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
+      <DotGridBackground />
       {/* Main Content with Blur Transition */}
       <div
         className={`relative w-full min-h-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${!hasEntered ? 'blur-md scale-105 brightness-75 pointer-events-none overflow-hidden h-screen' : 'blur-0 scale-100 brightness-100'

@@ -83,9 +83,9 @@ export default function CursorGlow() {
         <div
           className="w-full h-full rounded-full"
           style={{
-            background: 'radial-gradient(circle, rgba(220, 20, 60, 0.7) 0%, rgba(220, 20, 60, 0.4) 30%, rgba(220, 20, 60, 0.15) 60%, transparent 80%)',
+            background: 'radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 30%, rgba(255, 255, 255, 0.2) 60%, transparent 80%)',
             filter: 'blur(20px)',
-            boxShadow: '0 0 50px rgba(220, 20, 60, 0.48), 0 0 90px rgba(220, 20, 60, 0.24)',
+            boxShadow: '0 0 50px rgba(255, 255, 255, 0.6), 0 0 90px rgba(255, 255, 255, 0.3)',
           }}
         />
       </div>

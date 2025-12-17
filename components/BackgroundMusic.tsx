@@ -105,7 +105,7 @@ export default function BackgroundMusic({ shouldPlay }: BackgroundMusicProps) {
     return (
         <button
             onClick={toggleMusic}
-            className="fixed bottom-[6.5rem] right-8 z-[9999] cursor-pointer font-space-mono text-xs tracking-[0.3em] text-white/70 hover:text-red-500 transition-colors duration-300 bg-transparent border-none outline-none pointer-events-auto"
+            className="fixed bottom-[6.5rem] right-8 z-[9999] cursor-pointer font-space-mono text-xs tracking-[0.3em] text-black/70 hover:text-black transition-colors duration-300 bg-transparent border-none outline-none pointer-events-auto"
         >
             {isPlaying ? '<MUSIC ON/>' : '<MUSIC OFF/>'}
         </button>

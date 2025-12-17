@@ -78,11 +78,11 @@ export default function RedBars() {
         }
 
         const gradient = bar.direction < 2
-          ? 'linear-gradient(90deg, rgba(255,0,0,0.8) 0%, rgba(255,0,0,0.8) 80%, transparent 100%)'
-          : 'linear-gradient(180deg, rgba(255,0,0,0.8) 0%, rgba(255,0,0,0.8) 80%, transparent 100%)';
+          ? 'linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) 80%, transparent 100%)'
+          : 'linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) 80%, transparent 100%)';
 
         html += `<div style="position:absolute;${style}transform:${transform};opacity:${opacity};will-change:transform,opacity;">
-          <div style="width:100%;height:100%;background:${gradient};box-shadow:0 0 10px 2px rgba(255,0,0,0.6), 0 0 20px 4px rgba(255,0,0,0.3);"></div>
+          <div style="width:100%;height:100%;background:${gradient};box-shadow:0 0 10px 2px rgba(255,255,255,0.6), 0 0 20px 4px rgba(255,255,255,0.3);"></div>
         </div>`;
       }
 

@@ -38,10 +38,10 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
                 }}
             >
                 {/* Inner dot */}
-                <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full ${isHovering ? 'bg-red-500' : 'bg-white'} transition-colors duration-200`} />
+                <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full ${isHovering ? 'bg-white' : 'bg-white'} transition-colors duration-200`} />
                 {/* Outer circle */}
                 <div
-                    className={`w-8 h-8 rounded-full border ${isHovering ? 'border-red-500 scale-125' : 'border-white/50'} transition-all duration-200`}
+                    className={`w-8 h-8 rounded-full border ${isHovering ? 'border-white scale-125' : 'border-white/50'} transition-all duration-200`}
                 />
             </div>
 
@@ -50,7 +50,7 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
                 onClick={onEnter}
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
-                className="cursor-none relative z-10 font-space-mono text-xs tracking-[0.2em] text-white/70 hover:text-red-500 transition-colors duration-300"
+                className="cursor-none relative z-10 font-space-mono text-xs tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300"
             >
                 &lt;ENTER PORTFOLIO/&gt;
             </span>
