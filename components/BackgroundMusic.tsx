@@ -51,6 +51,7 @@ export default function BackgroundMusic({ shouldPlay }: BackgroundMusicProps) {
         audio.volume = 0;
         audio.play()
             .then(() => {
+                setIsPlaying(true);
                 // Fade in
                 let vol = 0;
                 const fadeIn = setInterval(() => {
