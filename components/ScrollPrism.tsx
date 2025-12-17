@@ -142,7 +142,7 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
 
     const containerStyle: React.CSSProperties = isMobile ? {
         left: `${progress}%`,
-        bottom: '2.8rem', // Positioned just below Music Button (6.5rem)
+        bottom: '4.5rem', // Adjusted higher as requested
         transform: 'translateX(-50%)',
         transition: 'left 1.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
     } : {

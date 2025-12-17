@@ -6,6 +6,17 @@ export default function FollowCube() {
   const currentPosRef = useRef({ x: 0, y: 0 });
   const animationRef = useRef<number>();
 
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  if (isMobile) return null;
+
   useEffect(() => {
     const cube = cubeRef.current;
     if (!cube) return;
