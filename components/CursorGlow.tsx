@@ -71,7 +71,7 @@ export default function CursorGlow() {
     <>
       <div
         ref={glowRef}
-        className="fixed pointer-events-none z-50 mix-blend-screen"
+        className="fixed pointer-events-none z-50 mix-blend-multiply"
         style={{
           width: '60px',
           height: '60px',
@@ -83,9 +83,9 @@ export default function CursorGlow() {
         <div
           className="w-full h-full rounded-full"
           style={{
-            background: 'radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 30%, rgba(255, 255, 255, 0.2) 60%, transparent 80%)',
-            filter: 'blur(20px)',
-            boxShadow: '0 0 50px rgba(255, 255, 255, 0.6), 0 0 90px rgba(255, 255, 255, 0.3)',
+            background: 'radial-gradient(circle, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 30%, rgba(0, 0, 0, 0.05) 60%, transparent 80%)',
+            filter: 'blur(15px)',
+            boxShadow: '0 0 40px rgba(0, 0, 0, 0.3), 0 0 80px rgba(0, 0, 0, 0.15)',
           }}
         />
       </div>
