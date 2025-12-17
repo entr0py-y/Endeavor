@@ -4,7 +4,6 @@ export default function DotGridBackground() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const mouseRef = useRef({ x: -1000, y: -1000 });
     const animationRef = useRef<number>();
-    const spotsRef = useRef<{ x: number; y: number; vx: number; vy: number; radius: number }[]>();
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -77,44 +76,25 @@ export default function DotGridBackground() {
         const animate = () => {
             const elapsed = (Date.now() - startTime) * waveSpeed;
 
-            // Draw dynamic dark spots (clouds)
-            // Use lighter base background
-            ctx.fillStyle = '#E5E5E5'; // Very light grey base
+            // Create dynamic gradient background (moving fog)
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+
+            // Animate gradient colors slightly for breathing effect
+            const t = elapsed * 0.5;
+            const topColor = `hsl(210, 15%, ${65 + Math.sin(t) * 5}%)`;   // #8e9eab range
+            const midColor = `hsl(220, 15%, ${60 + Math.sin(t + 2) * 5}%)`; // #8693ab range
+            const botColor = `hsl(210, 15%, ${40 + Math.sin(t + 4) * 5}%)`; // #5d6d7e range
+
+            gradient.addColorStop(0, topColor);
+            gradient.addColorStop(0.5, midColor);
+            gradient.addColorStop(1, botColor);
+            ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
-            if (!spotsRef.current) {
-                // Initialize spots
-                spotsRef.current = Array.from({ length: 4 }).map(() => ({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    vx: (Math.random() - 0.5) * 0.2,
-                    vy: (Math.random() - 0.5) * 0.2,
-                    radius: 600 + Math.random() * 800
-                }));
-            }
+            const mx = mouseRef.current.x;
+            const my = mouseRef.current.y;
 
-            // Update and draw spots
-            spotsRef.current?.forEach((spot: any) => {
-                spot.x += spot.vx;
-                spot.y += spot.vy;
-
-                // Bounce/Wrap
-                if (spot.x < -spot.radius) spot.x = width + spot.radius;
-                if (spot.x > width + spot.radius) spot.x = -spot.radius;
-                if (spot.y < -spot.radius) spot.y = height + spot.radius;
-                if (spot.y > height + spot.radius) spot.y = -spot.radius;
-
-                const gradient = ctx.createRadialGradient(spot.x, spot.y, 0, spot.x, spot.y, spot.radius);
-                gradient.addColorStop(0, 'rgba(0,0,0,0.4)'); // Darker center
-                gradient.addColorStop(1, 'rgba(0,0,0,0)'); // Transparent edge
-
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(spot.x, spot.y, spot.radius, 0, Math.PI * 2);
-                ctx.fill();
-            });
-
-            // Draw dots (Near Cursor Only)
+            // Draw dots
             ctx.fillStyle = '#1a1a1a'; // Dark grey dots
 
             dots.forEach((dot, i) => {
