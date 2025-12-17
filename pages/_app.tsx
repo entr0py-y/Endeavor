@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { AnimatePresence } from 'framer-motion'
 import ClickTesseract from '@/components/ClickTesseract'
 import EnterScreen from '@/components/EnterScreen'
+import BackgroundMusic from '@/components/BackgroundMusic'
 
 // Use lazy loading for EnterScreen to ensure client-side rendering if needed, 
 // though standard import is fine. dynamic import used for others.
@@ -55,6 +56,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
       <CursorTrail />
       {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
+
+      {/* Background Music - starts after Enter */}
+      <BackgroundMusic shouldPlay={hasEntered} />
 
       {/* Enter Screen Overlay */}
       <AnimatePresence>
