@@ -132,13 +132,13 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false }: Back
 
     let colorClasses = '';
     if (isInverted) {
-        // Inverted theme: white text with glow
+        // Inverted theme: grey text
         colorClasses = isPlaying
             ? 'text-red-500'
-            : 'text-white hover:text-red-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]';
+            : 'text-gray-400 hover:text-red-500';
     } else {
-        // Normal theme: black/red text
-        colorClasses = isPlaying ? 'text-red-500' : 'text-black hover:text-red-500';
+        // Normal theme: grey text
+        colorClasses = isPlaying ? 'text-red-500' : 'text-gray-500 hover:text-red-500';
     }
 
     return (
