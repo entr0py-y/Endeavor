@@ -95,7 +95,7 @@ export default function DotGridBackground() {
             const my = mouseRef.current.y;
 
             // Draw dots
-            ctx.fillStyle = '#FFFFFF'; // White dots
+            ctx.fillStyle = '#1a1a1a'; // Dark grey dots
 
             dots.forEach((dot, i) => {
                 // Calculate wave displacement
