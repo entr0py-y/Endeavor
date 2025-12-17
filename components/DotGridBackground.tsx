@@ -15,7 +15,7 @@ export default function DotGridBackground() {
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         // Configuration
-        const dotSpacing = 80;
+        const dotSpacing = 115; // Increased spacing for ~50% density reduction
         const dotRadius = 0.8;
         const waveSpeed = 0.0005;
         const waveAmplitude = 2;
