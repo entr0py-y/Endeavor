@@ -95,7 +95,7 @@ export default function DotGridBackground() {
             const my = mouseRef.current.y;
 
             // Draw dots
-            ctx.fillStyle = '#1a1a1a'; // Dark grey dots
+            ctx.fillStyle = '#000000'; // Black dots
 
             dots.forEach((dot, i) => {
                 // Calculate wave displacement
@@ -108,56 +108,39 @@ export default function DotGridBackground() {
                 const dy = mouseRef.current.y - dot.baseY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
 
-                // Visibility radius (larger than interaction radius)
-                const visibleRadius = 400;
-                let visibility = 0;
+                // Breathing/Pulsing Effect (Randomized per dot)
+                // Use a combination of elapsed time and dot index/position for pseudo-random pulsing
+                // This ensures all dots pulse, not just visible ones
+                const randomOffset = (dot.baseX * 13 + dot.baseY * 19);
+                const pulseT = elapsed * 0.5 + randomOffset;
 
-                if (dist < visibleRadius) {
-                    visibility = Math.pow(1 - dist / visibleRadius, 2); // Squared falloff for smoother edge
-                }
+                // Base opacity pulsing: 0.2 to 0.5
+                const currentOpacity = 0.2 + (Math.sin(pulseT) * 0.5 + 0.5) * 0.3;
 
-                // Interaction push (only if close)
-                // The instruction comments out the original interaction push and then re-adds it.
-                // I will integrate the re-added part.
-                // Original: if (dist < cursorRadius) { ... }
-                // New: if (dist < cursorRadius) { ... } // This is just a comment in the instruction, the actual logic is moved below.
+                // Smaller dots: Base 1.2px
+                let currentRadius = 1.2;
 
-                // Breathing/Pulsing Effect
-                const pulseT = elapsed * 0.5 + (i * 0.1);
+                // Magnification near cursor (only applies if close)
+                let shiftX = 0, shiftY = 0;
 
-                // Smaller dots: Base 1.2px, varying +/- 0.4px
-                let currentRadius = 1.2 + Math.sin(pulseT) * 0.4;
-
-                // Magnification near cursor
                 if (dist < cursorRadius) {
                     const magFactor = (1 - dist / cursorRadius); // 0 to 1
                     currentRadius += magFactor * 3; // Add up to 3px
+
+                    // Push effect
+                    const force = (cursorRadius - dist) / cursorRadius;
+                    const angle = Math.atan2(dy, dx);
+                    shiftX = Math.cos(angle) * force * cursorStrength;
+                    shiftY = Math.sin(angle) * force * cursorStrength;
                 }
 
-                // Opacity pulsing combined with visibility mask
-                // Base pulse 0.4 +/- 0.2, multiplied by visibility factor
-                const pulseOpacity = 0.4 + Math.sin(pulseT * 0.7) * 0.2;
-                const currentOpacity = pulseOpacity * visibility;
+                const drawX = dot.baseX + waveX + shiftX;
+                const drawY = dot.baseY + waveY + shiftY;
 
-                if (currentOpacity > 0.01) {
-                    // Let's keep the push interaction if user wants
-                    // re-calculating shift...
-                    let shiftX = 0, shiftY = 0;
-                    if (dist < cursorRadius) {
-                        const force = (cursorRadius - dist) / cursorRadius;
-                        const angle = Math.atan2(dy, dx);
-                        shiftX = Math.cos(angle) * force * cursorStrength;
-                        shiftY = Math.sin(angle) * force * cursorStrength;
-                    }
-
-                    const drawX = dot.baseX + waveX + shiftX;
-                    const drawY = dot.baseY + waveY + shiftY;
-
-                    ctx.globalAlpha = Math.max(0, Math.min(1, currentOpacity));
-                    ctx.beginPath();
-                    ctx.arc(drawX, drawY, Math.max(0, currentRadius), 0, Math.PI * 2);
-                    ctx.fill();
-                }
+                ctx.globalAlpha = Math.max(0, Math.min(1, currentOpacity));
+                ctx.beginPath();
+                ctx.arc(drawX, drawY, Math.max(0, currentRadius), 0, Math.PI * 2);
+                ctx.fill();
             });
             ctx.globalAlpha = 1; // Reset alpha
             animationRef.current = requestAnimationFrame(animate);
