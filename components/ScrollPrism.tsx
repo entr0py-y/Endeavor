@@ -19,21 +19,21 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
 
         // Responsive scale: larger on desktop, smaller on mobile
         const isDesktop = window.innerWidth >= 768;
-        const scale = isDesktop ? 1.4 : 1.0;
-        const size = isDesktop ? 260 : 200;
+        const scale = isDesktop ? 1.2 : 0.9;
+        const size = isDesktop ? 200 : 160;
         canvas.width = size * 2;
         canvas.height = size * 2;
 
         // Prism vertices (triangular prism)
         const baseVertices = [
-            [0, -60 * scale, 0],
-            [-50 * scale, 30 * scale, 0],
-            [50 * scale, 30 * scale, 0],
+            [0, -50 * scale, 0],
+            [-40 * scale, 25 * scale, 0],
+            [40 * scale, 25 * scale, 0],
         ];
 
         const vertices = [
-            ...baseVertices.map(v => [...v.slice(0, 2), -40 * scale] as [number, number, number]),
-            ...baseVertices.map(v => [...v.slice(0, 2), 40 * scale] as [number, number, number]),
+            ...baseVertices.map(v => [...v.slice(0, 2), -35 * scale] as [number, number, number]),
+            ...baseVertices.map(v => [...v.slice(0, 2), 35 * scale] as [number, number, number]),
         ];
 
         const faces = [
@@ -123,35 +123,32 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
         };
     }, []);
 
-    // Calculate X position based on current section (10% to 90% of viewport - left to right)
-    const xPosition = 10 + (currentIndex / (totalSections - 1)) * 80;
+    // Y position moves from 15% (top) to 85% (bottom) based on current section
+    const yPosition = 15 + (currentIndex / Math.max(totalSections - 1, 1)) * 70;
 
     return (
         <div
-            className={
-                // Lower on mobile, higher on desktop
-                'fixed z-50 pointer-events-none'
-            }
+            className="fixed z-50 pointer-events-none"
             style={{
-                left: `${xPosition}%`,
-                bottom: window.innerWidth >= 768 ? '-20px' : '-30px',
-                transform: 'translateX(-50%)',
-                transition: 'left 1.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                left: '-20px',
+                top: `${yPosition}%`,
+                transform: 'translateY(-50%)',
+                transition: 'top 1.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
             }}
         >
             <canvas
                 ref={canvasRef}
                 style={{
-                    width: window.innerWidth >= 768 ? '180px' : '140px',
-                    height: window.innerWidth >= 768 ? '180px' : '140px',
+                    width: window.innerWidth >= 768 ? '160px' : '120px',
+                    height: window.innerWidth >= 768 ? '160px' : '120px',
                 }}
             />
-            {/* Track line */}
+            {/* Vertical track line on the left */}
             <div
-                className="absolute top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-transparent via-nothing-red/30 to-transparent"
+                className="absolute left-1/2 -translate-x-1/2 w-px bg-gradient-to-b from-transparent via-nothing-red/30 to-transparent"
                 style={{
-                    width: '200vw',
-                    left: '-100vw',
+                    height: '200vh',
+                    top: '-100vh',
                     zIndex: -1,
                 }}
             />
