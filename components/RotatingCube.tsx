@@ -189,6 +189,17 @@ export default function RotatingCube() {
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
         ctx.fill();
+
+        // Draw coordinate text
+        if (opacity > 0.15) {
+          // Smaller font size calculation
+          const fontSize = Math.max(6, 8 + (z + 1) * 2);
+          ctx.font = `${fontSize}px "Space Mono", monospace`;
+          // Dark Grey color for text
+          const greyVal = 50;
+          ctx.fillStyle = `rgba(${greyVal}, ${greyVal}, ${greyVal}, ${opacity * 0.8})`;
+          ctx.fillText(`[${Math.round(x)}, ${Math.round(y)}]`, x + radius + 4, y + 4);
+        }
       }
 
       animationRef.current = requestAnimationFrame(drawTesseract);
