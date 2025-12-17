@@ -44,7 +44,7 @@ const RESUME_DATA = {
   }
 };
 
-export default function Home() {
+export default function Home({ hasEntered }: { hasEntered?: boolean }) {
   const router = useRouter();
 
   /* Simple Vertical Navigation State */
@@ -117,7 +117,7 @@ export default function Home() {
     const handleWheel = (e: WheelEvent) => {
       e.preventDefault();
 
-      if (isTransitioning) return;
+      if (!hasEntered || isTransitioning) return;
 
       // Threshold to prevent accidental triggers
       const threshold = 30;
@@ -146,7 +146,7 @@ export default function Home() {
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      if (isTransitioning) return;
+      if (!hasEntered || isTransitioning) return;
 
       touchEndY = e.changedTouches[0].clientY;
       const deltaY = touchStartY - touchEndY;

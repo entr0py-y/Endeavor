@@ -50,7 +50,7 @@ export default function App({ Component, pageProps }: AppProps) {
         className={`relative w-full min-h-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${!hasEntered ? 'blur-md scale-105 brightness-75 pointer-events-none overflow-hidden h-screen' : 'blur-0 scale-100 brightness-100'
           }`}
       >
-        <Component {...pageProps} />
+        <Component {...pageProps} hasEntered={hasEntered} />
       </div>
 
       <CursorTrail />
