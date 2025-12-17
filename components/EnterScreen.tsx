@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import MicroGlitch from './MicroGlitch';
 
 interface EnterScreenProps {
     onEnter: () => void;
@@ -45,15 +46,19 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
                 />
             </div>
 
-            {/* Enter text at bottom */}
-            <span
+            {/* Enter Text */}
+            <div
+                className={`relative z-10 mt-8 transition-opacity duration-1000 ${isHovering ? 'opacity-100' : 'opacity-50'}`}
                 onClick={onEnter}
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
-                className="cursor-none relative z-10 font-space-mono text-xs tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300"
             >
-                &lt;ENTER PORTFOLIO/&gt;
-            </span>
+                <MicroGlitch text="ENTER PORTFOLIO">
+                    <span className="font-space-mono text-sm tracking-[0.3em] text-white/70 group-hover:text-white transition-colors duration-300">
+                        ENTER PORTFOLIO
+                    </span>
+                </MicroGlitch>
+            </div>
         </motion.div>
     );
 }

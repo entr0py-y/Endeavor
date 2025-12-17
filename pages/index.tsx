@@ -9,6 +9,7 @@ import RotatingSmallCube from '@/components/RotatingSmallCube';
 import RedBars from '@/components/RedBars';
 import Card from '@/components/Card';
 import ClickTesseract from '@/components/ClickTesseract';
+import MicroGlitch from '@/components/MicroGlitch';
 import ScrollPrism from '@/components/ScrollPrism';
 
 const RESUME_DATA = {
@@ -218,16 +219,15 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex flex-col items-end gap-2 text-sm tracking-wider pt-2 pointer-events-auto">
-          {sectionsList.map((item, index) => (
-            <button
-              key={item}
-              onClick={() => scrollToSection(item)}
-              className={`hover:text-black transition-colors relative group uppercase text-right py-1 cursor-pointer ${currentSectionIndex === index ? 'text-black' : ''}`}
-            >
-              <span className="opacity-50 mr-2">0{index + 1}.</span>
-              {item}
-              <span className={`absolute bottom-0 right-0 h-px bg-black transition-all duration-300 ${currentSectionIndex === index ? 'w-full' : 'w-0 group-hover:w-full'}`} />
-            </button>
+          {['ABOUT', 'EDUCATION', 'WORK', 'CONNECT'].map((item) => (
+            <MicroGlitch key={item} text={item}>
+              <button
+                onClick={(e) => { e.stopPropagation(); scrollToSection(item.toLowerCase() === 'about' ? 'identity' : item.toLowerCase() === 'work' ? 'projects' : item.toLowerCase()); }}
+                className={`text-sm tracking-[0.2em] font-bold hover:text-white transition-colors duration-300 ${currentSectionIndex === sectionsList.indexOf(item.toLowerCase() === 'about' ? 'identity' : item.toLowerCase() === 'work' ? 'projects' : item.toLowerCase()) ? 'text-white' : 'text-zinc-500'}`}
+              >
+                {item}
+              </button>
+            </MicroGlitch>
           ))}
         </div>
       </nav>
@@ -279,31 +279,36 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
             transition={{ duration: 0.6 }}
           >
             <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
-              <h2 className="text-base md:text-xl text-black tracking-wide mb-3 md:mb-4 font-bold font-space-mono">Hi, I'm</h2>
-              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]">
-                {nameText}
-              </h1>
+              <MicroGlitch text="Hi, I'm" className="mb-3 md:mb-4">
+                <h2 className="text-base md:text-xl text-black tracking-wide font-bold font-space-mono">Hi, I'm</h2>
+              </MicroGlitch>
+              <MicroGlitch text={nameText}>
+                <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]">
+                  {nameText}
+                </h1>
+              </MicroGlitch>
               <div className="h-px w-24 bg-black mb-4 md:mb-8" />
-              <p className="text-lg md:text-2xl text-white/90 tracking-wide font-light mb-2 md:mb-4">
-                {RESUME_DATA.role}
-              </p>
-              <p className="text-white/60 tracking-wide max-w-2xl text-sm md:text-lg mb-8 md:mb-12">
-                {RESUME_DATA.tagline}
+              <p className="text-sm md:text-lg font-space-mono tracking-widest leading-relaxed max-w-lg text-black/80 mb-8 md:mb-12">
+                A CREATIVE DEVELOPER CRAFTING DIGITAL EXPERIENCES.
               </p>
 
               <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full max-w-md">
-                <button
-                  onClick={(e) => { e.stopPropagation(); scrollToSection('education'); }}
-                  className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold cursor-pointer"
-                >
-                  MY EDUCATION
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); scrollToSection('connect'); }}
-                  className="bg-transparent border border-black text-black w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-black hover:text-white cursor-pointer"
-                >
-                  GET IN TOUCH
-                </button>
+                <MicroGlitch text="MY EDUCATION" className="w-full">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); scrollToSection('education'); }}
+                    className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold cursor-pointer"
+                  >
+                    MY EDUCATION
+                  </button>
+                </MicroGlitch>
+                <MicroGlitch text="GET IN TOUCH" className="w-full">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); scrollToSection('connect'); }}
+                    className="bg-transparent border border-black text-black w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-black hover:text-white cursor-pointer"
+                  >
+                    GET IN TOUCH
+                  </button>
+                </MicroGlitch>
               </div>
             </div>
           </motion.div>

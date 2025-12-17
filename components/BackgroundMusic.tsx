@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import MicroGlitch from './MicroGlitch';
 
 interface BackgroundMusicProps {
     shouldPlay: boolean;
@@ -128,7 +129,9 @@ export default function BackgroundMusic({ shouldPlay }: BackgroundMusicProps) {
             onClick={toggleMusic}
             className={`fixed bottom-[6.5rem] right-8 z-[9999] cursor-pointer font-space-mono text-xs tracking-[0.3em] transition-all duration-300 bg-transparent border-none outline-none ${isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} ${isPlaying ? 'text-red-500' : 'text-black hover:text-red-500'}`}
         >
-            {isPlaying ? '<MUSIC ON/>' : '<MUSIC OFF/>'}
+            <MicroGlitch text={isPlaying ? '<MUSIC ON/>' : '<MUSIC OFF/>'}>
+                {isPlaying ? '<MUSIC ON/>' : '<MUSIC OFF/>'}
+            </MicroGlitch>
         </button>
     );
 }
