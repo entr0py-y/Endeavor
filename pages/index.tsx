@@ -90,6 +90,8 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
     const index = sectionsList.indexOf(id);
     if (index !== -1) {
       setCurrentSectionIndex(index);
+      // Dispatch event for other components (like Music Toggle)
+      window.dispatchEvent(new CustomEvent('sectionChange', { detail: index }));
     }
   };
 
@@ -278,7 +280,7 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
           >
             <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
               <h2 className="text-base md:text-xl text-black tracking-wide mb-3 md:mb-4 font-bold font-space-mono">Hi, I'm</h2>
-              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant">
+              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]">
                 {nameText}
               </h1>
               <div className="h-px w-24 bg-black mb-4 md:mb-8" />

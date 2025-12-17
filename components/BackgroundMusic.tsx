@@ -43,6 +43,26 @@ export default function BackgroundMusic({ shouldPlay }: BackgroundMusicProps) {
         }
     }, [shouldPlay, isLoaded]);
 
+    const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+        const handleSectionChange = (e: CustomEvent) => {
+            if (window.innerWidth < 768) {
+                setIsVisible(e.detail === 0);
+            } else {
+                setIsVisible(true);
+            }
+        };
+        // Verify initial state
+        if (window.innerWidth < 768) {
+            // We can't easily know the initial section index here without context, 
+            // but usually it starts at 0, so visible is correct.
+        }
+
+        window.addEventListener('sectionChange', handleSectionChange as EventListener);
+        return () => window.removeEventListener('sectionChange', handleSectionChange as EventListener);
+    }, []);
+
     const playMusic = () => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -106,7 +126,7 @@ export default function BackgroundMusic({ shouldPlay }: BackgroundMusicProps) {
     return (
         <button
             onClick={toggleMusic}
-            className={`fixed bottom-[6.5rem] right-8 z-[9999] cursor-pointer font-space-mono text-xs tracking-[0.3em] transition-colors duration-300 bg-transparent border-none outline-none pointer-events-auto ${isPlaying ? 'text-red-500' : 'text-black hover:text-red-500'}`}
+            className={`fixed bottom-[6.5rem] right-8 z-[9999] cursor-pointer font-space-mono text-xs tracking-[0.3em] transition-all duration-300 bg-transparent border-none outline-none ${isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} ${isPlaying ? 'text-red-500' : 'text-black hover:text-red-500'}`}
         >
             {isPlaying ? '<MUSIC ON/>' : '<MUSIC OFF/>'}
         </button>

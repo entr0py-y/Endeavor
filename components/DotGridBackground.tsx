@@ -15,7 +15,7 @@ export default function DotGridBackground() {
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         // Configuration
-        const dotSpacing = 30;
+        const dotSpacing = 80;
         const dotRadius = 0.8;
         const waveSpeed = 0.0005;
         const waveAmplitude = 2;
@@ -46,8 +46,9 @@ export default function DotGridBackground() {
             canvas.style.height = `${height}px`;
             ctx.scale(dpr, dpr);
 
-            cols = Math.ceil(width / dotSpacing) + 2;
-            rows = Math.ceil(height / dotSpacing) + 2;
+            // Grid configuration
+            cols = Math.floor(width / dotSpacing);
+            rows = Math.floor(height / dotSpacing) + 2;
 
             dots = [];
             for (let row = 0; row < rows; row++) {
