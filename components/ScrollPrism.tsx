@@ -37,11 +37,11 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
         ];
 
         const faces = [
-            { indices: [0, 1, 2], color: 'rgba(220, 20, 60, 0.4)' },
-            { indices: [3, 4, 5], color: 'rgba(220, 20, 60, 0.25)' },
-            { indices: [0, 3, 4, 1], color: 'rgba(220, 20, 60, 0.35)' },
-            { indices: [1, 4, 5, 2], color: 'rgba(220, 20, 60, 0.35)' },
-            { indices: [2, 5, 3, 0], color: 'rgba(220, 20, 60, 0.35)' },
+            { indices: [0, 1, 2], color: 'rgba(0, 0, 0, 0.4)' },
+            { indices: [3, 4, 5], color: 'rgba(0, 0, 0, 0.25)' },
+            { indices: [0, 3, 4, 1], color: 'rgba(0, 0, 0, 0.35)' },
+            { indices: [1, 4, 5, 2], color: 'rgba(0, 0, 0, 0.35)' },
+            { indices: [2, 5, 3, 0], color: 'rgba(0, 0, 0, 0.35)' },
         ];
 
         const rotateX = (point: [number, number, number], angle: number): [number, number, number] => {
@@ -106,7 +106,7 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
 
                 ctx.fillStyle = face.color;
                 ctx.fill();
-                ctx.strokeStyle = 'rgba(220, 20, 60, 0.8)';
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
                 ctx.lineWidth = 1;
                 ctx.stroke();
             });
@@ -145,7 +145,7 @@ export default function ScrollPrism({ currentIndex, totalSections }: ScrollPrism
             />
             {/* Vertical track line on the left */}
             <div
-                className="absolute left-1/2 -translate-x-1/2 w-px bg-gradient-to-b from-transparent via-nothing-red/30 to-transparent"
+                className="absolute left-1/2 -translate-x-1/2 w-px bg-gradient-to-b from-transparent via-white to-transparent drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"
                 style={{
                     height: '200vh',
                     top: '-100vh',
