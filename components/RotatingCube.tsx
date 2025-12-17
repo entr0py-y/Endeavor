@@ -161,10 +161,10 @@ export default function RotatingCube() {
         const opacity = 0.2 + (avgZ + 1) * 0.15;
 
         const color4D = (vertices4D[a][3] + 1) * 0.5;
-        // Black color, only opacity varies
-        const red = 0;
-        const green = 0;
-        const blue = 0;
+        // White color, only opacity varies
+        const red = 255;
+        const green = 255;
+        const blue = 255;
 
         ctx.strokeStyle = `rgba(${red},${green},${blue},${opacity})`;
         ctx.beginPath();
@@ -180,10 +180,10 @@ export default function RotatingCube() {
         const opacity = Math.max(0.1, Math.min(0.7, 0.3 + (z + 1) * 0.2));
 
         const color4D = (vertices4D[i][3] + 1) * 0.5;
-        // Black color
-        const red = 0;
-        const green = 0;
-        const blue = 0;
+        // White color
+        const red = 255;
+        const green = 255;
+        const blue = 255;
 
         ctx.fillStyle = `rgba(${red},${green},${blue},${opacity})`;
         ctx.beginPath();
