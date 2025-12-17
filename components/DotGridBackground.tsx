@@ -94,39 +94,66 @@ export default function DotGridBackground() {
             const mx = mouseRef.current.x;
             const my = mouseRef.current.y;
 
-            for (const dot of dots) {
-                let x = dot.baseX;
-                let y = dot.baseY;
+            // Draw dots
+            ctx.fillStyle = '#FFFFFF'; // White dots
 
-                // Apply subtle wave motion
-                if (!prefersReducedMotion) {
-                    const n = noise(dot.baseX, dot.baseY, elapsed);
-                    x += n * waveAmplitude;
-                    y += noise(dot.baseY, dot.baseX, elapsed + 50) * waveAmplitude;
-                }
+            dots.forEach((dot, i) => {
+                // Calculate wave displacement
+                const noiseVal = noise(dot.baseX, dot.baseY, elapsed);
+                const waveX = Math.cos(elapsed * 0.5 + dot.baseY * 0.01) * waveAmplitude;
+                const waveY = Math.sin(elapsed * 0.5 + dot.baseX * 0.01) * waveAmplitude;
 
-                // Cursor interaction - subtle push
-                const dx = mx - x;
-                const dy = my - y;
+                // Calculate distance to cursor
+                const dx = mouseRef.current.x - dot.baseX;
+                const dy = mouseRef.current.y - dot.baseY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
 
-                if (dist < cursorRadius && dist > 0) {
-                    const force = (1 - dist / cursorRadius) * cursorStrength;
-                    x -= (dx / dist) * force;
-                    y -= (dy / dist) * force;
+                // Visibility radius (larger than interaction radius)
+                const visibleRadius = 400;
+                let visibility = 0;
+
+                if (dist < visibleRadius) {
+                    visibility = Math.pow(1 - dist / visibleRadius, 2); // Squared falloff for smoother edge
                 }
 
-                // Calculate dot opacity based on vertical position (fade with gradient)
-                const yRatio = y / height;
-                const baseOpacity = 0.15 + yRatio * 0.1; // More visible at bottom
+                // Interaction push (only if close)
+                // The instruction comments out the original interaction push and then re-adds it.
+                // I will integrate the re-added part.
+                // Original: if (dist < cursorRadius) { ... }
+                // New: if (dist < cursorRadius) { ... } // This is just a comment in the instruction, the actual logic is moved below.
 
-                // Draw dot
-                ctx.fillStyle = `rgba(40, 40, 40, ${baseOpacity})`;
-                ctx.beginPath();
-                ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
-                ctx.fill();
-            }
+                // Breathing/Pulsing Effect
+                const pulseT = elapsed * 0.5 + (i * 0.1);
 
+                // Smaller dots: Base 1.2px, varying +/- 0.4px
+                const currentRadius = 1.2 + Math.sin(pulseT) * 0.4;
+
+                // Opacity pulsing combined with visibility mask
+                // Base pulse 0.4 +/- 0.2, multiplied by visibility factor
+                const pulseOpacity = 0.4 + Math.sin(pulseT * 0.7) * 0.2;
+                const currentOpacity = pulseOpacity * visibility;
+
+                if (currentOpacity > 0.01) {
+                    // Let's keep the push interaction if user wants
+                    // re-calculating shift...
+                    let shiftX = 0, shiftY = 0;
+                    if (dist < cursorRadius) {
+                        const force = (cursorRadius - dist) / cursorRadius;
+                        const angle = Math.atan2(dy, dx);
+                        shiftX = Math.cos(angle) * force * cursorStrength;
+                        shiftY = Math.sin(angle) * force * cursorStrength;
+                    }
+
+                    const drawX = dot.baseX + waveX + shiftX;
+                    const drawY = dot.baseY + waveY + shiftY;
+
+                    ctx.globalAlpha = Math.max(0, Math.min(1, currentOpacity));
+                    ctx.beginPath();
+                    ctx.arc(drawX, drawY, Math.max(0, currentRadius), 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+            ctx.globalAlpha = 1; // Reset alpha
             animationRef.current = requestAnimationFrame(animate);
         };
 
