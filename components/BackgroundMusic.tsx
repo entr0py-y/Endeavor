@@ -135,10 +135,10 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false }: Back
         // Inverted theme: grey text
         colorClasses = isPlaying
             ? 'text-gray-300 hover:text-gray-400'
-            : 'text-gray-400 hover:text-gray-300';
+            : 'text-black hover:text-gray-800';
     } else {
-        // Normal theme: grey text
-        colorClasses = isPlaying ? 'text-gray-600 hover:text-gray-500' : 'text-gray-500 hover:text-gray-600';
+        // Normal theme: black text
+        colorClasses = isPlaying ? 'text-gray-600 hover:text-gray-500' : 'text-black hover:text-gray-800';
     }
 
     return (

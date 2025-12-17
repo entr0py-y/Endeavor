@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import { motion } from 'framer-motion';
 import CursorGlow from '@/components/CursorGlow';
 import RotatingCube from '@/components/RotatingCube';
 import FollowCube from '@/components/FollowCube';
-import RotatingPrism from '@/components/RotatingPrism';
-import RotatingSmallCube from '@/components/RotatingSmallCube';
 import RedBars from '@/components/RedBars';
-import Card from '@/components/Card';
 import ClickTesseract from '@/components/ClickTesseract';
 import ScrollPrism from '@/components/ScrollPrism';
 import ScrambleText from '@/components/ScrambleText';
@@ -46,8 +42,6 @@ const RESUME_DATA = {
 };
 
 export default function Home({ hasEntered, isInverted = false }: { hasEntered?: boolean; isInverted?: boolean }) {
-  const router = useRouter();
-
   /* Simple Vertical Navigation State */
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const sectionsList = ['identity', 'education', 'skills', 'projects', 'connect'];
@@ -542,8 +536,8 @@ export default function Home({ hasEntered, isInverted = false }: { hasEntered?: 
           </div>
         </section>
 
-      </div>
+      </div >
 
-    </div>
+    </div >
   );
 }
