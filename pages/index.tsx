@@ -184,7 +184,7 @@ export default function Home({ hasEntered }: { hasEntered?: boolean }) {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [sectionsList.length]);
+  }, [sectionsList.length, hasEntered]);
   return (
     <div
       className="h-[100vh] w-full bg-nothing-black font-space-mono relative no-scrollbar cursor-none overflow-hidden"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface EnterScreenProps {
@@ -6,14 +6,21 @@ interface EnterScreenProps {
 }
 
 export default function EnterScreen({ onEnter }: EnterScreenProps) {
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [isHovering, setIsHovering] = useState(false);
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        setMousePos({ x: e.clientX, y: e.clientY });
+    };
+
     return (
         <motion.div
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-end pb-16"
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-end pb-16 cursor-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            // Block all interactions including swipe gestures
+            onMouseMove={handleMouseMove}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
@@ -21,10 +28,29 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
             {/* Full overlay to block gestures */}
             <div className="absolute inset-0 bg-black/40" />
 
+            {/* Custom cursor - dot with circle */}
+            <div
+                className="fixed pointer-events-none z-[10000] transition-transform duration-150"
+                style={{
+                    left: mousePos.x,
+                    top: mousePos.y,
+                    transform: 'translate(-50%, -50%)',
+                }}
+            >
+                {/* Inner dot */}
+                <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full ${isHovering ? 'bg-red-500' : 'bg-white'} transition-colors duration-200`} />
+                {/* Outer circle */}
+                <div
+                    className={`w-8 h-8 rounded-full border ${isHovering ? 'border-red-500 scale-125' : 'border-white/50'} transition-all duration-200`}
+                />
+            </div>
+
             {/* Enter text at bottom */}
             <span
                 onClick={onEnter}
-                className="cursor-pointer relative z-10 font-space-mono text-xs tracking-[0.2em] text-white/70 hover:text-red-500 transition-colors duration-300"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                className="cursor-none relative z-10 font-space-mono text-xs tracking-[0.2em] text-white/70 hover:text-red-500 transition-colors duration-300"
             >
                 &lt;ENTER PORTFOLIO/&gt;
             </span>
