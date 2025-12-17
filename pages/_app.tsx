@@ -1,6 +1,6 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { AnimatePresence } from 'framer-motion'
 import ClickTesseract from '@/components/ClickTesseract'
@@ -17,10 +17,46 @@ export default function App({ Component, pageProps }: AppProps) {
   const [hasEntered, setHasEntered] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // Correct implementation with Refs to avoid stale closures
+  const bufferRef = useRef<AudioBuffer | null>(null);
+  const ctxRef = useRef<AudioContext | null>(null);
+
   useEffect(() => {
     setMounted(true);
+    const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+    const ctx = new Ctx();
+    ctxRef.current = ctx;
 
-    // Preload Ndot55 font
+    fetch('/audio/main-click.mp3')
+      .then(res => res.arrayBuffer())
+      .then(buf => ctx.decodeAudioData(buf))
+      .then(decoded => {
+        bufferRef.current = decoded;
+      });
+
+    const handleGlobalClick = (e: MouseEvent) => {
+      setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
+      setTimeout(() => setClickEffect(null), 800);
+
+      if (ctxRef.current && bufferRef.current) {
+        if (ctxRef.current.state === 'suspended') ctxRef.current.resume();
+
+        const source = ctxRef.current.createBufferSource();
+        source.buffer = bufferRef.current;
+
+        const gainNode = ctxRef.current.createGain();
+        gainNode.gain.value = 0.4;
+
+        source.connect(gainNode);
+        gainNode.connect(ctxRef.current.destination);
+
+        source.start(0);
+      }
+    };
+
+    document.addEventListener('click', handleGlobalClick, true);
+
+    // Font preload
     if (typeof window !== 'undefined') {
       const link = document.createElement('link');
       link.rel = 'preload';
@@ -31,28 +67,7 @@ export default function App({ Component, pageProps }: AppProps) {
       document.head.appendChild(link);
     }
 
-    // Preload global click sound
-    const clickSound = typeof window !== 'undefined' ? new Audio('/audio/click-10.mp3') : null;
-    if (clickSound) {
-      clickSound.preload = 'auto';
-      clickSound.load();
-    }
-
-    // Global click handler for tesseract effect
-    const handleClick = (e: MouseEvent) => {
-      setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
-      setTimeout(() => setClickEffect(null), 800);
-
-      // Play global click sound with low latency
-      if (clickSound) {
-        const sound = clickSound.cloneNode() as HTMLAudioElement;
-        sound.volume = 0.4;
-        sound.play().catch(() => { });
-      }
-    };
-
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleGlobalClick, true);
   }, []);
 
   if (!mounted) {
