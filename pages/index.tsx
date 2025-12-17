@@ -456,9 +456,9 @@ export default function Home({ hasEntered, isInverted = false }: { hasEntered?: 
                 className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-black font-valorant text-center md:text-left"
               />
               <div className="py-12 md:py-24 border-y border-white/10 w-full text-center md:text-left">
-                <ol className="list-decimal list-inside text-white/90 text-lg md:text-2xl font-light space-y-4">
-                  <li className="drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
-                    <span className="drop-shadow-none">Portfolio: </span><a href="https://endeavor-tan.vercel.app" target="_blank" rel="noopener noreferrer" className="text-black underline hover:text-white transition-colors duration-300 drop-shadow-none">https://endeavor-tan.vercel.app</a>
+                <ol className="list-decimal list-inside text-lg md:text-2xl font-light space-y-4">
+                  <li>
+                    <span className="text-white/90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Portfolio:</span> <a href="https://endeavor-tan.vercel.app" target="_blank" rel="noopener noreferrer" className="text-black underline hover:text-white transition-colors duration-300">https://endeavor-tan.vercel.app</a>
                   </li>
                 </ol>
               </div>
