@@ -130,16 +130,10 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false }: Back
     const baseClasses = `fixed top-8 right-8 md:top-auto md:bottom-[6.5rem] md:right-8 z-[9999] cursor-pointer font-space-mono text-xs md:text-sm tracking-[0.3em] transition-all duration-500 bg-transparent border-none outline-none`;
     const visibilityClasses = isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none';
 
-    let colorClasses = '';
-    if (isInverted) {
-        // Inverted theme: grey text
-        colorClasses = isPlaying
-            ? 'text-gray-300 hover:text-gray-400'
-            : 'text-black hover:text-gray-800';
-    } else {
-        // Normal theme: black text
-        colorClasses = isPlaying ? 'text-gray-600 hover:text-gray-500' : 'text-black hover:text-gray-800';
-    }
+    // Music ON = white, Music OFF = black (consistent across all slides)
+    const colorClasses = isPlaying
+        ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] hover:text-gray-200'
+        : 'text-black hover:text-gray-700';
 
     return (
         <button

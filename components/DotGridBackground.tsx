@@ -25,20 +25,23 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
 
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Configuration
-        const dotSpacing = 115;
+        // Configuration - optimized for performance
+        const dotSpacing = 130; // Increased from 115 for fewer dots
         const dotRadius = 0.8;
         const waveSpeed = 0.0005;
         const waveAmplitude = 2;
         const cursorRadius = 100;
         const cursorStrength = 8;
-        const transitionSpeed = 0.02; // Speed of theme transition (higher = faster)
+        const transitionSpeed = 0.02;
+        const targetFPS = 45;
+        const frameTime = 1000 / targetFPS;
 
         let cols = 0;
         let rows = 0;
         let dots: { baseX: number; baseY: number }[] = [];
         let width = 0;
         let height = 0;
+        let lastFrameTime = 0;
 
         const noise = (x: number, y: number, t: number) => {
             return (
@@ -52,7 +55,7 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
         const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
         const resize = () => {
-            const dpr = Math.min(window.devicePixelRatio, 2);
+            const dpr = Math.min(window.devicePixelRatio, 1.5); // Cap DPR for performance
             width = window.innerWidth;
             height = window.innerHeight;
             canvas.width = width * dpr;
@@ -87,7 +90,14 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
 
         let startTime = Date.now();
 
-        const animate = () => {
+        const animate = (currentTime: number) => {
+            // FPS limiting
+            if (currentTime - lastFrameTime < frameTime) {
+                animationRef.current = requestAnimationFrame(animate);
+                return;
+            }
+            lastFrameTime = currentTime;
+
             const elapsed = (Date.now() - startTime) * waveSpeed;
             const targetProgress = isInvertedRef.current ? 1 : 0;
 
@@ -179,7 +189,7 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('mouseleave', handleMouseLeave);
 
-        animate();
+        animationRef.current = requestAnimationFrame(animate);
 
         return () => {
             window.removeEventListener('resize', resize);

@@ -529,9 +529,6 @@ export default function Home({ hasEntered, isInverted = false }: { hasEntered?: 
               <p className="text-black/80 text-xs tracking-[0.3em]">
                 DESIGNED BY PUSHKAR JHA
               </p>
-              <p className="text-white/40 text-xs tracking-[0.3em] mt-2 drop-shadow-[0_0_6px_rgba(255,255,255,0.2)]">
-                UI/UX INSPIRED BY iOS 26 AND NOTHING OS 3.0
-              </p>
             </div>
           </div>
         </section>
