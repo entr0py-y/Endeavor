@@ -19,9 +19,9 @@ export default function App({ Component, pageProps }: AppProps) {
   const [mounted, setMounted] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
 
-  // Theme is inverted (light background) for: Identity(0), Skills(1), Education(3), Connect(4)
-  // Dark background for: Projects(2)
-  const isInverted = currentSection === 0 || currentSection === 1 || currentSection === 3 || currentSection === 4;
+  // Theme is inverted (light background) for: Identity(0), Projects(2), Connect(4)
+  // Dark background for: Skills(1), Education(3)
+  const isInverted = currentSection === 0 || currentSection === 2 || currentSection === 4;
 
   // Handle the cinematic enter transition
   const handleEnter = () => {
