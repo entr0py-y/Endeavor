@@ -66,6 +66,34 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false }: Back
         return () => window.removeEventListener('sectionChange', handleSectionChange as EventListener);
     }, []);
 
+    // Track if music was playing before tab switch (for resume)
+    const wasPlayingRef = useRef(false);
+
+    // Pause/resume based on tab visibility
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            const audio = audioRef.current;
+            if (!audio) return;
+
+            if (document.hidden) {
+                // Tab is hidden - pause if playing
+                if (isPlaying && !audio.paused) {
+                    wasPlayingRef.current = true;
+                    audio.pause();
+                }
+            } else {
+                // Tab is visible - resume if was playing before
+                if (wasPlayingRef.current && shouldPlay) {
+                    wasPlayingRef.current = false;
+                    audio.play().catch(console.error);
+                }
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [isPlaying, shouldPlay]);
+
     const playMusic = () => {
         const audio = audioRef.current;
         if (!audio) return;
