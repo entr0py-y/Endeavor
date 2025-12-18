@@ -19,8 +19,9 @@ export default function App({ Component, pageProps }: AppProps) {
   const [mounted, setMounted] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
 
-  // Theme is inverted when on Identity slide (index 0), Skills slide (index 2), or Connect slide (index 4)
-  const isInverted = currentSection === 0 || currentSection === 2 || currentSection === 4;
+  // Theme is inverted (light background) for: Identity(0), Skills(1), Education(3), Connect(4)
+  // Dark background for: Projects(2)
+  const isInverted = currentSection === 0 || currentSection === 1 || currentSection === 3 || currentSection === 4;
 
   // Handle the cinematic enter transition
   const handleEnter = () => {

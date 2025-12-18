@@ -45,7 +45,7 @@ const RESUME_DATA = {
 export default function Home({ hasEntered, isInverted = false, isTransitioning = false }: { hasEntered?: boolean; isInverted?: boolean; isTransitioning?: boolean }) {
   /* Simple Vertical Navigation State */
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const sectionsList = ['identity', 'education', 'skills', 'projects', 'connect'];
+  const sectionsList = ['identity', 'skills', 'projects', 'education', 'connect'];
 
   /* Track if initial entry transition is complete */
   const [entryComplete, setEntryComplete] = useState(false);
@@ -340,49 +340,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
           </motion.div>
         </section>
 
-        {/* Section 2: Education */}
-        <section
-          id="education"
-          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
-        >
-          {/* 3D Object */}
-          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
-            <RotatingCube />
-          </div>
-
-          <div className="w-full max-w-5xl">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: currentSectionIndex === 1 ? 1 : 0.3, y: currentSectionIndex === 1 ? 0 : 20 }}
-              transition={{ duration: 0.8 }}
-            >
-              <ScrambleText
-                text="EDUCATION LOGS"
-                as="h2"
-                duration={250}
-                className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-black font-valorant text-center md:text-left"
-              />
-              <div className="flex flex-col gap-12">
-                {RESUME_DATA.education.map((edu, index) => (
-                  <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-black transition-colors group w-full">
-                    <div className="text-left">
-                      <h3 className="text-xl md:text-3xl font-bold tracking-wide text-white group-hover:text-black transition-colors font-space-mono mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-                        {edu.institution}
-                      </h3>
-                      <p className="text-white/80 text-lg tracking-wider drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">{edu.title}</p>
-                    </div>
-                    <div className="mt-4 md:mt-0 text-left md:text-right w-full md:w-auto">
-                      <span className="block text-black text-sm tracking-widest mb-1">{edu.status}</span>
-                      <p className="text-white/40 text-sm font-mono drop-shadow-[0_0_6px_rgba(255,255,255,0.2)]">{edu.year}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Section 3: Skills */}
+        {/* Section 2: Skills */}
         <section
           id="skills"
           className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
@@ -395,7 +353,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
           <div className="w-full max-w-6xl">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: currentSectionIndex === 2 ? 1 : 0.3, y: currentSectionIndex === 2 ? 0 : 20 }}
+              animate={{ opacity: currentSectionIndex === 1 ? 1 : 0.3, y: currentSectionIndex === 1 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
               className="text-left w-full"
             >
@@ -433,7 +391,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                       <motion.div
                         className="absolute top-0 left-0 h-full bg-black"
                         initial={{ width: 0 }}
-                        animate={{ width: currentSectionIndex === 2 ? skill.percent : 0 }}
+                        animate={{ width: currentSectionIndex === 1 ? skill.percent : 0 }}
                         transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.1 }}
                       />
                     </div>
@@ -444,7 +402,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
           </div>
         </section>
 
-        {/* Section 4: Projects */}
+        {/* Section 3: Projects */}
         <section
           id="projects"
           className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
@@ -457,7 +415,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
           <div className="w-full max-w-4xl text-left">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: currentSectionIndex === 3 ? 1 : 0.3, y: currentSectionIndex === 3 ? 0 : 20 }}
+              animate={{ opacity: currentSectionIndex === 2 ? 1 : 0.3, y: currentSectionIndex === 2 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
             >
               <ScrambleText
@@ -472,6 +430,48 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                     <span className="text-white/90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Portfolio:</span> <a href="https://endeavor-tan.vercel.app" target="_blank" rel="noopener noreferrer" className="text-black underline hover:text-white transition-colors duration-300">https://endeavor-tan.vercel.app</a>
                   </li>
                 </ol>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Section 4: Education */}
+        <section
+          id="education"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
+        >
+          {/* 3D Object */}
+          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
+            <RotatingCube />
+          </div>
+
+          <div className="w-full max-w-5xl">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: currentSectionIndex === 3 ? 1 : 0.3, y: currentSectionIndex === 3 ? 0 : 20 }}
+              transition={{ duration: 0.8 }}
+            >
+              <ScrambleText
+                text="EDUCATION LOGS"
+                as="h2"
+                duration={250}
+                className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-black font-valorant text-center md:text-left"
+              />
+              <div className="flex flex-col gap-12">
+                {RESUME_DATA.education.map((edu, index) => (
+                  <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-black transition-colors group w-full">
+                    <div className="text-left">
+                      <h3 className="text-xl md:text-3xl font-bold tracking-wide text-white group-hover:text-black transition-colors font-space-mono mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+                        {edu.institution}
+                      </h3>
+                      <p className="text-white/80 text-lg tracking-wider drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">{edu.title}</p>
+                    </div>
+                    <div className="mt-4 md:mt-0 text-left md:text-right w-full md:w-auto">
+                      <span className="block text-black text-sm tracking-widest mb-1">{edu.status}</span>
+                      <p className="text-white/40 text-sm font-mono drop-shadow-[0_0_6px_rgba(255,255,255,0.2)]">{edu.year}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </motion.div>
           </div>
