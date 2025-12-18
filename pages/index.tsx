@@ -7,6 +7,7 @@ import RedBars from '@/components/RedBars';
 import ClickTesseract from '@/components/ClickTesseract';
 import ScrollPrism from '@/components/ScrollPrism';
 import ScrambleText from '@/components/ScrambleText';
+import DecodingText from '@/components/DecodingText';
 
 const RESUME_DATA = {
   name: "PUSHKAR JHA",
@@ -41,10 +42,13 @@ const RESUME_DATA = {
   }
 };
 
-export default function Home({ hasEntered, isInverted = false }: { hasEntered?: boolean; isInverted?: boolean }) {
+export default function Home({ hasEntered, isInverted = false, isTransitioning = false }: { hasEntered?: boolean; isInverted?: boolean; isTransitioning?: boolean }) {
   /* Simple Vertical Navigation State */
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const sectionsList = ['identity', 'education', 'skills', 'projects', 'connect'];
+
+  /* Track if initial entry transition is complete */
+  const [entryComplete, setEntryComplete] = useState(false);
 
   /* Click Effect State */
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
@@ -56,6 +60,9 @@ export default function Home({ hasEntered, isInverted = false }: { hasEntered?: 
   const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
 
   useEffect(() => {
+    // Only run ambient glitch after entry transition completes
+    if (!entryComplete) return;
+
     const nameGlitchInterval = setInterval(() => {
       if (Math.random() < 0.15) { // 15% chance to glitch
         const glitchedName = originalName.split('').map((char, index) => {
@@ -75,7 +82,7 @@ export default function Home({ hasEntered, isInverted = false }: { hasEntered?: 
     return () => {
       clearInterval(nameGlitchInterval);
     };
-  }, []);
+  }, [entryComplete]);
 
   // Dispatch sectionChange event whenever currentSectionIndex changes
   useEffect(() => {
@@ -293,16 +300,26 @@ export default function Home({ hasEntered, isInverted = false }: { hasEntered?: 
             transition={{ duration: 0.6 }}
           >
             <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
-              <h2 className="text-base md:text-xl text-black tracking-wide mb-3 md:mb-4 font-bold font-space-mono">Hi, I'm</h2>
+              <h2 className="text-base md:text-xl text-black tracking-wide mb-3 md:mb-4 font-bold font-space-mono">
+                <DecodingText text="Hi, I'm" trigger={hasEntered} duration={200} delay={50} />
+              </h2>
               <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]">
-                {nameText}
+                {entryComplete ? nameText : (
+                  <DecodingText
+                    text={RESUME_DATA.name}
+                    trigger={hasEntered}
+                    duration={350}
+                    delay={100}
+                    onComplete={() => setEntryComplete(true)}
+                  />
+                )}
               </h1>
               <div className="h-px w-24 bg-black mb-4 md:mb-8" />
               <p className="text-lg md:text-2xl text-white/90 tracking-wide font-light mb-2 md:mb-4 drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]">
-                {RESUME_DATA.role}
+                <DecodingText text={RESUME_DATA.role} trigger={hasEntered} duration={250} delay={200} />
               </p>
               <p className="text-white/60 tracking-wide max-w-2xl text-sm md:text-lg mb-8 md:mb-12 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
-                {RESUME_DATA.tagline}
+                <DecodingText text={RESUME_DATA.tagline} trigger={hasEntered} duration={250} delay={250} />
               </p>
 
               <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full max-w-md">

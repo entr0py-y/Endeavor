@@ -15,11 +15,20 @@ const DotGridBackground = dynamic(() => import('@/components/DotGridBackground')
 export default function App({ Component, pageProps }: AppProps) {
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
   const [hasEntered, setHasEntered] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
 
   // Theme is inverted when on Identity slide (index 0), Skills slide (index 2), or Connect slide (index 4)
   const isInverted = currentSection === 0 || currentSection === 2 || currentSection === 4;
+
+  // Handle the cinematic enter transition
+  const handleEnter = () => {
+    setIsTransitioning(true);
+    setHasEntered(true);
+    // Reset transitioning after animation completes
+    setTimeout(() => setIsTransitioning(false), 1000);
+  };
 
   // Correct implementation with Refs to avoid stale closures
   const bufferRef = useRef<AudioBuffer | null>(null);
@@ -95,7 +104,7 @@ export default function App({ Component, pageProps }: AppProps) {
         className={`relative w-full min-h-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${!hasEntered ? 'blur-md scale-105 brightness-75 pointer-events-none overflow-hidden h-screen' : 'blur-0 scale-100 brightness-100'
           }`}
       >
-        <Component {...pageProps} hasEntered={hasEntered} isInverted={isInverted} />
+        <Component {...pageProps} hasEntered={hasEntered} isInverted={isInverted} isTransitioning={isTransitioning} />
       </div>
 
       <CursorTrail />
@@ -106,7 +115,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
       {/* Enter Screen Overlay */}
       <AnimatePresence>
-        {!hasEntered && <EnterScreen key="enter-screen" onEnter={() => setHasEntered(true)} />}
+        {!hasEntered && <EnterScreen key="enter-screen" onEnter={handleEnter} />}
       </AnimatePresence>
     </>
   )
