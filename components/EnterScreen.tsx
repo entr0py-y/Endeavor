@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
+
+// Dynamic import for NetworkMesh to avoid SSR issues
+const NetworkMesh = dynamic(() => import('./NetworkMesh'), { ssr: false });
 
 interface EnterScreenProps {
     onEnter: () => void;
@@ -25,13 +29,16 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
             onTouchMove={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
         >
+            {/* Network Mesh Background - White Neon Glow */}
+            <NetworkMesh />
+
             {/* Full overlay to block gestures */}
             <div className="absolute inset-0 bg-black/40" />
 
             {/* User Quote */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full max-w-2xl px-6 pointer-events-none select-none">
                 <p className="font-space-mono text-white text-lg md:text-xl glow-white leading-relaxed mb-6 tracking-wide">
-                    “The optimist thinks this is the best of all possible worlds; the pessimist fears it is true.”
+                    "The optimist thinks this is the best of all possible worlds; the pessimist fears it is true."
                 </p>
                 <p className="font-space-mono text-white/80 text-sm md:text-base glow-white tracking-widest">
                     - J. Robert Oppenheimer

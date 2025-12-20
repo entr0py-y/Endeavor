@@ -209,4 +209,3 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
         />
     );
 }
-
