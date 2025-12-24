@@ -24,9 +24,9 @@ const NetworkMesh: React.FC = () => {
     const lastMouseMoveRef = useRef(0);
     const glowIntensityRef = useRef(0);
 
-    // Configuration - Slightly increased density
-    const NODE_COUNT = 90;
-    const CONNECTION_DISTANCE = 180;
+    // Configuration - Dense coverage with more nodes
+    const NODE_COUNT = 120;
+    const CONNECTION_DISTANCE = 160;
     const GLOW_RADIUS = 200;
     const DRIFT_SPEED = 0.15;
     const DRIFT_AMPLITUDE = 30;
@@ -43,7 +43,7 @@ const NetworkMesh: React.FC = () => {
 
         const cellWidth = width / cols;
         const cellHeight = height / rows;
-        const jitter = 0.4; // Amount of randomness (0-0.5)
+        const jitter = 0.6; // More randomness for organic spread
 
         let count = 0;
         for (let row = 0; row < rows && count < NODE_COUNT; row++) {
@@ -131,8 +131,8 @@ const NetworkMesh: React.FC = () => {
         const mouseX = mouseRef.current.x;
         const mouseY = mouseRef.current.y;
 
-        // WHITE NEON COLORS
-        const lineBase = 'rgba(255, 255, 255, 0.08)';
+        // WHITE NEON COLORS - Increased visibility
+        const lineBase = 'rgba(255, 255, 255, 0.18)';
         const lineGlow = 'rgba(255, 255, 255, ';  // White glow
 
         // Draw edges
@@ -180,7 +180,7 @@ const NetworkMesh: React.FC = () => {
                 ctx.moveTo(nodeA.x, nodeA.y);
                 ctx.lineTo(nodeB.x, nodeB.y);
                 ctx.strokeStyle = lineBase;
-                ctx.lineWidth = 0.5;
+                ctx.lineWidth = 0.8;
                 ctx.stroke();
             }
         }
@@ -224,10 +224,12 @@ const NetworkMesh: React.FC = () => {
             edgesRef.current = calculateEdges(nodesRef.current);
         };
 
-        // Mouse move handler
+        // Mouse move handler - adjust for canvas offset
         const handleMouseMove = (e: MouseEvent) => {
-            mouseRef.current.targetX = e.clientX;
-            mouseRef.current.targetY = e.clientY;
+            const rect = canvas.getBoundingClientRect();
+            // Adjust mouse position relative to the offset canvas
+            mouseRef.current.targetX = e.clientX - rect.left;
+            mouseRef.current.targetY = e.clientY - rect.top;
             lastMouseMoveRef.current = Date.now();
         };
 
@@ -272,10 +274,10 @@ const NetworkMesh: React.FC = () => {
             ref={canvasRef}
             style={{
                 position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
+                top: '-15%',
+                left: '-15%',
+                width: '130%',
+                height: '130%',
                 zIndex: 0,
                 pointerEvents: 'none',
             }}
