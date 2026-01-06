@@ -23,6 +23,13 @@ const NetworkMesh: React.FC = () => {
     const timeRef = useRef(0);
     const lastMouseMoveRef = useRef(0);
     const glowIntensityRef = useRef(0);
+    const lastFrameTimeRef = useRef(0);
+
+    // Frame rate control - 30fps on mobile, 60fps on desktop
+    const TARGET_FPS_MOBILE = 30;
+    const TARGET_FPS_DESKTOP = 60;
+    const FRAME_INTERVAL_MOBILE = 1000 / TARGET_FPS_MOBILE;
+    const FRAME_INTERVAL_DESKTOP = 1000 / TARGET_FPS_DESKTOP;
 
     // Configuration - Dense coverage with more nodes
     // Mobile gets significantly fewer nodes for better performance and less visual clutter
@@ -195,18 +202,29 @@ const NetworkMesh: React.FC = () => {
         }
     }, [calculateEdges]);
 
-    // Animation loop
-    const animate = useCallback(() => {
+    // Animation loop with frame rate throttling
+    const animate = useCallback((timestamp: number) => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        timeRef.current += 16; // ~60fps
+        // Frame rate throttling for mobile
+        const frameInterval = isMobileRef.current ? FRAME_INTERVAL_MOBILE : FRAME_INTERVAL_DESKTOP;
+        const elapsed = timestamp - lastFrameTimeRef.current;
+
+        if (elapsed < frameInterval) {
+            animationRef.current = requestAnimationFrame(animate);
+            return;
+        }
+
+        lastFrameTimeRef.current = timestamp - (elapsed % frameInterval);
+
+        timeRef.current += frameInterval;
         draw(ctx, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
         animationRef.current = requestAnimationFrame(animate);
-    }, [draw]);
+    }, [draw, FRAME_INTERVAL_MOBILE, FRAME_INTERVAL_DESKTOP]);
 
     // Initialize and resize handler
     useEffect(() => {
@@ -263,7 +281,7 @@ const NetworkMesh: React.FC = () => {
         // Initialize after a brief delay to avoid blocking render
         const initTimeout = setTimeout(() => {
             resize();
-            animate();
+            requestAnimationFrame(animate);
         }, 100);
 
         window.addEventListener('resize', resize);
