@@ -210,21 +210,18 @@ const NetworkMesh: React.FC = () => {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // Frame rate throttling for mobile
+        // Frame rate throttling - especially important on mobile
         const frameInterval = isMobileRef.current ? FRAME_INTERVAL_MOBILE : FRAME_INTERVAL_DESKTOP;
         const elapsed = timestamp - lastFrameTimeRef.current;
 
-        if (elapsed < frameInterval) {
-            animationRef.current = requestAnimationFrame(animate);
-            return;
+        if (elapsed >= frameInterval) {
+            lastFrameTimeRef.current = timestamp - (elapsed % frameInterval);
+            timeRef.current += isMobileRef.current ? 33 : 16; // ~30fps or ~60fps
+            draw(ctx, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
         }
 
-        lastFrameTimeRef.current = timestamp - (elapsed % frameInterval);
-
-        timeRef.current += frameInterval;
-        draw(ctx, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
         animationRef.current = requestAnimationFrame(animate);
-    }, [draw, FRAME_INTERVAL_MOBILE, FRAME_INTERVAL_DESKTOP]);
+    }, [draw]);
 
     // Initialize and resize handler
     useEffect(() => {
