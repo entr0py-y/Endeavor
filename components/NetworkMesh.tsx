@@ -25,8 +25,15 @@ const NetworkMesh: React.FC = () => {
     const glowIntensityRef = useRef(0);
 
     // Configuration - Dense coverage with more nodes
-    const NODE_COUNT = 120;
-    const CONNECTION_DISTANCE = 160;
+    // Mobile gets significantly fewer nodes for better performance and less visual clutter
+    const getNodeCount = () => {
+        if (typeof window !== 'undefined' && window.innerWidth < 768) {
+            return 40; // Much sparser on mobile
+        }
+        return 120;
+    };
+    const CONNECTION_DISTANCE_DESKTOP = 160;
+    const CONNECTION_DISTANCE_MOBILE = 120;
     const GLOW_RADIUS = 200;
     const DRIFT_SPEED = 0.15;
     const DRIFT_AMPLITUDE = 30;
@@ -35,6 +42,7 @@ const NetworkMesh: React.FC = () => {
     // Initialize nodes - Grid-based distribution with jitter for even spread
     const initNodes = useCallback((width: number, height: number) => {
         const nodes: Node[] = [];
+        const NODE_COUNT = getNodeCount();
 
         // Calculate grid dimensions for even distribution
         const aspectRatio = width / height;
@@ -66,8 +74,9 @@ const NetworkMesh: React.FC = () => {
     }, []);
 
     // Calculate edges (connections between nearby nodes)
-    const calculateEdges = useCallback((nodes: Node[]) => {
+    const calculateEdges = useCallback((nodes: Node[], isMobile: boolean) => {
         const edges: Edge[] = [];
+        const CONNECTION_DISTANCE = isMobile ? CONNECTION_DISTANCE_MOBILE : CONNECTION_DISTANCE_DESKTOP;
 
         for (let i = 0; i < nodes.length; i++) {
             for (let j = i + 1; j < nodes.length; j++) {
@@ -124,7 +133,7 @@ const NetworkMesh: React.FC = () => {
 
         // Recalculate edges periodically for performance
         if (Math.floor(time) % 60 === 0) {
-            edgesRef.current = calculateEdges(nodes);
+            edgesRef.current = calculateEdges(nodes, isMobile);
         }
 
         const edges = edgesRef.current;
@@ -219,9 +228,12 @@ const NetworkMesh: React.FC = () => {
                 ctx.scale(dpr, dpr);
             }
 
+            // Check if mobile on resize
+            isMobileRef.current = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth < 768;
+
             // Reinitialize nodes on resize
             nodesRef.current = initNodes(rect.width, rect.height);
-            edgesRef.current = calculateEdges(nodesRef.current);
+            edgesRef.current = calculateEdges(nodesRef.current, isMobileRef.current);
         };
 
         // Mouse move handler - adjust for canvas offset
