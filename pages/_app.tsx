@@ -114,8 +114,8 @@ export default function App({ Component, pageProps }: AppProps) {
       <CursorTrail />
       {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
 
-      {/* Audio Reactive Wave - positioned between content and music toggle */}
-      <AudioWave isPlaying={isMusicPlaying} analyserNode={analyserNode} />
+      {/* Audio Reactive Wave - only visible after entering portfolio */}
+      {hasEntered && <AudioWave isPlaying={isMusicPlaying} analyserNode={analyserNode} />}
 
       {/* Background Music - starts after Enter */}
       <BackgroundMusic
