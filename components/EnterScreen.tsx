@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
-// Dynamic import for NetworkMesh to avoid SSR issues
+// Dynamic imports to avoid SSR issues
+const RotatingCube = dynamic(() => import('./RotatingCube'), { ssr: false });
 const NetworkMesh = dynamic(() => import('./NetworkMesh'), { ssr: false });
 
 interface EnterScreenProps {
@@ -29,10 +30,13 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
             onTouchMove={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
         >
-            {/* Network Mesh Background - White Neon Glow */}
+            {/* Web-like structure - Bottom layer */}
             <NetworkMesh />
 
-            {/* Full overlay to block gestures */}
+            {/* Tesseract with coordinates - Background */}
+            <RotatingCube />
+
+            {/* Full overlay */}
             <div className="absolute inset-0 bg-black/40" />
 
             {/* User Quote */}

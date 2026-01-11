@@ -305,7 +305,7 @@ const NetworkMesh: React.FC = () => {
                 left: '-15%',
                 width: '130%',
                 height: '130%',
-                zIndex: 0,
+                zIndex: -1,
                 pointerEvents: 'none',
             }}
         />

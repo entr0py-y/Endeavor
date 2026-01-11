@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import CursorGlow from '@/components/CursorGlow';
 import RotatingCube from '@/components/RotatingCube';
 import FollowCube from '@/components/FollowCube';
@@ -8,6 +9,9 @@ import ClickTesseract from '@/components/ClickTesseract';
 import ScrollPrism from '@/components/ScrollPrism';
 import ScrambleText from '@/components/ScrambleText';
 import DecodingText from '@/components/DecodingText';
+
+// Dynamic import for NetworkMesh to avoid SSR issues
+const NetworkMesh = dynamic(() => import('@/components/NetworkMesh'), { ssr: false });
 
 const RESUME_DATA = {
   name: "PUSHKAR JHA",
@@ -199,7 +203,8 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
     >
       {/* Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <RotatingCube isInverted={isInverted} />
+        <NetworkMesh />
+        <RotatingCube />
         <FollowCube />
         <CursorGlow />
         <RedBars />
