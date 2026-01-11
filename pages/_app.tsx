@@ -1,11 +1,12 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import { AnimatePresence } from 'framer-motion'
 import ClickTesseract from '@/components/ClickTesseract'
 import EnterScreen from '@/components/EnterScreen'
 import BackgroundMusic from '@/components/BackgroundMusic'
+import AudioWave from '@/components/AudioWave'
 
 // Use lazy loading for EnterScreen to ensure client-side rendering if needed, 
 // though standard import is fine. dynamic import used for others.
@@ -18,6 +19,8 @@ export default function App({ Component, pageProps }: AppProps) {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
+  const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   // Theme is inverted (light background) for: Identity(0), Projects(2), Connect(4)
   // Dark background for: Skills(1), Education(3)
@@ -111,8 +114,16 @@ export default function App({ Component, pageProps }: AppProps) {
       <CursorTrail />
       {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
 
+      {/* Audio Reactive Wave - positioned between content and music toggle */}
+      <AudioWave isPlaying={isMusicPlaying} analyserNode={analyserNode} />
+
       {/* Background Music - starts after Enter */}
-      <BackgroundMusic shouldPlay={hasEntered} isInverted={isInverted} />
+      <BackgroundMusic
+        shouldPlay={hasEntered}
+        isInverted={isInverted}
+        onAnalyserReady={setAnalyserNode}
+        onPlayingChange={setIsMusicPlaying}
+      />
 
       {/* Enter Screen Overlay */}
       <AnimatePresence>

@@ -5,10 +5,15 @@ import ScrambleText from './ScrambleText';
 interface BackgroundMusicProps {
     shouldPlay: boolean;
     isInverted?: boolean;
+    onAnalyserReady?: (analyser: AnalyserNode | null) => void;
+    onPlayingChange?: (isPlaying: boolean) => void;
 }
 
-export default function BackgroundMusic({ shouldPlay, isInverted = false }: BackgroundMusicProps) {
+export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnalyserReady, onPlayingChange }: BackgroundMusicProps) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const analyserRef = useRef<AnalyserNode | null>(null);
+    const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -32,6 +37,9 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false }: Back
         return () => {
             audio.pause();
             audio.src = '';
+            if (audioContextRef.current) {
+                audioContextRef.current.close();
+            }
         };
     }, []);
 
@@ -45,6 +53,11 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false }: Back
             return () => clearTimeout(timer);
         }
     }, [shouldPlay, isLoaded]);
+
+    // Notify parent of playing state changes
+    useEffect(() => {
+        onPlayingChange?.(isPlaying);
+    }, [isPlaying, onPlayingChange]);
 
     const [isVisible, setIsVisible] = useState(true);
 
@@ -97,6 +110,32 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false }: Back
     const playMusic = () => {
         const audio = audioRef.current;
         if (!audio) return;
+
+        // Set up AudioContext and AnalyserNode if not already done
+        if (!audioContextRef.current) {
+            const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+            const ctx = new Ctx();
+            audioContextRef.current = ctx;
+
+            const analyser = ctx.createAnalyser();
+            analyser.fftSize = 256;
+            analyser.smoothingTimeConstant = 0.8;
+            analyserRef.current = analyser;
+
+            // Create source and connect
+            const source = ctx.createMediaElementSource(audio);
+            sourceRef.current = source;
+            source.connect(analyser);
+            analyser.connect(ctx.destination);
+
+            // Notify parent that analyser is ready
+            onAnalyserReady?.(analyser);
+        }
+
+        // Resume AudioContext if suspended
+        if (audioContextRef.current?.state === 'suspended') {
+            audioContextRef.current.resume();
+        }
 
         audio.currentTime = 5;
         audio.volume = 0;
