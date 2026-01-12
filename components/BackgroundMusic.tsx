@@ -178,27 +178,28 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
         }, 50);
     };
 
-    const toggleMusic = (e: React.MouseEvent | React.TouchEvent) => {
+    const toggleMusic = (e: React.MouseEvent) => {
         e.stopPropagation();
-        e.preventDefault(); // Prevent double-firing on mobile
+        e.preventDefault();
 
         const audio = audioRef.current;
         if (!audio) return;
 
-        // Toggle based on current audio state, not React state
-        if (!audio.paused && isPlaying) {
+        // Check actual audio state
+        if (!audio.paused) {
+            // Audio is playing, so pause it
             pauseMusic();
             setIsPlaying(false);
         } else {
+            // Audio is paused, so play it
             playMusic();
-            // Note: playMusic already sets isPlaying to true on success
         }
     };
 
     if (!shouldPlay) return null;
 
     // Dynamic styling based on inverted theme
-    const baseClasses = `fixed top-8 right-8 md:top-auto md:bottom-[6.5rem] md:right-8 z-[9999] cursor-pointer font-space-mono text-xs md:text-sm tracking-[0.3em] transition-all duration-500 bg-transparent border-none outline-none select-none touch-manipulation`;
+    const baseClasses = `fixed top-8 right-8 md:top-auto md:bottom-[6.5rem] md:right-8 z-[9999] cursor-pointer font-space-mono text-xs md:text-sm tracking-[0.3em] transition-all duration-500 bg-transparent border-none outline-none select-none`;
     const visibilityClasses = isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none';
 
     // Music ON = white, Music OFF = black (consistent across all slides)
@@ -209,7 +210,6 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
     return (
         <button
             onClick={toggleMusic}
-            onTouchEnd={toggleMusic}
             className={`${baseClasses} ${visibilityClasses} ${colorClasses}`}
         >
             {isPlaying ?

@@ -60,32 +60,50 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
   const [nameText, setNameText] = useState(RESUME_DATA.name);
   const originalName = RESUME_DATA.name;
 
-  const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+  const glitchChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
   useEffect(() => {
     // Only run ambient glitch after entry transition completes
     if (!entryComplete) return;
 
+    // Ensure name starts as original
+    setNameText(originalName);
+
+    let glitchTimeoutId: NodeJS.Timeout | null = null;
+    let isGlitching = false;
+
     const nameGlitchInterval = setInterval(() => {
-      if (Math.random() < 0.15) { // 15% chance to glitch
-        const glitchedName = originalName.split('').map((char, index) => {
+      // Don't start a new glitch if one is in progress
+      if (isGlitching) return;
+
+      if (Math.random() < 0.12) { // 12% chance to glitch
+        isGlitching = true;
+
+        const glitchedName = originalName.split('').map((char) => {
           if (char === ' ') return ' '; // Preserve spaces
-          if (Math.random() < 0.3) { // 30% chance each letter glitches
+          if (Math.random() < 0.25) { // 25% chance each letter glitches
             return glitchChars[Math.floor(Math.random() * glitchChars.length)];
           }
           return char;
         }).join('');
+
         setNameText(glitchedName);
 
-        // Reset after short delay
-        setTimeout(() => setNameText(originalName), 50 + Math.random() * 100);
+        // Always reset to original name after glitch
+        glitchTimeoutId = setTimeout(() => {
+          setNameText(originalName);
+          isGlitching = false;
+        }, 60);
       }
-    }, 150);
+    }, 200);
 
     return () => {
       clearInterval(nameGlitchInterval);
+      if (glitchTimeoutId) clearTimeout(glitchTimeoutId);
+      // Ensure name is reset on cleanup
+      setNameText(originalName);
     };
-  }, [entryComplete]);
+  }, [entryComplete, originalName]);
 
   // Dispatch sectionChange event whenever currentSectionIndex changes
   useEffect(() => {
