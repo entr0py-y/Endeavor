@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 import CursorGlow from '@/components/CursorGlow';
 import RotatingCube from '@/components/RotatingCube';
 import FollowCube from '@/components/FollowCube';
-import RedBars from '@/components/RedBars';
 import ClickTesseract from '@/components/ClickTesseract';
 import ScrollPrism from '@/components/ScrollPrism';
 import ScrambleText from '@/components/ScrambleText';
@@ -207,7 +206,6 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
         <RotatingCube />
         <FollowCube />
         <CursorGlow />
-        <RedBars />
       </div>
 
       {/* Click Effect */}
@@ -230,18 +228,12 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
         <div className="hidden md:flex flex-col items-end gap-2 text-sm tracking-wider pt-2 pointer-events-auto">
           {sectionsList.map((item, index) => {
             const isActive = currentSectionIndex === index;
-            const isEducation = item === 'education';
 
-            // When inverted (on Education slide): active item is white with glow, others are black
-            // When normal: active item is black, others have default styling
+            // Consistent styling: active = white with glow, inactive = black
             let itemClasses = 'transition-all duration-500 relative group uppercase text-right py-1 cursor-pointer ';
-            if (isInverted) {
-              itemClasses += isActive
-                ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]'
-                : 'text-black hover:text-white';
-            } else {
-              itemClasses += isActive ? 'text-black' : 'hover:text-black';
-            }
+            itemClasses += isActive
+              ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]'
+              : 'text-black hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]';
 
             return (
               <button
@@ -249,9 +241,9 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 onClick={() => scrollToSection(item)}
                 className={itemClasses}
               >
-                <span className="opacity-50 mr-2">0{index + 1}.</span>
+                <span className={`mr-2 ${isActive ? 'opacity-80' : 'opacity-50'}`}>0{index + 1}.</span>
                 <ScrambleText text={item} as="span" duration={250} />
-                <span className={`absolute bottom-0 right-0 h-px transition-all duration-300 ${isInverted ? 'bg-white' : 'bg-black'} ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+                <span className={`absolute bottom-0 right-0 h-px transition-all duration-300 bg-white ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} />
               </button>
             );
           })}

@@ -64,15 +64,20 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
             canvas.style.height = `${height}px`;
             ctx.scale(dpr, dpr);
 
-            cols = Math.floor(width / dotSpacing);
-            rows = Math.floor(height / dotSpacing) + 2;
+            // Add extra columns and rows to ensure full coverage beyond screen edges
+            cols = Math.ceil(width / dotSpacing) + 2;
+            rows = Math.ceil(height / dotSpacing) + 2;
+
+            // Offset to center the grid and extend beyond edges
+            const offsetX = -dotSpacing / 2;
+            const offsetY = -dotSpacing / 2;
 
             dots = [];
             for (let row = 0; row < rows; row++) {
                 for (let col = 0; col < cols; col++) {
                     dots.push({
-                        baseX: col * dotSpacing,
-                        baseY: row * dotSpacing,
+                        baseX: offsetX + col * dotSpacing,
+                        baseY: offsetY + row * dotSpacing,
                     });
                 }
             }
@@ -132,8 +137,10 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
             const mx = mouseRef.current.x;
             const my = mouseRef.current.y;
 
-            // Draw dots - always white on all slides
+            // Draw dots - always white on all slides with glow
             ctx.fillStyle = '#FFFFFF';
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+            ctx.shadowBlur = 12;
 
             dots.forEach((dot, i) => {
                 // Calculate wave displacement
@@ -152,24 +159,28 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
                 const randomOffset = (dot.baseX * 13 + dot.baseY * 19);
                 const pulseT = elapsed * 0.5 + randomOffset;
 
-                // Base opacity pulsing: 0.2 to 0.5
-                const currentOpacity = 0.2 + (Math.sin(pulseT) * 0.5 + 0.5) * 0.3;
+                // Base opacity pulsing: 0.4 to 0.9 (increased for more glow)
+                const currentOpacity = 0.4 + (Math.sin(pulseT) * 0.5 + 0.5) * 0.5;
 
-                // Smaller dots: Base 1.2px
-                let currentRadius = 1.2;
+                // Smaller dots: Base 1.5px (slightly larger)
+                let currentRadius = 1.5;
 
                 // Magnification near cursor (only applies if close)
                 let shiftX = 0, shiftY = 0;
 
                 if (dist < cursorRadius) {
                     const magFactor = (1 - dist / cursorRadius); // 0 to 1
-                    currentRadius += magFactor * 3; // Add up to 3px
+                    currentRadius += magFactor * 4; // Add up to 4px
+                    // Increase glow near cursor
+                    ctx.shadowBlur = 12 + magFactor * 15;
 
                     // Push effect
                     const force = (cursorRadius - dist) / cursorRadius;
                     const angle = Math.atan2(dy, dx);
                     shiftX = Math.cos(angle) * force * cursorStrength;
                     shiftY = Math.sin(angle) * force * cursorStrength;
+                } else {
+                    ctx.shadowBlur = 12;
                 }
 
                 const drawX = dot.baseX + waveX + shiftX;
@@ -181,6 +192,7 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
                 ctx.fill();
             });
             ctx.globalAlpha = 1; // Reset alpha
+            ctx.shadowBlur = 0; // Reset shadow
             animationRef.current = requestAnimationFrame(animate);
         };
 

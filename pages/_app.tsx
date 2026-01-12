@@ -1,22 +1,23 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { AnimatePresence } from 'framer-motion'
 import ClickTesseract from '@/components/ClickTesseract'
-import EnterScreen from '@/components/EnterScreen'
+import CinematicLoader from '@/components/CinematicLoader'
 import BackgroundMusic from '@/components/BackgroundMusic'
 import AudioWave from '@/components/AudioWave'
 
-// Use lazy loading for EnterScreen to ensure client-side rendering if needed, 
-// though standard import is fine. dynamic import used for others.
+// Dynamic imports for client-side only components
 const CursorTrail = dynamic(() => import('@/components/CursorTrail'), { ssr: false });
 const DotGridBackground = dynamic(() => import('@/components/DotGridBackground'), { ssr: false });
+
+const SESSION_KEY = 'portfolio_loaded';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
   const [hasEntered, setHasEntered] = useState(false);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
   const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
@@ -26,20 +27,36 @@ export default function App({ Component, pageProps }: AppProps) {
   // Dark background for: Skills(1), Education(3)
   const isInverted = currentSection === 0 || currentSection === 2 || currentSection === 4;
 
-  // Handle the cinematic enter transition
-  const handleEnter = () => {
-    setIsTransitioning(true);
+  // Check if this is first visit this session
+  useEffect(() => {
+    setMounted(true);
+
+    // Check session storage for first visit
+    const hasLoaded = sessionStorage.getItem(SESSION_KEY);
+
+    if (!hasLoaded) {
+      // First visit - show loader
+      setShowLoader(true);
+    } else {
+      // Already visited this session - skip loader
+      setHasEntered(true);
+    }
+  }, []);
+
+  // Handle loader completion
+  const handleLoaderComplete = () => {
+    sessionStorage.setItem(SESSION_KEY, 'true');
+    setShowLoader(false);
     setHasEntered(true);
-    // Reset transitioning after animation completes
-    setTimeout(() => setIsTransitioning(false), 1000);
   };
 
-  // Correct implementation with Refs to avoid stale closures
+  // Audio context and click sound refs
   const bufferRef = useRef<AudioBuffer | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
-    setMounted(true);
+    if (!mounted) return;
+
     const Ctx = window.AudioContext || (window as any).webkitAudioContext;
     const ctx = new Ctx();
     ctxRef.current = ctx;
@@ -49,6 +66,9 @@ export default function App({ Component, pageProps }: AppProps) {
       .then(buf => ctx.decodeAudioData(buf))
       .then(decoded => {
         bufferRef.current = decoded;
+      })
+      .catch(() => {
+        // Silently fail if audio can't load
       });
 
     const handleGlobalClick = (e: MouseEvent) => {
@@ -80,21 +100,19 @@ export default function App({ Component, pageProps }: AppProps) {
     window.addEventListener('sectionChange', handleSectionChange as EventListener);
 
     // Font preload
-    if (typeof window !== 'undefined') {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'font';
-      link.type = 'font/otf';
-      link.href = '/fonts/ndot-55.otf';
-      link.crossOrigin = 'anonymous';
-      document.head.appendChild(link);
-    }
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'font';
+    link.type = 'font/otf';
+    link.href = '/fonts/ndot-55.otf';
+    link.crossOrigin = 'anonymous';
+    document.head.appendChild(link);
 
     return () => {
       document.removeEventListener('click', handleGlobalClick, true);
       window.removeEventListener('sectionChange', handleSectionChange as EventListener);
     };
-  }, []);
+  }, [mounted]);
 
   if (!mounted) {
     return null;
@@ -103,12 +121,15 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <DotGridBackground isInverted={isInverted} />
-      {/* Main Content with Blur Transition */}
+
+      {/* Main Content - visible immediately but blurred during loader */}
       <div
-        className={`relative w-full min-h-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${!hasEntered ? 'blur-md scale-105 brightness-75 pointer-events-none overflow-hidden h-screen' : 'blur-0 scale-100 brightness-100'
+        className={`relative w-full min-h-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${!hasEntered
+            ? 'blur-md scale-105 brightness-75 pointer-events-none overflow-hidden h-screen'
+            : 'blur-0 scale-100 brightness-100'
           }`}
       >
-        <Component {...pageProps} hasEntered={hasEntered} isInverted={isInverted} isTransitioning={isTransitioning} />
+        <Component {...pageProps} hasEntered={hasEntered} isInverted={isInverted} isTransitioning={false} />
       </div>
 
       <CursorTrail />
@@ -125,9 +146,11 @@ export default function App({ Component, pageProps }: AppProps) {
         onPlayingChange={setIsMusicPlaying}
       />
 
-      {/* Enter Screen Overlay */}
+      {/* Cinematic Loader - shows only on first visit */}
       <AnimatePresence>
-        {!hasEntered && <EnterScreen key="enter-screen" onEnter={handleEnter} />}
+        {showLoader && (
+          <CinematicLoader key="cinematic-loader" onComplete={handleLoaderComplete} />
+        )}
       </AnimatePresence>
     </>
   )
