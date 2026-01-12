@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import ScrambleText from './ScrambleText';
 
 interface BackgroundMusicProps {
@@ -16,6 +15,9 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
     const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const hasAutoStartedRef = useRef(false);
+    const wasPlayingRef = useRef(false);
 
     // Initialize audio on mount
     useEffect(() => {
@@ -24,13 +26,11 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
         audio.volume = 0.3;
         audio.preload = 'auto';
 
-        audio.addEventListener('canplaythrough', () => {
-            setIsLoaded(true);
-        });
-
-        audio.addEventListener('error', (e) => {
-            console.error('Audio error:', e);
-        });
+        // Track actual play/pause state from audio element
+        audio.addEventListener('play', () => setIsPlaying(true));
+        audio.addEventListener('pause', () => setIsPlaying(false));
+        audio.addEventListener('canplaythrough', () => setIsLoaded(true));
+        audio.addEventListener('error', (e) => console.error('Audio error:', e));
 
         audioRef.current = audio;
 
@@ -43,105 +43,47 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
         };
     }, []);
 
-    // Auto-start when user enters (with user gesture already done via Enter click)
-    useEffect(() => {
-        if (shouldPlay && isLoaded && audioRef.current && !isPlaying) {
-            // Small delay to ensure user gesture is registered
-            const timer = setTimeout(() => {
-                playMusic();
-            }, 100);
-            return () => clearTimeout(timer);
-        }
-    }, [shouldPlay, isLoaded]);
-
-    // Notify parent of playing state changes
-    useEffect(() => {
-        onPlayingChange?.(isPlaying);
-    }, [isPlaying, onPlayingChange]);
-
-    const [isVisible, setIsVisible] = useState(true);
-
-    useEffect(() => {
-        const handleSectionChange = (e: CustomEvent) => {
-            if (window.innerWidth < 768) {
-                setIsVisible(e.detail === 0);
-            } else {
-                setIsVisible(true);
-            }
-        };
-        // Verify initial state
-        if (window.innerWidth < 768) {
-            // We can't easily know the initial section index here without context, 
-            // but usually it starts at 0, so visible is correct.
-        }
-
-        window.addEventListener('sectionChange', handleSectionChange as EventListener);
-        return () => window.removeEventListener('sectionChange', handleSectionChange as EventListener);
-    }, []);
-
-    // Track if music was playing before tab switch (for resume)
-    const wasPlayingRef = useRef(false);
-
-    // Pause/resume based on tab visibility
-    useEffect(() => {
-        const handleVisibilityChange = () => {
-            const audio = audioRef.current;
-            if (!audio) return;
-
-            if (document.hidden) {
-                // Tab is hidden - pause if playing
-                if (isPlaying && !audio.paused) {
-                    wasPlayingRef.current = true;
-                    audio.pause();
-                }
-            } else {
-                // Tab is visible - resume if was playing before
-                if (wasPlayingRef.current && shouldPlay) {
-                    wasPlayingRef.current = false;
-                    audio.play().catch(console.error);
-                }
-            }
-        };
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-    }, [isPlaying, shouldPlay]);
-
-    const playMusic = () => {
+    // Setup AudioContext and Analyser
+    const setupAudioContext = useCallback(() => {
         const audio = audioRef.current;
-        if (!audio) return;
+        if (!audio || audioContextRef.current) return;
 
-        // Set up AudioContext and AnalyserNode if not already done
-        if (!audioContextRef.current) {
-            const Ctx = window.AudioContext || (window as any).webkitAudioContext;
-            const ctx = new Ctx();
-            audioContextRef.current = ctx;
+        const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+        const ctx = new Ctx();
+        audioContextRef.current = ctx;
 
-            const analyser = ctx.createAnalyser();
-            analyser.fftSize = 256;
-            analyser.smoothingTimeConstant = 0.8;
-            analyserRef.current = analyser;
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.8;
+        analyserRef.current = analyser;
 
-            // Create source and connect
-            const source = ctx.createMediaElementSource(audio);
-            sourceRef.current = source;
-            source.connect(analyser);
-            analyser.connect(ctx.destination);
+        const source = ctx.createMediaElementSource(audio);
+        sourceRef.current = source;
+        source.connect(analyser);
+        analyser.connect(ctx.destination);
 
-            // Notify parent that analyser is ready
-            onAnalyserReady?.(analyser);
-        }
+        onAnalyserReady?.(analyser);
+    }, [onAnalyserReady]);
 
-        // Resume AudioContext if suspended
+    // Play music function
+    const playMusic = useCallback(() => {
+        const audio = audioRef.current;
+        if (!audio || !isLoaded) return;
+
+        setupAudioContext();
+
         if (audioContextRef.current?.state === 'suspended') {
             audioContextRef.current.resume();
         }
 
-        audio.currentTime = 5;
+        // Only reset time if not resuming from pause
+        if (audio.currentTime === 0 || audio.currentTime < 5) {
+            audio.currentTime = 5;
+        }
+
         audio.volume = 0;
         audio.play()
             .then(() => {
-                setIsPlaying(true);
                 // Fade in
                 let vol = 0;
                 const fadeIn = setInterval(() => {
@@ -156,15 +98,14 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
             })
             .catch((err) => {
                 console.log('Play failed:', err);
-                setIsPlaying(false);
             });
-    };
+    }, [isLoaded, setupAudioContext]);
 
-    const pauseMusic = () => {
+    // Pause music function
+    const pauseMusic = useCallback(() => {
         const audio = audioRef.current;
         if (!audio) return;
 
-        // Fade out
         let vol = audio.volume;
         const fadeOut = setInterval(() => {
             vol -= 0.02;
@@ -176,40 +117,87 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
                 audio.volume = vol;
             }
         }, 50);
-    };
+    }, []);
 
-    const toggleMusic = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
+    // Auto-start when user enters (only once)
+    useEffect(() => {
+        if (shouldPlay && isLoaded && !hasAutoStartedRef.current) {
+            hasAutoStartedRef.current = true;
+            // Delay to ensure user interaction context
+            const timer = setTimeout(() => {
+                playMusic();
+            }, 300);
+            return () => clearTimeout(timer);
+        }
+    }, [shouldPlay, isLoaded, playMusic]);
 
+    // Notify parent of playing state changes
+    useEffect(() => {
+        onPlayingChange?.(isPlaying);
+    }, [isPlaying, onPlayingChange]);
+
+    // Handle section visibility on mobile
+    useEffect(() => {
+        const handleSectionChange = (e: CustomEvent) => {
+            if (window.innerWidth < 768) {
+                setIsVisible(e.detail === 0);
+            } else {
+                setIsVisible(true);
+            }
+        };
+
+        window.addEventListener('sectionChange', handleSectionChange as EventListener);
+        return () => window.removeEventListener('sectionChange', handleSectionChange as EventListener);
+    }, []);
+
+    // Pause/resume based on tab visibility
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            const audio = audioRef.current;
+            if (!audio) return;
+
+            if (document.hidden) {
+                if (!audio.paused) {
+                    wasPlayingRef.current = true;
+                    audio.pause();
+                }
+            } else {
+                if (wasPlayingRef.current && shouldPlay) {
+                    wasPlayingRef.current = false;
+                    audio.play().catch(console.error);
+                }
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [shouldPlay]);
+
+    // Toggle function - single click
+    const handleToggle = useCallback(() => {
         const audio = audioRef.current;
         if (!audio) return;
 
         // Check actual audio state
         if (!audio.paused) {
-            // Audio is playing, so pause it
             pauseMusic();
-            setIsPlaying(false);
         } else {
-            // Audio is paused, so play it
             playMusic();
         }
-    };
+    }, [playMusic, pauseMusic]);
 
     if (!shouldPlay) return null;
 
-    // Dynamic styling based on inverted theme
     const baseClasses = `fixed top-8 right-8 md:top-auto md:bottom-[6.5rem] md:right-8 z-[9999] cursor-pointer font-space-mono text-xs md:text-sm tracking-[0.3em] transition-all duration-500 bg-transparent border-none outline-none select-none`;
     const visibilityClasses = isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none';
 
-    // Music ON = white, Music OFF = black (consistent across all slides)
     const colorClasses = isPlaying
         ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] hover:text-gray-200'
         : 'text-black hover:text-gray-700';
 
     return (
         <button
-            onClick={toggleMusic}
+            onClick={handleToggle}
             className={`${baseClasses} ${visibilityClasses} ${colorClasses}`}
         >
             {isPlaying ?
@@ -219,4 +207,3 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
         </button>
     );
 }
-

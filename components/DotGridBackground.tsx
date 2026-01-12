@@ -26,10 +26,10 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         // Configuration - optimized for performance
-        const dotSpacing = 130; // Increased from 115 for fewer dots
+        const dotSpacing = 130;
         const dotRadius = 0.8;
-        const waveSpeed = 0.0005;
-        const waveAmplitude = 2;
+        const waveSpeed = 0.0012; // Faster wave animation
+        const waveAmplitude = 4; // More noticeable movement
         const cursorRadius = 100;
         const cursorStrength = 8;
         const transitionSpeed = 0.02;
@@ -113,19 +113,25 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
             // Create dynamic gradient background (moving fog)
             const gradient = ctx.createLinearGradient(0, 0, 0, height);
 
-            // Animate gradient colors slightly for breathing effect
-            const t = elapsed * 0.5;
+            // Animate gradient colors with more pronounced breathing effect
+            const t = elapsed * 0.8; // Faster color breathing
+            const breathe = Math.sin(t) * 8; // Larger breathing amplitude
+            const breathe2 = Math.sin(t * 0.7 + 1) * 6;
+            const breathe3 = Math.sin(t * 0.5 + 2) * 5;
+
+            // Subtle hue shift for more life
+            const hueShift = Math.sin(t * 0.3) * 5;
 
             // Lerp between normal and inverted theme colors based on progress
-            // Normal: light grey (65/60/40), Inverted: mid grey (55/50/45)
-            const topLightness = lerp(65 + Math.sin(t) * 5, 55 + Math.sin(t) * 3, progress);
-            const midLightness = lerp(60 + Math.sin(t + 2) * 5, 50 + Math.sin(t + 2) * 3, progress);
-            const botLightness = lerp(40 + Math.sin(t + 4) * 5, 45 + Math.sin(t + 4) * 3, progress);
-            const saturation = lerp(15, 12, progress);
+            // DARKER: Normal: dark grey (35/30/20), Inverted: darker grey (30/25/18)
+            const topLightness = lerp(35 + breathe, 30 + breathe * 0.7, progress);
+            const midLightness = lerp(30 + breathe2, 25 + breathe2 * 0.7, progress);
+            const botLightness = lerp(20 + breathe3, 18 + breathe3 * 0.7, progress);
+            const saturation = lerp(15 + Math.sin(t) * 3, 12 + Math.sin(t) * 2, progress);
 
-            const topColor = `hsl(210, ${saturation}%, ${topLightness}%)`;
-            const midColor = `hsl(220, ${saturation}%, ${midLightness}%)`;
-            const botColor = `hsl(210, ${saturation}%, ${botLightness}%)`;
+            const topColor = `hsl(${220 + hueShift}, ${saturation}%, ${topLightness}%)`;
+            const midColor = `hsl(${225 + hueShift}, ${saturation}%, ${midLightness}%)`;
+            const botColor = `hsl(${220 + hueShift}, ${saturation}%, ${botLightness}%)`;
 
             gradient.addColorStop(0, topColor);
             gradient.addColorStop(0.5, midColor);

@@ -56,7 +56,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
   /* Click Effect State */
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
 
-  /* Glitchy Name Text */
+  /* Name text - always show original, glitch effect is separate */
   const [nameText, setNameText] = useState(RESUME_DATA.name);
   const originalName = RESUME_DATA.name;
 
@@ -109,6 +109,16 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('sectionChange', { detail: currentSectionIndex }));
   }, [currentSectionIndex]);
+
+  // Backup: ensure entryComplete is true after animation should have finished
+  useEffect(() => {
+    if (hasEntered && !entryComplete) {
+      const timer = setTimeout(() => {
+        setEntryComplete(true);
+      }, 600); // 350ms decode + 100ms delay + buffer
+      return () => clearTimeout(timer);
+    }
+  }, [hasEntered, entryComplete]);
 
   const handleGlobalClick = (e: React.MouseEvent) => {
     setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
@@ -319,7 +329,9 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 <DecodingText text="Hi, I'm" trigger={hasEntered} duration={200} delay={50} />
               </h2>
               <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]">
-                {entryComplete ? nameText : (
+                {entryComplete ? (
+                  nameText
+                ) : (
                   <DecodingText
                     text={RESUME_DATA.name}
                     trigger={hasEntered}
