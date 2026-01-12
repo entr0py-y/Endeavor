@@ -2,7 +2,6 @@ import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import { useEffect, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { AnimatePresence } from 'framer-motion'
 import ClickTesseract from '@/components/ClickTesseract'
 import CinematicLoader from '@/components/CinematicLoader'
 import BackgroundMusic from '@/components/BackgroundMusic'
@@ -12,12 +11,12 @@ import AudioWave from '@/components/AudioWave'
 const CursorTrail = dynamic(() => import('@/components/CursorTrail'), { ssr: false });
 const DotGridBackground = dynamic(() => import('@/components/DotGridBackground'), { ssr: false });
 
-const SESSION_KEY = 'portfolio_loaded';
+const SESSION_KEY = 'portfolio_session_loaded';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
   const [hasEntered, setHasEntered] = useState(false);
-  const [showLoader, setShowLoader] = useState(false);
+  const [showLoader, setShowLoader] = useState(true); // Start with loader visible
   const [mounted, setMounted] = useState(false);
   const [currentSection, setCurrentSection] = useState(0);
   const [analyserNode, setAnalyserNode] = useState<AnalyserNode | null>(null);
@@ -34,16 +33,15 @@ export default function App({ Component, pageProps }: AppProps) {
     // Check session storage for first visit
     const hasLoaded = sessionStorage.getItem(SESSION_KEY);
 
-    if (!hasLoaded) {
-      // First visit - show loader
-      setShowLoader(true);
-    } else {
-      // Already visited this session - skip loader
+    if (hasLoaded) {
+      // Already visited this session - skip loader immediately
+      setShowLoader(false);
       setHasEntered(true);
     }
+    // If first visit, loader stays visible (showLoader is already true)
   }, []);
 
-  // Handle loader completion
+  // Handle loader completion - ONLY called after 2000ms minimum
   const handleLoaderComplete = () => {
     sessionStorage.setItem(SESSION_KEY, 'true');
     setShowLoader(false);
@@ -61,6 +59,7 @@ export default function App({ Component, pageProps }: AppProps) {
     const ctx = new Ctx();
     ctxRef.current = ctx;
 
+    // Preload audio during loader
     fetch('/audio/main-click.mp3')
       .then(res => res.arrayBuffer())
       .then(buf => ctx.decodeAudioData(buf))
@@ -72,6 +71,9 @@ export default function App({ Component, pageProps }: AppProps) {
       });
 
     const handleGlobalClick = (e: MouseEvent) => {
+      // Only show click effects after entering
+      if (!hasEntered) return;
+
       setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
       setTimeout(() => setClickEffect(null), 800);
 
@@ -99,7 +101,7 @@ export default function App({ Component, pageProps }: AppProps) {
     document.addEventListener('click', handleGlobalClick, true);
     window.addEventListener('sectionChange', handleSectionChange as EventListener);
 
-    // Font preload
+    // Font preload during loader
     const link = document.createElement('link');
     link.rel = 'preload';
     link.as = 'font';
@@ -112,33 +114,41 @@ export default function App({ Component, pageProps }: AppProps) {
       document.removeEventListener('click', handleGlobalClick, true);
       window.removeEventListener('sectionChange', handleSectionChange as EventListener);
     };
-  }, [mounted]);
+  }, [mounted, hasEntered]);
 
+  // Don't render anything until mounted (prevents hydration issues)
   if (!mounted) {
-    return null;
+    return (
+      <div className="fixed inset-0 bg-neutral-900" />
+    );
   }
 
   return (
     <>
+      {/* Background - loads during loader phase */}
       <DotGridBackground isInverted={isInverted} />
 
-      {/* Main Content - visible immediately but blurred during loader */}
+      {/* Main Content - COMPLETELY HIDDEN until loader completes */}
       <div
-        className={`relative w-full min-h-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${!hasEntered
-            ? 'blur-md scale-105 brightness-75 pointer-events-none overflow-hidden h-screen'
-            : 'blur-0 scale-100 brightness-100'
+        className={`relative w-full min-h-screen transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${hasEntered
+            ? 'opacity-100 blur-0 scale-100'
+            : 'opacity-0 blur-lg scale-105 pointer-events-none'
           }`}
+        style={{
+          visibility: hasEntered ? 'visible' : 'hidden',
+        }}
       >
         <Component {...pageProps} hasEntered={hasEntered} isInverted={isInverted} isTransitioning={false} />
       </div>
 
-      <CursorTrail />
-      {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
+      {/* Effects - only active after entering */}
+      {hasEntered && <CursorTrail />}
+      {hasEntered && clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
 
       {/* Audio Reactive Wave - only visible after entering portfolio */}
       {hasEntered && <AudioWave isPlaying={isMusicPlaying} analyserNode={analyserNode} />}
 
-      {/* Background Music - starts after Enter */}
+      {/* Background Music - starts after loader completes */}
       <BackgroundMusic
         shouldPlay={hasEntered}
         isInverted={isInverted}
@@ -146,12 +156,10 @@ export default function App({ Component, pageProps }: AppProps) {
         onPlayingChange={setIsMusicPlaying}
       />
 
-      {/* Cinematic Loader - shows only on first visit */}
-      <AnimatePresence>
-        {showLoader && (
-          <CinematicLoader key="cinematic-loader" onComplete={handleLoaderComplete} />
-        )}
-      </AnimatePresence>
+      {/* Cinematic Loader - MUST show for minimum 2000ms on first visit */}
+      {showLoader && (
+        <CinematicLoader onComplete={handleLoaderComplete} />
+      )}
     </>
   )
 }
