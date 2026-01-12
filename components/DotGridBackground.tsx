@@ -140,6 +140,27 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
+            // Draw soft blur clouds - slightly brighter patches for depth
+            const cloudTime = elapsed * 0.3;
+            const numClouds = 5;
+
+            for (let i = 0; i < numClouds; i++) {
+                // Each cloud moves slowly and loops
+                const cloudX = ((Math.sin(cloudTime * 0.2 + i * 2.5) * 0.3 + 0.5) * width + i * width / numClouds) % width;
+                const cloudY = ((Math.cos(cloudTime * 0.15 + i * 1.8) * 0.2 + 0.5) * height);
+                const cloudRadius = 200 + Math.sin(cloudTime * 0.4 + i) * 50;
+
+                // Create soft radial gradient for cloud
+                const cloudGradient = ctx.createRadialGradient(cloudX, cloudY, 0, cloudX, cloudY, cloudRadius);
+                const cloudBrightness = lerp(45, 40, progress) + Math.sin(cloudTime + i) * 5;
+                cloudGradient.addColorStop(0, `hsla(${220 + hueShift}, 15%, ${cloudBrightness}%, 0.4)`);
+                cloudGradient.addColorStop(0.5, `hsla(${220 + hueShift}, 12%, ${cloudBrightness - 5}%, 0.2)`);
+                cloudGradient.addColorStop(1, 'transparent');
+
+                ctx.fillStyle = cloudGradient;
+                ctx.fillRect(0, 0, width, height);
+            }
+
             const mx = mouseRef.current.x;
             const my = mouseRef.current.y;
 
