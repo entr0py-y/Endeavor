@@ -108,9 +108,12 @@ const AudioWave: React.FC<AudioWaveProps> = ({ isPlaying, analyserNode }) => {
         let audioLevel = 0;
         if (isPlaying && analyserNode && frequencyDataRef.current) {
             analyserNode.getByteFrequencyData(frequencyDataRef.current as any);
-            // Average of bass and mid frequencies for more reactive feel
-            const bassSum = frequencyDataRef.current.slice(0, 10).reduce((a, b) => a + b, 0);
-            const midSum = frequencyDataRef.current.slice(10, 30).reduce((a, b) => a + b, 0);
+            // Calculate bass and mid sums without slice (avoid allocations)
+            const data = frequencyDataRef.current;
+            let bassSum = 0;
+            let midSum = 0;
+            for (let i = 0; i < 10; i++) bassSum += data[i];
+            for (let i = 10; i < 30; i++) midSum += data[i];
             audioLevel = (bassSum / 10 + midSum / 20) / 255; // Normalized 0-1
         }
 

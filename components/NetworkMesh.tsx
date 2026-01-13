@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { getPerformanceEngine } from '@/lib/performanceEngine';
 
 interface Node {
     x: number;
@@ -24,12 +25,7 @@ const NetworkMesh: React.FC = () => {
     const lastMouseMoveRef = useRef(0);
     const glowIntensityRef = useRef(0);
     const lastFrameTimeRef = useRef(0);
-
-    // Frame rate control - 30fps on mobile, 60fps on desktop
-    const TARGET_FPS_MOBILE = 30;
-    const TARGET_FPS_DESKTOP = 60;
-    const FRAME_INTERVAL_MOBILE = 1000 / TARGET_FPS_MOBILE;
-    const FRAME_INTERVAL_DESKTOP = 1000 / TARGET_FPS_DESKTOP;
+    const performanceEngineRef = useRef<ReturnType<typeof getPerformanceEngine> | null>(null);
 
     // Configuration - Dense coverage with more nodes
     // Mobile gets significantly fewer nodes for better performance and less visual clutter
@@ -149,60 +145,79 @@ const NetworkMesh: React.FC = () => {
 
         // WHITE NEON COLORS - Increased visibility
         const lineBase = 'rgba(255, 255, 255, 0.18)';
-        const lineGlow = 'rgba(255, 255, 255, ';  // White glow
 
-        // Draw edges
-        for (const edge of edges) {
+        // Pre-calculate glow radius squared to avoid sqrt in loop
+        const glowRadiusSquared = GLOW_RADIUS * GLOW_RADIUS;
+
+        // Separate edges into batches by type for fewer state changes
+        const baseEdges: { ax: number; ay: number; bx: number; by: number }[] = [];
+        const glowEdges: { ax: number; ay: number; bx: number; by: number; opacity: number; width: number; glow: boolean }[] = [];
+
+        // Categorize edges
+        for (let i = 0; i < edges.length; i++) {
+            const edge = edges[i];
             const nodeA = nodes[edge.from];
             const nodeB = nodes[edge.to];
 
-            const midX = (nodeA.x + nodeB.x) / 2;
-            const midY = (nodeA.y + nodeB.y) / 2;
+            const midX = (nodeA.x + nodeB.x) * 0.5;
+            const midY = (nodeA.y + nodeB.y) * 0.5;
 
-            // Distance from mouse to line midpoint
-            const distToMouse = Math.sqrt(
-                (midX - mouseX) * (midX - mouseX) +
-                (midY - mouseY) * (midY - mouseY)
-            );
+            // Distance from mouse to line midpoint (squared first)
+            const dx = midX - mouseX;
+            const dy = midY - mouseY;
+            const distSquared = dx * dx + dy * dy;
 
-            // Calculate glow factor based on distance
-            const glowFactor = isMobile
-                ? 0.03 // Greatly reduced on mobile
-                : Math.max(0, 1 - distToMouse / GLOW_RADIUS) * glowIntensityRef.current;
+            if (!isMobile && distSquared < glowRadiusSquared) {
+                const distToMouse = Math.sqrt(distSquared);
+                const glowFactor = Math.max(0, 1 - distToMouse / GLOW_RADIUS) * glowIntensityRef.current;
 
-            if (glowFactor > 0.01 && !isMobile) {
-                // Glowing line near cursor - WHITE NEON
-                const glowOpacity = glowFactor * 0.8 * pulse * microFlicker;
-
-                ctx.beginPath();
-                ctx.moveTo(nodeA.x, nodeA.y);
-                ctx.lineTo(nodeB.x, nodeB.y);
-                ctx.strokeStyle = `${lineGlow}${glowOpacity.toFixed(3)})`;
-                ctx.lineWidth = 1 + glowFactor * 2;
-
-                // Apply shadow blur for very close lines - WHITE GLOW
-                if (glowFactor > 0.4) {
-                    ctx.shadowBlur = 18 * glowFactor;
-                    ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+                if (glowFactor > 0.01) {
+                    const glowOpacity = glowFactor * 0.8 * pulse * microFlicker;
+                    glowEdges.push({
+                        ax: nodeA.x, ay: nodeA.y,
+                        bx: nodeB.x, by: nodeB.y,
+                        opacity: glowOpacity,
+                        width: 1 + glowFactor * 2,
+                        glow: glowFactor > 0.4
+                    });
+                    continue;
                 }
-
-                ctx.stroke();
-
-                // Reset shadow
-                ctx.shadowBlur = 0;
-            } else {
-                // Base line (subtle)
-                ctx.beginPath();
-                ctx.moveTo(nodeA.x, nodeA.y);
-                ctx.lineTo(nodeB.x, nodeB.y);
-                ctx.strokeStyle = lineBase;
-                ctx.lineWidth = 0.8;
-                ctx.stroke();
             }
+
+            baseEdges.push({ ax: nodeA.x, ay: nodeA.y, bx: nodeB.x, by: nodeB.y });
+        }
+
+        // Draw base edges in one batch
+        ctx.strokeStyle = lineBase;
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        for (let i = 0; i < baseEdges.length; i++) {
+            const e = baseEdges[i];
+            ctx.moveTo(e.ax, e.ay);
+            ctx.lineTo(e.bx, e.by);
+        }
+        ctx.stroke();
+
+        // Draw glow edges (these need individual styling)
+        for (let i = 0; i < glowEdges.length; i++) {
+            const e = glowEdges[i];
+            ctx.beginPath();
+            ctx.moveTo(e.ax, e.ay);
+            ctx.lineTo(e.bx, e.by);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${e.opacity.toFixed(3)})`;
+            ctx.lineWidth = e.width;
+
+            if (e.glow) {
+                ctx.shadowBlur = 18 * (e.opacity / 0.8);
+                ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+            }
+
+            ctx.stroke();
+            ctx.shadowBlur = 0;
         }
     }, [calculateEdges]);
 
-    // Animation loop with frame rate throttling
+    // Animation loop with adaptive frame rate from performance engine
     const animate = useCallback((timestamp: number) => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -210,15 +225,21 @@ const NetworkMesh: React.FC = () => {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // Frame rate throttling - especially important on mobile
-        const frameInterval = isMobileRef.current ? FRAME_INTERVAL_MOBILE : FRAME_INTERVAL_DESKTOP;
-        const elapsed = timestamp - lastFrameTimeRef.current;
-
-        if (elapsed >= frameInterval) {
-            lastFrameTimeRef.current = timestamp - (elapsed % frameInterval);
-            timeRef.current += isMobileRef.current ? 33 : 16; // ~30fps or ~60fps
-            draw(ctx, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+        // Use performance engine for adaptive frame timing
+        const engine = performanceEngineRef.current;
+        if (engine && !engine.shouldRenderFrame(lastFrameTimeRef.current)) {
+            animationRef.current = requestAnimationFrame(animate);
+            return;
         }
+
+        const elapsed = timestamp - lastFrameTimeRef.current;
+        lastFrameTimeRef.current = timestamp;
+        
+        // Scale time increment based on actual elapsed time for smooth animation
+        const targetFrameTime = engine ? engine.getTargetFrameTime() : (isMobileRef.current ? 33 : 16);
+        timeRef.current += Math.min(elapsed, targetFrameTime * 2); // Cap to prevent jumps
+        
+        draw(ctx, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
 
         animationRef.current = requestAnimationFrame(animate);
     }, [draw]);
@@ -227,6 +248,10 @@ const NetworkMesh: React.FC = () => {
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
+
+        // Initialize performance engine
+        performanceEngineRef.current = getPerformanceEngine();
+        performanceEngineRef.current.start();
 
         // Check if mobile
         isMobileRef.current = 'ontouchstart' in window || navigator.maxTouchPoints > 0;

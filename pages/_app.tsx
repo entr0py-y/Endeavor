@@ -10,6 +10,7 @@ import AudioWave from '@/components/AudioWave'
 const CursorTrail = dynamic(() => import('@/components/CursorTrail'), { ssr: false });
 const DotGridBackground = dynamic(() => import('@/components/DotGridBackground'), { ssr: false });
 const AudioJack = dynamic(() => import('@/components/AudioJack'), { ssr: false });
+const FPSMeter = dynamic(() => import('@/components/FPSMeter'), { ssr: false });
 
 export default function App({ Component, pageProps }: AppProps) {
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
@@ -236,6 +237,13 @@ export default function App({ Component, pageProps }: AppProps) {
       {/* Effects - only active after entering */}
       {hasEntered && <CursorTrail />}
       {hasEntered && clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
+
+      {/* FPS Meter - only visible after entering, desktop only */}
+      {hasEntered && (
+        <div className="hidden md:block">
+          <FPSMeter showTier={false} />
+        </div>
+      )}
 
       {/* Audio Reactive Wave - only visible after entering portfolio and only on desktop */}
       {hasEntered && (

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { getPerformanceEngine } from '@/lib/performanceEngine';
 
 interface DotGridBackgroundProps {
     isInverted?: boolean;
@@ -10,6 +11,8 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
     const animationRef = useRef<number>();
     const isInvertedRef = useRef(isInverted);
     const transitionProgress = useRef(isInverted ? 1 : 0); // 0 = normal, 1 = inverted
+    const performanceEngineRef = useRef<ReturnType<typeof getPerformanceEngine> | null>(null);
+    const lastRenderTimeRef = useRef(0);
 
     // Update ref when prop changes
     useEffect(() => {
@@ -23,6 +26,10 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
+        // Initialize performance engine
+        performanceEngineRef.current = getPerformanceEngine();
+        performanceEngineRef.current.start();
+
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         // Configuration - optimized for performance
@@ -33,8 +40,6 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
         const cursorRadius = 100;
         const cursorStrength = 8;
         const transitionSpeed = 0.02;
-        const targetFPS = 45;
-        const frameTime = 1000 / targetFPS;
 
         let cols = 0;
         let rows = 0;
@@ -96,11 +101,13 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
         let startTime = Date.now();
 
         const animate = (currentTime: number) => {
-            // FPS limiting
-            if (currentTime - lastFrameTime < frameTime) {
+            // Use performance engine for adaptive frame timing
+            const engine = performanceEngineRef.current;
+            if (engine && !engine.shouldRenderFrame(lastRenderTimeRef.current)) {
                 animationRef.current = requestAnimationFrame(animate);
                 return;
             }
+            lastRenderTimeRef.current = currentTime;
             lastFrameTime = currentTime;
 
             const elapsed = (Date.now() - startTime) * waveSpeed;
@@ -188,62 +195,87 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
             const mx = mouseRef.current.x;
             const my = mouseRef.current.y;
 
+            // Pre-calculate common values for performance
+            const cursorRadiusSquared = cursorRadius * cursorRadius;
+            const halfElapsed = elapsed * 0.5;
+
             // Draw dots - always white on all slides with glow
             ctx.fillStyle = '#FFFFFF';
             ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
-            ctx.shadowBlur = 12;
 
-            dots.forEach((dot, i) => {
+            // Group dots by shadow blur to batch drawing and reduce state changes
+            const normalDots: { x: number; y: number; radius: number; opacity: number }[] = [];
+            const glowDots: { x: number; y: number; radius: number; opacity: number; blur: number }[] = [];
+
+            // First pass: calculate all dot properties
+            for (let i = 0; i < dots.length; i++) {
+                const dot = dots[i];
                 // Calculate wave displacement
-                const noiseVal = noise(dot.baseX, dot.baseY, elapsed);
-                const waveX = Math.cos(elapsed * 0.5 + dot.baseY * 0.01) * waveAmplitude;
-                const waveY = Math.sin(elapsed * 0.5 + dot.baseX * 0.01) * waveAmplitude;
+                const waveX = Math.cos(halfElapsed + dot.baseY * 0.01) * waveAmplitude;
+                const waveY = Math.sin(halfElapsed + dot.baseX * 0.01) * waveAmplitude;
 
-                // Calculate distance to cursor
-                const dx = mouseRef.current.x - dot.baseX;
-                const dy = mouseRef.current.y - dot.baseY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+                // Calculate distance to cursor using squared distance first (avoid sqrt when possible)
+                const dx = mx - dot.baseX;
+                const dy = my - dot.baseY;
+                const distSquared = dx * dx + dy * dy;
 
-                // Breathing/Pulsing Effect (Randomized per dot)
-                // Use a combination of elapsed time and dot index/position for pseudo-random pulsing
-                // This ensures all dots pulse, not just visible ones
+                // Breathing/Pulsing Effect
                 const randomOffset = (dot.baseX * 13 + dot.baseY * 19);
-                const pulseT = elapsed * 0.5 + randomOffset;
-
-                // Base opacity pulsing: 0.4 to 0.9 (increased for more glow)
+                const pulseT = halfElapsed + randomOffset;
                 const currentOpacity = 0.4 + (Math.sin(pulseT) * 0.5 + 0.5) * 0.5;
 
-                // Smaller dots: Base 1.5px (slightly larger)
                 let currentRadius = 1.5;
-
-                // Magnification near cursor (only applies if close)
                 let shiftX = 0, shiftY = 0;
 
-                if (dist < cursorRadius) {
-                    const magFactor = (1 - dist / cursorRadius); // 0 to 1
-                    currentRadius += magFactor * 4; // Add up to 4px
-                    // Increase glow near cursor
-                    ctx.shadowBlur = 12 + magFactor * 15;
+                if (distSquared < cursorRadiusSquared) {
+                    const dist = Math.sqrt(distSquared);
+                    const magFactor = 1 - dist / cursorRadius;
+                    currentRadius += magFactor * 4;
 
-                    // Push effect
-                    const force = (cursorRadius - dist) / cursorRadius;
+                    const force = magFactor;
                     const angle = Math.atan2(dy, dx);
                     shiftX = Math.cos(angle) * force * cursorStrength;
                     shiftY = Math.sin(angle) * force * cursorStrength;
+
+                    glowDots.push({
+                        x: dot.baseX + waveX + shiftX,
+                        y: dot.baseY + waveY + shiftY,
+                        radius: currentRadius,
+                        opacity: currentOpacity,
+                        blur: 12 + magFactor * 15
+                    });
                 } else {
-                    ctx.shadowBlur = 12;
+                    normalDots.push({
+                        x: dot.baseX + waveX,
+                        y: dot.baseY + waveY,
+                        radius: currentRadius,
+                        opacity: currentOpacity
+                    });
                 }
+            }
 
-                const drawX = dot.baseX + waveX + shiftX;
-                const drawY = dot.baseY + waveY + shiftY;
-
-                ctx.globalAlpha = Math.max(0, Math.min(1, currentOpacity));
+            // Second pass: batch draw normal dots (same shadow blur)
+            ctx.shadowBlur = 12;
+            for (let i = 0; i < normalDots.length; i++) {
+                const dot = normalDots[i];
+                ctx.globalAlpha = dot.opacity;
                 ctx.beginPath();
-                ctx.arc(drawX, drawY, Math.max(0, currentRadius), 0, Math.PI * 2);
+                ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
                 ctx.fill();
-            });
-            ctx.globalAlpha = 1; // Reset alpha
-            ctx.shadowBlur = 0; // Reset shadow
+            }
+
+            // Third pass: draw glow dots (varying shadow blur - fewer of these)
+            for (let i = 0; i < glowDots.length; i++) {
+                const dot = glowDots[i];
+                ctx.shadowBlur = dot.blur;
+                ctx.globalAlpha = dot.opacity;
+                ctx.beginPath();
+                ctx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
             animationRef.current = requestAnimationFrame(animate);
         };
 

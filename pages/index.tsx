@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 import CursorGlow from '@/components/CursorGlow';
 import RotatingCube from '@/components/RotatingCube';
 import FollowCube from '@/components/FollowCube';
-import ClickTesseract from '@/components/ClickTesseract';
 import ScrollPrism from '@/components/ScrollPrism';
 import ScrambleText from '@/components/ScrambleText';
 import DecodingText from '@/components/DecodingText';
@@ -52,9 +51,6 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
 
   /* Track if initial entry transition is complete */
   const [entryComplete, setEntryComplete] = useState(false);
-
-  /* Click Effect State */
-  const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
 
   /* Name text - always show original, glitch effect is separate */
   const [nameText, setNameText] = useState(RESUME_DATA.name);
@@ -119,10 +115,6 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
       return () => clearTimeout(timer);
     }
   }, [hasEntered, entryComplete]);
-
-  const handleGlobalClick = (e: React.MouseEvent) => {
-    setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
-  };
 
   const scrollToSection = (id: string) => {
     const index = sectionsList.indexOf(id);
@@ -226,7 +218,6 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
   return (
     <div
       className="h-[100vh] w-full bg-transparent font-space-mono relative no-scrollbar cursor-none overflow-hidden"
-      onClick={handleGlobalClick}
     >
       {/* Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -235,9 +226,6 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
         <FollowCube />
         <CursorGlow />
       </div>
-
-      {/* Click Effect */}
-      {clickEffect && <ClickTesseract key={clickEffect.id} x={clickEffect.x} y={clickEffect.y} />}
 
       {/* Scroll Indicator Prism */}
       <ScrollPrism currentIndex={currentSectionIndex} totalSections={sectionsList.length} isInverted={isInverted} />
@@ -454,7 +442,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
               <div className="py-12 md:py-24 border-y border-white/10 w-full text-center md:text-left">
                 <ol className="list-decimal list-inside text-lg md:text-2xl font-light space-y-4">
                   <li>
-                    <span className="text-white/90 drop-shadow-[0_0_3px_rgba(255,255,255,0.2)]">Portfolio:</span> <a href="https://endeavor-tan.vercel.app" target="_blank" rel="noopener noreferrer" className="text-black underline hover:text-white transition-colors duration-300">https://endeavor-tan.vercel.app</a>
+                    <span className="text-white/90 drop-shadow-[0_0_3px_rgba(255,255,255,0.2)]">My Portfolio:</span> <a href="https://sylked.vercel.app" target="_blank" rel="noopener noreferrer" className="text-black underline hover:text-white transition-colors duration-300">https://sylked.vercel.app</a>
                   </li>
                 </ol>
               </div>

@@ -177,19 +177,33 @@ export default function RotatingCube({ isInverted = false }: RotatingCubeProps) 
         rotate4DAndProject(i, centerX, centerY, size);
       }
 
-      // Draw edges (skip sorting for performance - use simple depth check)
+      // Draw edges - batch by similar opacity for fewer state changes
       ctx.lineWidth = 2;
+      
+      // Group edges by opacity range for batching
+      const edgesByOpacity: Map<number, number[][]> = new Map();
       for (let i = 0; i < edges.length; i++) {
         const [a, b] = edges[i];
         const avgZ = (projectedVertices[a][2] + projectedVertices[b][2]) / 2;
-        const opacity = 0.2 + (avgZ + 1) * 0.15;
-
+        const opacity = Math.round((0.2 + (avgZ + 1) * 0.15) * 10) / 10; // Round to 1 decimal
+        
+        if (!edgesByOpacity.has(opacity)) {
+          edgesByOpacity.set(opacity, []);
+        }
+        edgesByOpacity.get(opacity)!.push([a, b]);
+      }
+      
+      // Draw batched edges
+      edgesByOpacity.forEach((edgeList, opacity) => {
         ctx.strokeStyle = `rgba(${colorValue},${colorValue},${colorValue},${opacity})`;
         ctx.beginPath();
-        ctx.moveTo(projectedVertices[a][0], projectedVertices[a][1]);
-        ctx.lineTo(projectedVertices[b][0], projectedVertices[b][1]);
+        for (let i = 0; i < edgeList.length; i++) {
+          const [a, b] = edgeList[i];
+          ctx.moveTo(projectedVertices[a][0], projectedVertices[a][1]);
+          ctx.lineTo(projectedVertices[b][0], projectedVertices[b][1]);
+        }
         ctx.stroke();
-      }
+      });
 
       // Draw vertices with batched fills
       for (let i = 0; i < 16; i++) {

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { getPerformanceEngine } from '@/lib/performanceEngine';
 
 export default function CursorTrail() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -10,6 +11,8 @@ export default function CursorTrail() {
     const pointsRef = useRef<{ x: number; y: number; age: number }[]>([]);
     const isMovingRef = useRef(false);
     const moveTimeoutRef = useRef<number>();
+    const performanceEngineRef = useRef<ReturnType<typeof getPerformanceEngine> | null>(null);
+    const lastRenderTimeRef = useRef(0);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -17,6 +20,10 @@ export default function CursorTrail() {
 
         const ctx = canvas.getContext('2d', { alpha: true });
         if (!ctx) return;
+
+        // Initialize performance engine
+        performanceEngineRef.current = getPerformanceEngine();
+        performanceEngineRef.current.start();
 
         // Configuration
         const TRAIL_LENGTH = 35;       // Number of points
@@ -83,8 +90,15 @@ export default function CursorTrail() {
         handleResize();
 
         const animate = () => {
+            // Use performance engine for adaptive frame timing
+            const engine = performanceEngineRef.current;
+            if (engine && !engine.shouldRenderFrame(lastRenderTimeRef.current)) {
+                animationRef.current = requestAnimationFrame(animate);
+                return;
+            }
+            lastRenderTimeRef.current = performance.now();
+
             // 1. Physics: Move 'pen' towards 'cursor' with inertia
-            // Standard lerp: target + (current - target) * factor? No, lerp(a, b, t) = a + (b-a)*t
             const dx = cursorRef.current.x - penRef.current.x;
             const dy = cursorRef.current.y - penRef.current.y;
 
@@ -92,9 +106,6 @@ export default function CursorTrail() {
             penRef.current.y += dy * INERTIA;
 
             // 2. Add new point to history
-            // Only if moved enough to avoid bunching up points effectively
-            // But for a smooth time-based trail, we usually just push every frame or every N distance
-            // Let's stick to time-based for smooth "flowing ribbon" even when slow
             pointsRef.current.push({
                 x: penRef.current.x,
                 y: penRef.current.y,
@@ -106,15 +117,6 @@ export default function CursorTrail() {
                 pointsRef.current.shift();
             }
 
-            // Age points (optional, if we want them to "die" in place)
-            // For a trail that follows, we usually just manage length.
-            // But let's check readability - we want trail to fade out.
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height); // Note: using raw dims if styled?
-            // actually clearRect needs scaled coords if we haven't transformed...
-            // wait, ctx.scale(dpr, dpr) handles drawing coords.
-            // clearRect usually works on local space too.
-            // Easiest is to clear the whole logical space
             ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
             // 4. Draw Path
