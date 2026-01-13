@@ -241,7 +241,7 @@ export default function WebGLScene() {
                         blendFunction={BlendFunction.ADD}
                     />
                     <ChromaticAberration
-                        offset={[0.0005, 0.0005]}
+                        offset={{ x: 0.0005, y: 0.0005 }}
                         blendFunction={BlendFunction.NORMAL}
                     />
                 </EffectComposer>
