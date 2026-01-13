@@ -244,13 +244,46 @@ export default function App({ Component, pageProps }: AppProps) {
         </div>
       )}
 
-      {/* Audio Jack - interactive music control */}
+      {/* Audio Jack - interactive music control (desktop only) */}
       {hasEntered && (
-        <AudioJack
-          onPlugChange={handlePlugChange}
-          isPlaying={isMusicPlaying}
-          currentSection={currentSection}
-        />
+        <div className="hidden md:block">
+          <AudioJack
+            onPlugChange={handlePlugChange}
+            isPlaying={isMusicPlaying}
+            currentSection={currentSection}
+          />
+        </div>
+      )}
+
+      {/* Mobile Music Button - simple on/off toggle (mobile only) */}
+      {hasEntered && (
+        <button
+          onClick={() => handlePlugChange(!isMusicPlaying)}
+          className="md:hidden fixed bottom-6 left-6 z-[70] flex items-center gap-2 px-4 py-2 rounded-full border border-white/30 bg-black/30 backdrop-blur-sm transition-all duration-300 hover:border-white/50 hover:bg-black/50"
+          style={{
+            fontFamily: '"Space Mono", monospace',
+          }}
+        >
+          {/* Music icon */}
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`text-white transition-opacity duration-300 ${isMusicPlaying ? 'opacity-100' : 'opacity-60'}`}
+          >
+            <path d="M9 18V5l12-2v13" />
+            <circle cx="6" cy="18" r="3" />
+            <circle cx="18" cy="16" r="3" />
+          </svg>
+          <span className={`text-xs tracking-wide ${isMusicPlaying ? 'text-white' : 'text-white/60'}`}>
+            {isMusicPlaying ? 'ON' : 'OFF'}
+          </span>
+        </button>
       )}
 
       {/* Original Enter Screen - Shows on first visit per session */}
