@@ -214,8 +214,8 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
             className={`${baseClasses} ${visibilityClasses} ${colorClasses}`}
         >
             {isPlaying ?
-                <ScrambleText text="<MUSIC ON/>" as="span" duration={250} /> :
-                <ScrambleText text="<MUSIC OFF/>" as="span" duration={250} />
+                <ScrambleText text="<MUSIC ON/>" as="span" duration={250} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]" /> :
+                <ScrambleText text="<MUSIC OFF/>" as="span" duration={250} className="text-white opacity-50" />
             }
         </button>
     );

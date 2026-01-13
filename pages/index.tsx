@@ -326,7 +326,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
           >
             <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
               <h2 className="text-base md:text-xl text-black tracking-wide mb-3 md:mb-4 font-bold font-space-mono">
-                <DecodingText text="Hi, I'm" trigger={hasEntered} duration={200} delay={50} />
+                <DecodingText text="Hi, I'm" trigger={hasEntered} duration={200} delay={50} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] opacity-70" />
               </h2>
               <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]">
                 {entryComplete ? (
@@ -389,7 +389,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                   text="SKILLS & EXPERTISE"
                   as="h3"
                   duration={250}
-                  className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-black font-valorant"
+                  className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-white font-valorant drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
                 />
                 <p className="text-white/60 text-sm tracking-widest font-mono drop-shadow-[0_0_2px_rgba(255,255,255,0.2)]">
                   &gt; Technologies I actively work with
@@ -449,7 +449,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 text="PROJECT MODULE"
                 as="h2"
                 duration={250}
-                className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-black font-valorant text-center md:text-left"
+                className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-white font-valorant text-center md:text-left drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
               />
               <div className="py-12 md:py-24 border-y border-white/10 w-full text-center md:text-left">
                 <ol className="list-decimal list-inside text-lg md:text-2xl font-light space-y-4">
@@ -482,7 +482,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 text="EDUCATION LOGS"
                 as="h2"
                 duration={250}
-                className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-black font-valorant text-center md:text-left"
+                className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-white font-valorant text-center md:text-left drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
               />
               <div className="flex flex-col gap-12">
                 {RESUME_DATA.education.map((edu, index) => (
@@ -525,7 +525,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 text="CONNECT MODULE"
                 as="h2"
                 duration={250}
-                className="text-2xl md:text-4xl font-bold tracking-wider mb-12 md:mb-24 text-black font-valorant text-center md:text-left"
+                className="text-2xl md:text-4xl font-bold tracking-wider mb-12 md:mb-24 text-white font-valorant text-center md:text-left drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
               />
 
               <div className="flex flex-col gap-16 items-start justify-start w-full">

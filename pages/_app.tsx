@@ -1,15 +1,15 @@
 import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
 import ClickTesseract from '@/components/ClickTesseract'
 import EnterScreen from '@/components/EnterScreen'
-import BackgroundMusic from '@/components/BackgroundMusic'
 import AudioWave from '@/components/AudioWave'
 
 // Dynamic imports for client-side only components
 const CursorTrail = dynamic(() => import('@/components/CursorTrail'), { ssr: false });
 const DotGridBackground = dynamic(() => import('@/components/DotGridBackground'), { ssr: false });
+const AudioJack = dynamic(() => import('@/components/AudioJack'), { ssr: false });
 
 const SESSION_KEY = 'portfolio_session_loaded';
 
@@ -48,27 +48,137 @@ export default function App({ Component, pageProps }: AppProps) {
     setHasEntered(true);
   };
 
-  // Audio context and click sound refs
-  const bufferRef = useRef<AudioBuffer | null>(null);
-  const ctxRef = useRef<AudioContext | null>(null);
+  // Audio refs for jack-controlled music
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const audioInitializedRef = useRef(false);
 
+  // Initialize audio element
   useEffect(() => {
     if (!mounted) return;
 
+    const audio = new Audio('/audio/a-dream-about-you.mp3');
+    audio.loop = true;
+    audio.volume = 0.3;
+    audio.preload = 'auto';
+    audioRef.current = audio;
+
+    return () => {
+      audio.pause();
+      audio.src = '';
+    };
+  }, [mounted]);
+
+  // Setup audio context and analyser
+  const setupAudioContext = useCallback(() => {
+    if (audioInitializedRef.current || !audioRef.current) return;
+
     const Ctx = window.AudioContext || (window as any).webkitAudioContext;
     const ctx = new Ctx();
-    ctxRef.current = ctx;
+    audioContextRef.current = ctx;
 
-    // Preload audio during loader
-    fetch('/audio/main-click.mp3')
-      .then(res => res.arrayBuffer())
-      .then(buf => ctx.decodeAudioData(buf))
-      .then(decoded => {
-        bufferRef.current = decoded;
-      })
-      .catch(() => {
-        // Silently fail if audio can't load
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 256;
+    analyser.smoothingTimeConstant = 0.8;
+    analyserRef.current = analyser;
+
+    const source = ctx.createMediaElementSource(audioRef.current);
+    sourceRef.current = source;
+    source.connect(analyser);
+    analyser.connect(ctx.destination);
+
+    setAnalyserNode(analyser);
+    audioInitializedRef.current = true;
+  }, []);
+
+  // Handle plug state change from AudioJack
+  const handlePlugChange = useCallback((isPlugged: boolean) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlugged) {
+      // Setup audio context on first plug (required by browsers)
+      setupAudioContext();
+
+      if (audioContextRef.current?.state === 'suspended') {
+        audioContextRef.current.resume();
+      }
+
+      // Skip intro, fade in
+      if (audio.currentTime < 5) {
+        audio.currentTime = 5;
+      }
+
+      audio.volume = 0;
+      audio.play()
+        .then(() => {
+          setIsMusicPlaying(true);
+          // Fade in
+          let vol = 0;
+          const fadeIn = setInterval(() => {
+            vol += 0.02;
+            if (vol >= 0.3) {
+              audio.volume = 0.3;
+              clearInterval(fadeIn);
+            } else {
+              audio.volume = vol;
+            }
+          }, 50);
+        })
+        .catch(console.error);
+    } else {
+      // Fade out and pause
+      let vol = audio.volume;
+      const fadeOut = setInterval(() => {
+        vol -= 0.03;
+        if (vol <= 0) {
+          audio.volume = 0;
+          audio.pause();
+          setIsMusicPlaying(false);
+          clearInterval(fadeOut);
+        } else {
+          audio.volume = vol;
+        }
+      }, 30);
+    }
+  }, [setupAudioContext]);
+
+  // Pre-loaded audio pool for instant click sounds (no lag)
+  const audioPoolRef = useRef<HTMLAudioElement[]>([]);
+  const audioIndexRef = useRef(0);
+  const POOL_SIZE = 5;
+
+  // Initialize audio pool on mount
+  useEffect(() => {
+    if (!mounted) return;
+
+    // Create pool of pre-loaded audio elements
+    const pool: HTMLAudioElement[] = [];
+    for (let i = 0; i < POOL_SIZE; i++) {
+      const audio = new Audio('/audio/main-click.mp3');
+      audio.preload = 'auto';
+      audio.volume = 0.4;
+      pool.push(audio);
+    }
+    audioPoolRef.current = pool;
+
+    // Pre-warm the pool by loading all audio
+    pool.forEach(audio => {
+      audio.load();
+    });
+
+    return () => {
+      pool.forEach(audio => {
+        audio.pause();
+        audio.src = '';
       });
+    };
+  }, [mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
 
     const handleGlobalClick = (e: MouseEvent) => {
       // Click effects only after entering
@@ -77,20 +187,15 @@ export default function App({ Component, pageProps }: AppProps) {
         setTimeout(() => setClickEffect(null), 800);
       }
 
-      // GLOBAL Click Sound - always active if audio is ready
-      if (ctxRef.current && bufferRef.current) {
-        if (ctxRef.current.state === 'suspended') ctxRef.current.resume();
-
-        const source = ctxRef.current.createBufferSource();
-        source.buffer = bufferRef.current;
-
-        const gainNode = ctxRef.current.createGain();
-        gainNode.gain.value = 0.4;
-
-        source.connect(gainNode);
-        gainNode.connect(ctxRef.current.destination);
-
-        source.start(0);
+      // INSTANT Click Sound - use pre-loaded audio pool
+      const pool = audioPoolRef.current;
+      if (pool.length > 0) {
+        const audio = pool[audioIndexRef.current];
+        audioIndexRef.current = (audioIndexRef.current + 1) % POOL_SIZE;
+        
+        // Reset and play immediately
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
       }
     };
 
@@ -146,13 +251,14 @@ export default function App({ Component, pageProps }: AppProps) {
       {/* Audio Reactive Wave - only visible after entering portfolio */}
       {hasEntered && <AudioWave isPlaying={isMusicPlaying} analyserNode={analyserNode} />}
 
-      {/* Background Music - starts after loader completes */}
-      <BackgroundMusic
-        shouldPlay={hasEntered}
-        isInverted={isInverted}
-        onAnalyserReady={setAnalyserNode}
-        onPlayingChange={setIsMusicPlaying}
-      />
+      {/* Audio Jack - interactive music control */}
+      {hasEntered && (
+        <AudioJack
+          onPlugChange={handlePlugChange}
+          isPlaying={isMusicPlaying}
+          currentSection={currentSection}
+        />
+      )}
 
       {/* Original Enter Screen - Shows on first visit per session */}
       {showLoader && (
