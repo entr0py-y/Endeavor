@@ -17,11 +17,19 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
     const [isPlaying, setIsPlaying] = useState(true);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
+    const [isMounted, setIsMounted] = useState(false);
     const hasTriedAutoplayRef = useRef(false);
     const wasPlayingRef = useRef(false);
 
+    // Set mounted state
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
     // Initialize audio on mount
     useEffect(() => {
+        if (!isMounted) return;
+        
         const audio = new Audio('/audio/a-dream-about-you.mp3');
         audio.loop = true;
         audio.volume = 0.3;
@@ -41,7 +49,7 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
                 audioContextRef.current.close();
             }
         };
-    }, []);
+    }, [isMounted]);
 
     // Setup AudioContext and Analyser
     const setupAudioContext = useCallback(() => {
