@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app'
 import { useEffect, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import ClickTesseract from '@/components/ClickTesseract'
-import CinematicLoader from '@/components/CinematicLoader'
+import EnterScreen from '@/components/EnterScreen'
 import BackgroundMusic from '@/components/BackgroundMusic'
 import AudioWave from '@/components/AudioWave'
 
@@ -71,12 +71,13 @@ export default function App({ Component, pageProps }: AppProps) {
       });
 
     const handleGlobalClick = (e: MouseEvent) => {
-      // Only show click effects after entering
-      if (!hasEntered) return;
+      // Click effects only after entering
+      if (hasEntered) {
+        setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
+        setTimeout(() => setClickEffect(null), 800);
+      }
 
-      setClickEffect({ x: e.clientX, y: e.clientY, id: Date.now() });
-      setTimeout(() => setClickEffect(null), 800);
-
+      // GLOBAL Click Sound - always active if audio is ready
       if (ctxRef.current && bufferRef.current) {
         if (ctxRef.current.state === 'suspended') ctxRef.current.resume();
 
@@ -130,13 +131,10 @@ export default function App({ Component, pageProps }: AppProps) {
 
       {/* Main Content - COMPLETELY HIDDEN until loader completes */}
       <div
-        className={`relative w-full min-h-screen transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${hasEntered
-            ? 'opacity-100 blur-0 scale-100'
-            : 'opacity-0 blur-lg scale-105 pointer-events-none'
+        className={`relative w-full min-h-screen transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${!hasEntered
+          ? 'blur-md scale-105 brightness-75 pointer-events-none overflow-hidden h-screen'
+          : 'blur-0 scale-100 brightness-100'
           }`}
-        style={{
-          visibility: hasEntered ? 'visible' : 'hidden',
-        }}
       >
         <Component {...pageProps} hasEntered={hasEntered} isInverted={isInverted} isTransitioning={false} />
       </div>
@@ -156,9 +154,9 @@ export default function App({ Component, pageProps }: AppProps) {
         onPlayingChange={setIsMusicPlaying}
       />
 
-      {/* Cinematic Loader - MUST show for minimum 2000ms on first visit */}
+      {/* Original Enter Screen - Shows on first visit per session */}
       {showLoader && (
-        <CinematicLoader onComplete={handleLoaderComplete} />
+        <EnterScreen onEnter={handleLoaderComplete} />
       )}
     </>
   )

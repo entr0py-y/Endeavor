@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
 // Dynamic imports to avoid SSR issues
+const RotatingCube = dynamic(() => import('./RotatingCube'), { ssr: false });
 const NetworkMesh = dynamic(() => import('./NetworkMesh'), { ssr: false });
 
 interface EnterScreenProps {
@@ -31,6 +32,9 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
         >
             {/* Web-like structure - Bottom layer */}
             <NetworkMesh />
+
+            {/* Tesseract with coordinates - Background */}
+            <RotatingCube />
 
             {/* Full overlay */}
             <div className="absolute inset-0 bg-black/40" />

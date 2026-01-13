@@ -13,10 +13,11 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
     const audioContextRef = useRef<AudioContext | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
     const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
+    // Default to ON - music should play by default
+    const [isPlaying, setIsPlaying] = useState(true);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
-    const hasAutoStartedRef = useRef(false);
+    const hasTriedAutoplayRef = useRef(false);
     const wasPlayingRef = useRef(false);
 
     // Initialize audio on mount
@@ -26,7 +27,6 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
         audio.volume = 0.3;
         audio.preload = 'auto';
 
-        // Track actual play/pause state from audio element
         audio.addEventListener('play', () => setIsPlaying(true));
         audio.addEventListener('pause', () => setIsPlaying(false));
         audio.addEventListener('canplaythrough', () => setIsLoaded(true));
@@ -76,7 +76,6 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
             audioContextRef.current.resume();
         }
 
-        // Only reset time if not resuming from pause
         if (audio.currentTime === 0 || audio.currentTime < 5) {
             audio.currentTime = 5;
         }
@@ -84,7 +83,6 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
         audio.volume = 0;
         audio.play()
             .then(() => {
-                // Fade in
                 let vol = 0;
                 const fadeIn = setInterval(() => {
                     vol += 0.02;
@@ -101,34 +99,42 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
             });
     }, [isLoaded, setupAudioContext]);
 
-    // Pause music function
+    // Pause music function - instant
     const pauseMusic = useCallback(() => {
         const audio = audioRef.current;
         if (!audio) return;
 
-        let vol = audio.volume;
-        const fadeOut = setInterval(() => {
-            vol -= 0.02;
-            if (vol <= 0) {
-                audio.volume = 0;
-                audio.pause();
-                clearInterval(fadeOut);
-            } else {
-                audio.volume = vol;
-            }
-        }, 50);
+        audio.pause();
+        audio.volume = 0;
     }, []);
 
-    // Auto-start when user enters (only once)
+    // Start music on first user interaction (required by browsers)
     useEffect(() => {
-        if (shouldPlay && isLoaded && !hasAutoStartedRef.current) {
-            hasAutoStartedRef.current = true;
-            // Delay to ensure user interaction context
-            const timer = setTimeout(() => {
-                playMusic();
-            }, 300);
-            return () => clearTimeout(timer);
-        }
+        if (!shouldPlay || !isLoaded || hasTriedAutoplayRef.current) return;
+
+        hasTriedAutoplayRef.current = true;
+
+        // Set up listener for first user interaction
+        const startMusic = () => {
+            playMusic();
+            document.removeEventListener('click', startMusic);
+            document.removeEventListener('touchstart', startMusic);
+            document.removeEventListener('keydown', startMusic);
+        };
+
+        // Add listeners for any user interaction
+        document.addEventListener('click', startMusic);
+        document.addEventListener('touchstart', startMusic);
+        document.addEventListener('keydown', startMusic);
+
+        // Also try immediate play (might work if user already interacted)
+        playMusic();
+
+        return () => {
+            document.removeEventListener('click', startMusic);
+            document.removeEventListener('touchstart', startMusic);
+            document.removeEventListener('keydown', startMusic);
+        };
     }, [shouldPlay, isLoaded, playMusic]);
 
     // Notify parent of playing state changes
@@ -173,12 +179,11 @@ export default function BackgroundMusic({ shouldPlay, isInverted = false, onAnal
         return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
     }, [shouldPlay]);
 
-    // Toggle function - single click
+    // Toggle function
     const handleToggle = useCallback(() => {
         const audio = audioRef.current;
         if (!audio) return;
 
-        // Check actual audio state
         if (!audio.paused) {
             pauseMusic();
         } else {

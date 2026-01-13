@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CinematicLoaderProps {
     onComplete: () => void;
+    onEnter?: () => void;
 }
 
 // Fake process messages - easily editable
@@ -19,15 +20,14 @@ const MINIMUM_DURATION = 2000; // 2 seconds - MUST always complete
 const MESSAGE_INTERVAL = 350; // ~350ms per message = ~1750ms total for 5 messages
 const EXIT_ANIMATION_DURATION = 600; // Exit transition duration
 
-export default function CinematicLoader({ onComplete }: CinematicLoaderProps) {
+export default function CinematicLoader({ onComplete, onEnter }: CinematicLoaderProps) {
     const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
     const [isExiting, setIsExiting] = useState(false);
+    const [showEnterPrompt, setShowEnterPrompt] = useState(false);
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
     // Refs to track completion state
     const hasCompletedRef = useRef(false);
-    const startTimeRef = useRef<number>(0);
-    const assetsReadyRef = useRef(false);
     const timerCompleteRef = useRef(false);
 
     // Check for reduced motion preference
@@ -40,52 +40,37 @@ export default function CinematicLoader({ onComplete }: CinematicLoaderProps) {
         return () => mediaQuery.removeEventListener('change', handler);
     }, []);
 
-    // Try to complete - only when BOTH conditions are met
-    const tryComplete = useCallback(() => {
-        if (hasCompletedRef.current) return;
+    // Handler for user tap/click to enter
+    const handleEnter = () => {
+        if (!timerCompleteRef.current || hasCompletedRef.current) return;
 
-        // CRITICAL: Both timer AND assets must be ready
-        if (timerCompleteRef.current && assetsReadyRef.current) {
-            hasCompletedRef.current = true;
-            setIsExiting(true);
+        hasCompletedRef.current = true;
+        setIsExiting(true);
 
-            // Wait for exit animation before calling onComplete
-            setTimeout(() => {
-                onComplete();
-            }, EXIT_ANIMATION_DURATION);
-        }
-    }, [onComplete]);
+        // Trigger immediate entry (for music/audio context)
+        onEnter?.();
+
+        // Wait for exit animation before calling onComplete
+        setTimeout(() => {
+            onComplete();
+        }, EXIT_ANIMATION_DURATION);
+    };
 
     // CRITICAL: Fixed 2000ms minimum timer - NON-NEGOTIABLE
     useEffect(() => {
-        startTimeRef.current = performance.now();
-
-        // This timer MUST complete before site can show
+        // This timer MUST complete before showing enter prompt
         const minimumTimer = setTimeout(() => {
             timerCompleteRef.current = true;
-            tryComplete();
+            setShowEnterPrompt(true);
         }, MINIMUM_DURATION);
 
         return () => clearTimeout(minimumTimer);
-    }, [tryComplete]);
-
-    // Simulate asset loading (in real implementation, this would track actual assets)
-    // For now, we mark assets as ready immediately, but the timer still enforces 2s minimum
-    useEffect(() => {
-        // In a real scenario, you'd track WebGL, audio, images loading here
-        // For demonstration, we mark assets ready after a small delay
-        const assetTimer = setTimeout(() => {
-            assetsReadyRef.current = true;
-            tryComplete();
-        }, 100); // Assets "ready" almost immediately, but timer still enforces 2s
-
-        return () => clearTimeout(assetTimer);
-    }, [tryComplete]);
+    }, []);
 
     // Cycle through messages - fits within the 2000ms window
     useEffect(() => {
         if (prefersReducedMotion) return;
-        if (isExiting) return;
+        if (isExiting || showEnterPrompt) return;
 
         const messageInterval = setInterval(() => {
             setCurrentMessageIndex((prev) => {
@@ -97,19 +82,20 @@ export default function CinematicLoader({ onComplete }: CinematicLoaderProps) {
         }, MESSAGE_INTERVAL);
 
         return () => clearInterval(messageInterval);
-    }, [prefersReducedMotion, isExiting]);
+    }, [prefersReducedMotion, isExiting, showEnterPrompt]);
 
     // For reduced motion: show static text, still respect 2000ms duration
     if (prefersReducedMotion) {
         return (
             <motion.div
-                className="fixed inset-0 z-[9999] bg-neutral-900 flex items-center justify-center"
+                className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center cursor-pointer"
                 initial={{ opacity: 1 }}
                 animate={{ opacity: isExiting ? 0 : 1 }}
                 transition={{ duration: EXIT_ANIMATION_DURATION / 1000 }}
+                onClick={handleEnter}
             >
-                <p className="font-space-mono text-xs tracking-[0.2em] text-white/60 uppercase">
-                    {LOADING_MESSAGES[currentMessageIndex]}
+                <p className="font-space-mono text-sm md:text-lg tracking-[0.3em] text-white uppercase text-center px-6">
+                    {showEnterPrompt ? 'Tap to enter' : LOADING_MESSAGES[currentMessageIndex]}
                 </p>
             </motion.div>
         );
@@ -117,7 +103,7 @@ export default function CinematicLoader({ onComplete }: CinematicLoaderProps) {
 
     return (
         <motion.div
-            className="fixed inset-0 z-[9999] bg-neutral-900 flex items-center justify-center cursor-none select-none"
+            className={`fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center select-none ${showEnterPrompt ? 'cursor-pointer' : 'cursor-none'}`}
             initial={{ opacity: 1 }}
             animate={{
                 opacity: isExiting ? 0 : 1,
@@ -125,44 +111,56 @@ export default function CinematicLoader({ onComplete }: CinematicLoaderProps) {
             }}
             transition={{
                 duration: EXIT_ANIMATION_DURATION / 1000,
-                ease: [0.22, 1, 0.36, 1] // Custom easing for premium feel
+                ease: [0.22, 1, 0.36, 1]
             }}
+            onClick={handleEnter}
         >
-            {/* Subtle gradient overlay for depth */}
-            <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                    background: 'radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%)',
-                }}
-            />
+            {/* Removed subtle gradient overlay to ensure text visibility */}
 
             {/* Message container */}
-            <div className="relative h-8 flex items-center justify-center overflow-hidden">
+            <div className="relative flex items-center justify-center min-h-[100px]">
                 <AnimatePresence mode="wait">
-                    <motion.p
-                        key={currentMessageIndex}
-                        className="font-space-mono text-xs tracking-[0.15em] text-white/50 uppercase absolute whitespace-nowrap"
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{
-                            duration: 0.2,
-                            ease: [0.33, 1, 0.68, 1] // power2.inOut equivalent
-                        }}
-                    >
-                        {LOADING_MESSAGES[currentMessageIndex]}
-                    </motion.p>
+                    {!showEnterPrompt ? (
+                        <motion.p
+                            key={currentMessageIndex}
+                            className="font-space-mono text-sm md:text-lg tracking-[0.3em] text-white uppercase absolute whitespace-nowrap"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{
+                                duration: 0.3,
+                                ease: "easeInOut"
+                            }}
+                        >
+                            {LOADING_MESSAGES[currentMessageIndex]}
+                        </motion.p>
+                    ) : (
+                        <motion.p
+                            key="enter-prompt"
+                            className="font-space-mono text-lg md:text-2xl tracking-[0.4em] text-white uppercase absolute whitespace-nowrap drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{
+                                opacity: [0.4, 1, 0.4],
+                                scale: 1
+                            }}
+                            transition={{
+                                opacity: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+                                scale: { duration: 0.5, ease: 'easeOut' }
+                            }}
+                        >
+                            Tap to enter
+                        </motion.p>
+                    )}
                 </AnimatePresence>
             </div>
 
             {/* Subtle bottom indicator line - grows over 2 seconds */}
             <motion.div
-                className="absolute bottom-20 left-1/2 -translate-x-1/2 h-px bg-white/15"
+                className="absolute bottom-20 left-1/2 -translate-x-1/2 h-px bg-white/30"
                 initial={{ width: 0 }}
-                animate={{ width: isExiting ? 80 : 60 }}
+                animate={{ width: showEnterPrompt ? 100 : 80 }}
                 transition={{
-                    duration: MINIMUM_DURATION / 1000,
-                    ease: 'linear'
+                    width: { duration: MINIMUM_DURATION / 1000, ease: 'linear' }
                 }}
             />
         </motion.div>

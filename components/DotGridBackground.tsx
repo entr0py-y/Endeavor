@@ -140,26 +140,50 @@ export default function DotGridBackground({ isInverted = false }: DotGridBackgro
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
-            // Draw soft blur clouds - slightly brighter patches for depth
-            const cloudTime = elapsed * 0.3;
-            const numClouds = 5;
+            // Draw organic cloud patches - irregular shapes that blend into background
+            const cloudTime = elapsed * 0.2;
 
-            for (let i = 0; i < numClouds; i++) {
-                // Each cloud moves slowly and loops
-                const cloudX = ((Math.sin(cloudTime * 0.2 + i * 2.5) * 0.3 + 0.5) * width + i * width / numClouds) % width;
-                const cloudY = ((Math.cos(cloudTime * 0.15 + i * 1.8) * 0.2 + 0.5) * height);
-                const cloudRadius = 200 + Math.sin(cloudTime * 0.4 + i) * 50;
+            // Multiple overlapping ellipses create irregular organic shapes
+            const cloudPatches = [
+                { baseX: 0.2, baseY: 0.3, scaleX: 1.8, scaleY: 0.6, size: 350, speed: 0.15, phase: 0 },
+                { baseX: 0.7, baseY: 0.2, scaleX: 0.7, scaleY: 1.5, size: 280, speed: 0.12, phase: 1.5 },
+                { baseX: 0.5, baseY: 0.7, scaleX: 1.4, scaleY: 0.8, size: 320, speed: 0.1, phase: 3 },
+                { baseX: 0.15, baseY: 0.8, scaleX: 1.2, scaleY: 1.6, size: 260, speed: 0.18, phase: 4.5 },
+                { baseX: 0.85, baseY: 0.5, scaleX: 0.9, scaleY: 1.3, size: 300, speed: 0.14, phase: 2.2 },
+                { baseX: 0.4, baseY: 0.15, scaleX: 1.6, scaleY: 0.5, size: 240, speed: 0.11, phase: 5.8 },
+            ];
 
-                // Create soft radial gradient for cloud
-                const cloudGradient = ctx.createRadialGradient(cloudX, cloudY, 0, cloudX, cloudY, cloudRadius);
-                const cloudBrightness = lerp(45, 40, progress) + Math.sin(cloudTime + i) * 5;
-                cloudGradient.addColorStop(0, `hsla(${220 + hueShift}, 15%, ${cloudBrightness}%, 0.4)`);
-                cloudGradient.addColorStop(0.5, `hsla(${220 + hueShift}, 12%, ${cloudBrightness - 5}%, 0.2)`);
+            cloudPatches.forEach((cloud, i) => {
+                // Slow drifting motion
+                const driftX = Math.sin(cloudTime * cloud.speed + cloud.phase) * width * 0.08;
+                const driftY = Math.cos(cloudTime * cloud.speed * 0.7 + cloud.phase) * height * 0.05;
+
+                const cx = cloud.baseX * width + driftX;
+                const cy = cloud.baseY * height + driftY;
+                const radius = cloud.size + Math.sin(cloudTime * 0.5 + i) * 30;
+
+                // Save context for ellipse transform
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.scale(cloud.scaleX, cloud.scaleY);
+
+                // Very subtle radial gradient - almost invisible
+                const cloudGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+                const cloudBrightness = lerp(42, 38, progress) + Math.sin(cloudTime * 0.4 + i * 0.7) * 3;
+
+                // Very low opacity for seamless blending
+                cloudGradient.addColorStop(0, `hsla(${220 + hueShift}, 10%, ${cloudBrightness}%, 0.12)`);
+                cloudGradient.addColorStop(0.4, `hsla(${222 + hueShift}, 8%, ${cloudBrightness - 3}%, 0.06)`);
+                cloudGradient.addColorStop(0.7, `hsla(${218 + hueShift}, 6%, ${cloudBrightness - 5}%, 0.02)`);
                 cloudGradient.addColorStop(1, 'transparent');
 
                 ctx.fillStyle = cloudGradient;
-                ctx.fillRect(0, 0, width, height);
-            }
+                ctx.beginPath();
+                ctx.arc(0, 0, radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            });
 
             const mx = mouseRef.current.x;
             const my = mouseRef.current.y;

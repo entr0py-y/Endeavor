@@ -244,9 +244,9 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
 
       {/* Navigation Header */}
       <nav className={`fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start pointer-events-none transition-colors duration-500 ${isInverted ? 'text-black' : 'text-white mix-blend-difference'}`}>
-        <div className={`font-bold tracking-widest text-lg md:text-3xl leading-none pointer-events-auto cursor-default transition-all duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'} ${isInverted ? 'text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]' : 'text-black'}`}>
+        <div className={`font-bold tracking-widest text-lg md:text-3xl leading-none pointer-events-auto cursor-default transition-all duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
           <span className={isInverted ? 'text-black' : 'text-white'}>&lt;</span>
-          <span className={`font-space-mono inline-flex ${isInverted ? 'text-white' : 'text-black'}`}>
+          <span className={`font-space-mono inline-flex ${isInverted ? 'text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]' : 'text-black'}`}>
             <ScrambleText text="PORTFOLIO" as="span" duration={250} />
           </span>
           <span className={isInverted ? 'text-black' : 'text-white'}>/&gt;</span>
@@ -260,8 +260,8 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
             // Consistent styling: active = white with glow, inactive = black
             let itemClasses = 'transition-all duration-500 relative group uppercase text-right py-1 cursor-pointer ';
             itemClasses += isActive
-              ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]'
-              : 'text-black hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]';
+              ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]'
+              : 'text-black hover:text-white hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]';
 
             return (
               <button
@@ -328,7 +328,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
               <h2 className="text-base md:text-xl text-black tracking-wide mb-3 md:mb-4 font-bold font-space-mono">
                 <DecodingText text="Hi, I'm" trigger={hasEntered} duration={200} delay={50} />
               </h2>
-              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant drop-shadow-[0_0_15px_rgba(255,255,255,0.6)]">
+              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]">
                 {entryComplete ? (
                   nameText
                 ) : (
@@ -342,10 +342,10 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 )}
               </h1>
               <div className="h-px w-24 bg-black mb-4 md:mb-8" />
-              <p className="text-lg md:text-2xl text-white/90 tracking-wide font-light mb-2 md:mb-4 drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]">
+              <p className="text-lg md:text-2xl text-white/90 tracking-wide font-light mb-2 md:mb-4 drop-shadow-[0_0_4px_rgba(255,255,255,0.25)]">
                 <DecodingText text={RESUME_DATA.role} trigger={hasEntered} duration={250} delay={200} />
               </p>
-              <p className="text-white/60 tracking-wide max-w-2xl text-sm md:text-lg mb-8 md:mb-12 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
+              <p className="text-white/60 tracking-wide max-w-2xl text-sm md:text-lg mb-8 md:mb-12 drop-shadow-[0_0_3px_rgba(255,255,255,0.2)]">
                 <DecodingText text={RESUME_DATA.tagline} trigger={hasEntered} duration={250} delay={250} />
               </p>
 
@@ -358,7 +358,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); scrollToSection('connect'); }}
-                  className="bg-transparent border border-black text-black w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-black hover:text-white cursor-pointer"
+                  className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-white hover:text-black cursor-pointer"
                 >
                   <ScrambleText text="GET IN TOUCH" as="span" duration={250} />
                 </button>
@@ -391,7 +391,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                   duration={250}
                   className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-black font-valorant"
                 />
-                <p className="text-white/60 text-sm tracking-widest font-mono drop-shadow-[0_0_6px_rgba(255,255,255,0.3)]">
+                <p className="text-white/60 text-sm tracking-widest font-mono drop-shadow-[0_0_2px_rgba(255,255,255,0.2)]">
                   &gt; Technologies I actively work with
                 </p>
               </div>
@@ -403,12 +403,12 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                       <div className="flex items-center gap-4">
                         <span className="text-black/60 font-mono text-sm">[{skill.id}]</span>
                         <div className="">
-                          <h4 className="text-xl md:text-2xl text-white font-bold tracking-wide group-hover:text-black transition-colors drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">{skill.name}</h4>
-                          <p className="text-white/40 text-xs tracking-wider uppercase hidden md:block drop-shadow-[0_0_6px_rgba(255,255,255,0.2)]">{skill.desc}</p>
+                          <h4 className="text-xl md:text-2xl text-white font-bold tracking-wide group-hover:text-black transition-colors drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]">{skill.name}</h4>
+                          <p className="text-white/40 text-xs tracking-wider uppercase hidden md:block drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">{skill.desc}</p>
                         </div>
                       </div>
                       <div className="text-right flex flex-col items-end">
-                        <span className="text-white/40 text-xs tracking-widest mb-1 drop-shadow-[0_0_6px_rgba(255,255,255,0.2)]">{skill.category}</span>
+                        <span className="text-white/40 text-xs tracking-widest mb-1 drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">{skill.category}</span>
                         <span className="text-black font-bold font-mono">{skill.percent}</span>
                       </div>
                     </div>
@@ -454,7 +454,7 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
               <div className="py-12 md:py-24 border-y border-white/10 w-full text-center md:text-left">
                 <ol className="list-decimal list-inside text-lg md:text-2xl font-light space-y-4">
                   <li>
-                    <span className="text-white/90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">Portfolio:</span> <a href="https://endeavor-tan.vercel.app" target="_blank" rel="noopener noreferrer" className="text-black underline hover:text-white transition-colors duration-300">https://endeavor-tan.vercel.app</a>
+                    <span className="text-white/90 drop-shadow-[0_0_3px_rgba(255,255,255,0.2)]">Portfolio:</span> <a href="https://endeavor-tan.vercel.app" target="_blank" rel="noopener noreferrer" className="text-black underline hover:text-white transition-colors duration-300">https://endeavor-tan.vercel.app</a>
                   </li>
                 </ol>
               </div>
@@ -488,14 +488,14 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 {RESUME_DATA.education.map((edu, index) => (
                   <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-black transition-colors group w-full">
                     <div className="text-left">
-                      <h3 className="text-xl md:text-3xl font-bold tracking-wide text-white group-hover:text-black transition-colors font-space-mono mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
+                      <h3 className="text-xl md:text-3xl font-bold tracking-wide text-white group-hover:text-black transition-colors font-space-mono mb-2 drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]">
                         {edu.institution}
                       </h3>
-                      <p className="text-white/80 text-lg tracking-wider drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">{edu.title}</p>
+                      <p className="text-white/80 text-lg tracking-wider drop-shadow-[0_0_3px_rgba(255,255,255,0.2)]">{edu.title}</p>
                     </div>
                     <div className="mt-4 md:mt-0 text-left md:text-right w-full md:w-auto">
                       <span className="block text-black text-sm tracking-widest mb-1">{edu.status}</span>
-                      <p className="text-white/40 text-sm font-mono drop-shadow-[0_0_6px_rgba(255,255,255,0.2)]">{edu.year}</p>
+                      <p className="text-white/40 text-sm font-mono drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">{edu.year}</p>
                     </div>
                   </div>
                 ))}
@@ -542,9 +542,9 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                       text="INSTAGRAM"
                       as="h3"
                       duration={250}
-                      className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                      className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]"
                     />
-                    <p className="text-white/40 text-sm mt-2 tracking-wider drop-shadow-[0_0_6px_rgba(255,255,255,0.2)]">@endeavv0r</p>
+                    <p className="text-white/40 text-sm mt-2 tracking-wider drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">@endeavv0r</p>
                   </div>
                 </a>
 
@@ -561,9 +561,9 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                       text="LINKEDIN"
                       as="h3"
                       duration={250}
-                      className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                      className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]"
                     />
-                    <p className="text-white/40 text-sm mt-2 tracking-wider drop-shadow-[0_0_6px_rgba(255,255,255,0.2)]">Connect Professionally</p>
+                    <p className="text-white/40 text-sm mt-2 tracking-wider drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">Connect Professionally</p>
                   </div>
                 </a>
               </div>
