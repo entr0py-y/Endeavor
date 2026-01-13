@@ -11,8 +11,6 @@ const CursorTrail = dynamic(() => import('@/components/CursorTrail'), { ssr: fal
 const DotGridBackground = dynamic(() => import('@/components/DotGridBackground'), { ssr: false });
 const AudioJack = dynamic(() => import('@/components/AudioJack'), { ssr: false });
 
-const SESSION_KEY = 'portfolio_session_loaded';
-
 export default function App({ Component, pageProps }: AppProps) {
   const [clickEffect, setClickEffect] = useState<{ x: number, y: number, id: number } | null>(null);
   const [hasEntered, setHasEntered] = useState(false);
@@ -26,24 +24,15 @@ export default function App({ Component, pageProps }: AppProps) {
   // Dark background for: Skills(1), Education(3)
   const isInverted = currentSection === 0 || currentSection === 2 || currentSection === 4;
 
-  // Check if this is first visit this session
+  // Set mounted on client side
   useEffect(() => {
     setMounted(true);
-
-    // Check session storage for first visit
-    const hasLoaded = sessionStorage.getItem(SESSION_KEY);
-
-    if (hasLoaded) {
-      // Already visited this session - skip loader immediately
-      setShowLoader(false);
-      setHasEntered(true);
-    }
-    // If first visit, loader stays visible (showLoader is already true)
+    // Enter screen always shows on page load/reload
+    // showLoader is already true by default
   }, []);
 
-  // Handle loader completion - ONLY called after 2000ms minimum
+  // Handle loader completion - when user clicks enter
   const handleLoaderComplete = () => {
-    sessionStorage.setItem(SESSION_KEY, 'true');
     setShowLoader(false);
     setHasEntered(true);
   };

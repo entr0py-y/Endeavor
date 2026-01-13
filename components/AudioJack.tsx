@@ -63,10 +63,12 @@ export default function AudioJack({ onPlugChange, isPlaying, currentSection = 0 
   const moveAnimationRef = useRef<number>();
   
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isPluggingIn, setIsPluggingIn] = useState(false); // Track direction of animation
   const [isPlugged, setIsPlugged] = useState(false);
   const [jackPos, setJackPos] = useState<Point>({ x: 0, y: 0 });
   const [socketPos, setSocketPos] = useState<Point>({ x: 0, y: 0 });
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [showHint, setShowHint] = useState(true); // For smooth fade out
 
   // Rest position for the jack (bottom-left area)
   const restPosRef = useRef<Point>({ x: 100, y: 0 });
@@ -194,8 +196,22 @@ export default function AudioJack({ onPlugChange, isPlaying, currentSection = 0 
     const targetPos = isPlugged ? restPosRef.current : socketPos;
     const duration = 800; // ms (2x slower)
     const startTime = performance.now();
-
+    
+    // Track if we're plugging in or unplugging
+    const pluggingIn = !isPlugged;
+    setIsPluggingIn(pluggingIn);
     setIsAnimating(true);
+    
+    // Hide hint when plugging in (will fade out smoothly)
+    // Show hint when unplugging (will fade in smoothly)
+    if (pluggingIn) {
+      setShowHint(false);
+    } else {
+      // Turn off music immediately when unplugging
+      onPlugChange(false);
+      // Start fading in the hint
+      setShowHint(true);
+    }
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
@@ -214,9 +230,14 @@ export default function AudioJack({ onPlugChange, isPlaying, currentSection = 0 
       } else {
         // Animation complete
         setIsAnimating(false);
+        setIsPluggingIn(false);
         const newPlugged = !isPlugged;
         setIsPlugged(newPlugged);
-        onPlugChange(newPlugged);
+        
+        // Only call onPlugChange when plugging IN (unplugging already called it immediately)
+        if (newPlugged) {
+          onPlugChange(true);
+        }
         
         if (newPlugged) {
           // Play plug-in sound
@@ -261,8 +282,8 @@ export default function AudioJack({ onPlugChange, isPlaying, currentSection = 0 
       // Update wire physics
       updateWire(jackPos);
 
-      // Draw wire only when plugged in or animating
-      if (isPlugged || isAnimating) {
+      // Draw wire only when plugging in or already plugged (not when unplugging)
+      if (isPlugged || (isAnimating && isPluggingIn)) {
         drawWire(ctx);
       }
 
@@ -286,7 +307,7 @@ export default function AudioJack({ onPlugChange, isPlaying, currentSection = 0 
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [jackPos, socketPos, isPlugged, isAnimating, updateWire]);
+  }, [jackPos, socketPos, isPlugged, isAnimating, isPluggingIn, updateWire]);
 
   // Draw wire with smooth curve
   const drawWire = (ctx: CanvasRenderingContext2D) => {
@@ -439,15 +460,15 @@ export default function AudioJack({ onPlugChange, isPlaying, currentSection = 0 
         className="absolute inset-0 w-full h-full"
       />
       
-      {/* Curved arrow hint pointing to pin - only show when not plugged and on first slide */}
-      {!isPlugged && !isAnimating && currentSection === 0 && (
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            left: jackPos.x - (CONFIG.jack.bodyLength + CONFIG.jack.tipLength),
-            top: jackPos.y - 90,
-          }}
-        >
+      {/* Curved arrow hint pointing to pin - smooth fade out */}
+      <div
+        className="absolute pointer-events-none transition-opacity duration-700 ease-out"
+        style={{
+          left: jackPos.x - (CONFIG.jack.bodyLength + CONFIG.jack.tipLength),
+          top: jackPos.y - 90,
+          opacity: (!isPlugged && !isAnimating && currentSection === 0 && showHint) ? 1 : 0,
+        }}
+      >
           {/* Curved arrow SVG with glow */}
           <svg
             width="100"
@@ -494,7 +515,6 @@ export default function AudioJack({ onPlugChange, isPlaying, currentSection = 0 
             <div>(recommended)</div>
           </div>
         </div>
-      )}
       
       {/* Clickable area for jack (horizontal) */}
       <div
