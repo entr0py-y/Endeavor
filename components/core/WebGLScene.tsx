@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
@@ -9,6 +9,9 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Chromatic aberration offset vector
+const chromaticOffset = new THREE.Vector2(0.0005, 0.0005);
 
 // Scroll-driven camera controller
 function ScrollCamera() {
@@ -241,8 +244,10 @@ export default function WebGLScene() {
                         blendFunction={BlendFunction.ADD}
                     />
                     <ChromaticAberration
-                        offset={{ x: 0.0005, y: 0.0005 }}
+                        offset={chromaticOffset}
                         blendFunction={BlendFunction.NORMAL}
+                        radialModulation={false}
+                        modulationOffset={0}
                     />
                 </EffectComposer>
             </Canvas>
