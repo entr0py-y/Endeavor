@@ -10,6 +10,8 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {
+    "@react-three/fiber": "^8.15.12",
+    "@react-three/postprocessing": "^2.15.11",
     "@types/three": "^0.182.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -23,6 +25,7 @@
     "lenis": "^1.0.42",
     "mongoose": "^8.0.3",
     "next": "^14.0.4",
+    "postprocessing": "^6.34.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1",
