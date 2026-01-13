@@ -14,6 +14,13 @@ interface Edge {
     distance: number;
 }
 
+// Fluid scale factor for network mesh
+const getFluidScale = () => {
+    if (typeof window === 'undefined') return 1;
+    const vmin = Math.min(window.innerWidth, window.innerHeight);
+    return Math.max(0.5, Math.min(1.5, vmin / 1440));
+};
+
 const NetworkMesh: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>(0);
@@ -26,20 +33,36 @@ const NetworkMesh: React.FC = () => {
     const glowIntensityRef = useRef(0);
     const lastFrameTimeRef = useRef(0);
     const performanceEngineRef = useRef<ReturnType<typeof getPerformanceEngine> | null>(null);
+    const fluidScaleRef = useRef(1);
 
-    // Configuration - Dense coverage with more nodes
-    // Mobile gets significantly fewer nodes for better performance and less visual clutter
+    // Configuration - Fluid scaling based on viewport
+    // Node count and connection distances scale with viewport
     const getNodeCount = () => {
+        const scale = getFluidScale();
         if (typeof window !== 'undefined' && window.innerWidth < 768) {
-            return 40; // Much sparser on mobile
+            return Math.round(40 * Math.max(0.7, scale)); // Mobile: fewer nodes, scaled
         }
-        return 120;
+        return Math.round(120 * Math.max(0.6, Math.min(1.3, scale))); // Desktop: scaled node count
     };
-    const CONNECTION_DISTANCE_DESKTOP = 160;
-    const CONNECTION_DISTANCE_MOBILE = 120;
-    const GLOW_RADIUS = 200;
+    
+    // Connection distances scale with viewport for proportional look
+    const getConnectionDistance = (isMobile: boolean) => {
+        const scale = getFluidScale();
+        const baseDistance = isMobile ? 120 : 160;
+        return Math.round(baseDistance * Math.max(0.7, Math.min(1.4, scale)));
+    };
+    
+    const getGlowRadius = () => {
+        const scale = getFluidScale();
+        return Math.round(200 * Math.max(0.6, Math.min(1.4, scale)));
+    };
+    
+    const getDriftAmplitude = () => {
+        const scale = getFluidScale();
+        return 30 * Math.max(0.7, Math.min(1.3, scale));
+    };
+
     const DRIFT_SPEED = 0.15;
-    const DRIFT_AMPLITUDE = 30;
     const LERP_FACTOR = 0.08;
 
     // Initialize nodes - Grid-based distribution with jitter for even spread
@@ -79,7 +102,7 @@ const NetworkMesh: React.FC = () => {
     // Calculate edges (connections between nearby nodes)
     const calculateEdges = useCallback((nodes: Node[], isMobile: boolean) => {
         const edges: Edge[] = [];
-        const CONNECTION_DISTANCE = isMobile ? CONNECTION_DISTANCE_MOBILE : CONNECTION_DISTANCE_DESKTOP;
+        const CONNECTION_DISTANCE = getConnectionDistance(isMobile);
 
         for (let i = 0; i < nodes.length; i++) {
             for (let j = i + 1; j < nodes.length; j++) {
@@ -101,6 +124,8 @@ const NetworkMesh: React.FC = () => {
         const nodes = nodesRef.current;
         const time = timeRef.current;
         const isMobile = isMobileRef.current;
+        const GLOW_RADIUS = getGlowRadius();
+        const DRIFT_AMPLITUDE = getDriftAmplitude();
 
         // Clear canvas
         ctx.clearRect(0, 0, width, height);
@@ -188,8 +213,9 @@ const NetworkMesh: React.FC = () => {
         }
 
         // Draw base edges in one batch
+        const baseLineWidth = 0.8 * Math.max(0.6, getFluidScale());
         ctx.strokeStyle = lineBase;
-        ctx.lineWidth = 0.8;
+        ctx.lineWidth = baseLineWidth;
         ctx.beginPath();
         for (let i = 0; i < baseEdges.length; i++) {
             const e = baseEdges[i];
@@ -199,16 +225,17 @@ const NetworkMesh: React.FC = () => {
         ctx.stroke();
 
         // Draw glow edges (these need individual styling)
+        const fluidScale = getFluidScale();
         for (let i = 0; i < glowEdges.length; i++) {
             const e = glowEdges[i];
             ctx.beginPath();
             ctx.moveTo(e.ax, e.ay);
             ctx.lineTo(e.bx, e.by);
             ctx.strokeStyle = `rgba(255, 255, 255, ${e.opacity.toFixed(3)})`;
-            ctx.lineWidth = e.width;
+            ctx.lineWidth = e.width * Math.max(0.7, fluidScale);
 
             if (e.glow) {
-                ctx.shadowBlur = 18 * (e.opacity / 0.8);
+                ctx.shadowBlur = 18 * (e.opacity / 0.8) * Math.max(0.6, fluidScale);
                 ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
             }
 

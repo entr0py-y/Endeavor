@@ -4,12 +4,20 @@ interface RotatingCubeProps {
   isInverted?: boolean;
 }
 
+// Get fluid scale based on viewport
+const getFluidScale = () => {
+  if (typeof window === 'undefined') return 1;
+  const vmin = Math.min(window.innerWidth, window.innerHeight);
+  return Math.max(0.5, Math.min(1.5, vmin / 1440));
+};
+
 export default function RotatingCube({ isInverted = false }: RotatingCubeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const rotationRef = useRef({ xy: 0, xz: 0, xw: 0, yz: 0, yw: 0, zw: 0 });
   const animationRef = useRef<number>();
   const isInvertedRef = useRef(isInverted);
+  const fluidScaleRef = useRef(1);
 
   // Update ref when prop changes
   useEffect(() => {
@@ -56,6 +64,7 @@ export default function RotatingCube({ isInverted = false }: RotatingCubeProps) 
       height = window.innerHeight;
       canvas.width = width;
       canvas.height = height;
+      fluidScaleRef.current = getFluidScale();
     };
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -160,7 +169,9 @@ export default function RotatingCube({ isInverted = false }: RotatingCubeProps) 
 
       const centerX = width / 2;
       const centerY = height / 2;
-      const size = Math.min(width, height) * 0.2;
+      // Fluid size scaling based on viewport
+      const fluidScale = fluidScaleRef.current;
+      const size = Math.min(width, height) * 0.2 * Math.max(0.7, Math.min(1.3, fluidScale * 1.1));
 
       // Smooth rotation updates
       const rot = rotationRef.current;
@@ -178,7 +189,8 @@ export default function RotatingCube({ isInverted = false }: RotatingCubeProps) 
       }
 
       // Draw edges - batch by similar opacity for fewer state changes
-      ctx.lineWidth = 2;
+      const lineWidth = 2 * Math.max(0.6, fluidScale);
+      ctx.lineWidth = lineWidth;
       
       // Group edges by opacity range for batching
       const edgesByOpacity: Map<number, number[][]> = new Map();
@@ -208,7 +220,7 @@ export default function RotatingCube({ isInverted = false }: RotatingCubeProps) 
       // Draw vertices with batched fills
       for (let i = 0; i < 16; i++) {
         const [x, y, z] = projectedVertices[i];
-        const radius = Math.max(1, 3 + (z + 1) * 2);
+        const radius = Math.max(1, (3 + (z + 1) * 2) * Math.max(0.6, fluidScale));
         const opacity = Math.max(0.1, Math.min(0.7, 0.3 + (z + 1) * 0.2));
 
         ctx.fillStyle = `rgba(${colorValue},${colorValue},${colorValue},${opacity})`;
@@ -218,13 +230,15 @@ export default function RotatingCube({ isInverted = false }: RotatingCubeProps) 
 
         // Draw coordinate text
         if (opacity > 0.15) {
-          // Smaller font size calculation
-          const fontSize = Math.max(6, 8 + (z + 1) * 2);
+          // Smaller font size calculation - fluid scaling
+          const baseFontSize = Math.max(6, 8 + (z + 1) * 2);
+          const fontSize = Math.round(baseFontSize * Math.max(0.7, Math.min(1.2, fluidScale)));
           ctx.font = `${fontSize}px "Space Mono", monospace`;
           // Text color - lerp between dark grey (50) and light grey (200)
           const greyVal = Math.round(lerp(50, 200, progress));
           ctx.fillStyle = `rgba(${greyVal}, ${greyVal}, ${greyVal}, ${opacity * 0.8})`;
-          ctx.fillText(`[${Math.round(x)}, ${Math.round(y)}]`, x + radius + 4, y + 4);
+          const textOffset = (radius + 4) * Math.max(0.7, fluidScale);
+          ctx.fillText(`[${Math.round(x)}, ${Math.round(y)}]`, x + textOffset, y + 4 * fluidScale);
         }
       }
 

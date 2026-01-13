@@ -1,5 +1,153 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Teko:wght@400;500;600;700&display=swap');
 
+/* ================================
+   FLUID RESPONSIVE DESIGN SYSTEM
+   ================================
+   All values scale proportionally based on viewport.
+   Reference design: 1440px viewport width
+   Uses vmin for true proportional scaling across all aspect ratios
+*/
+
+:root {
+  /* Base viewport reference (design was made at this width) */
+  --viewport-ref: 1440;
+  
+  /* Fluid scaling factor using vmin for aspect-ratio independent scaling */
+  --fluid-scale: calc(100vmin / 1440);
+  
+  /* Alternative scale factors for different use cases */
+  --fluid-scale-w: calc(100vw / 1440);
+  --fluid-scale-h: calc(100vh / 900);
+  
+  /* Fluid spacing units - scales with viewport */
+  --space-xs: clamp(0.25rem, 0.5vmin, 0.5rem);
+  --space-sm: clamp(0.5rem, 1vmin, 1rem);
+  --space-md: clamp(1rem, 2vmin, 2rem);
+  --space-lg: clamp(1.5rem, 3vmin, 3rem);
+  --space-xl: clamp(2rem, 4vmin, 4rem);
+  --space-2xl: clamp(3rem, 6vmin, 6rem);
+  --space-3xl: clamp(4rem, 8vmin, 8rem);
+  
+  /* Fluid typography scale */
+  --text-xs: clamp(0.625rem, calc(0.5rem + 0.5vmin), 0.875rem);
+  --text-sm: clamp(0.75rem, calc(0.6rem + 0.6vmin), 1rem);
+  --text-base: clamp(0.875rem, calc(0.7rem + 0.7vmin), 1.125rem);
+  --text-lg: clamp(1rem, calc(0.8rem + 0.8vmin), 1.5rem);
+  --text-xl: clamp(1.125rem, calc(0.9rem + 1vmin), 1.75rem);
+  --text-2xl: clamp(1.25rem, calc(1rem + 1.2vmin), 2rem);
+  --text-3xl: clamp(1.5rem, calc(1.2rem + 1.5vmin), 2.5rem);
+  --text-4xl: clamp(1.875rem, calc(1.5rem + 2vmin), 3.5rem);
+  --text-5xl: clamp(2.25rem, calc(1.8rem + 2.5vmin), 4rem);
+  --text-6xl: clamp(2.75rem, calc(2.2rem + 3vmin), 5rem);
+  --text-7xl: clamp(3.5rem, calc(2.8rem + 4vmin), 6rem);
+  --text-8xl: clamp(4rem, calc(3.2rem + 5vmin), 7.5rem);
+  --text-9xl: clamp(5rem, calc(4rem + 6vmin), 9rem);
+  
+  /* Fluid border/glow sizes */
+  --border-thin: clamp(0.5px, 0.1vmin, 1px);
+  --border-normal: clamp(1px, 0.15vmin, 2px);
+  --border-thick: clamp(2px, 0.25vmin, 3px);
+  
+  /* Fluid shadow/glow spread */
+  --glow-sm: clamp(5px, 1vmin, 10px);
+  --glow-md: clamp(10px, 2vmin, 20px);
+  --glow-lg: clamp(20px, 4vmin, 40px);
+  --glow-xl: clamp(30px, 6vmin, 60px);
+  
+  /* Fluid container widths */
+  --container-sm: min(90vw, 640px);
+  --container-md: min(90vw, 768px);
+  --container-lg: min(90vw, 1024px);
+  --container-xl: min(90vw, 1280px);
+  --container-2xl: min(90vw, 1536px);
+  
+  /* Fluid element sizes */
+  --size-icon-sm: clamp(1rem, 2vmin, 1.5rem);
+  --size-icon-md: clamp(1.5rem, 3vmin, 2.5rem);
+  --size-icon-lg: clamp(2rem, 4vmin, 3.5rem);
+  --size-icon-xl: clamp(3rem, 6vmin, 5rem);
+  
+  /* Fluid button dimensions */
+  --btn-height-sm: clamp(2rem, 4vmin, 2.5rem);
+  --btn-height-md: clamp(2.5rem, 5vmin, 3.5rem);
+  --btn-height-lg: clamp(3rem, 6vmin, 4.5rem);
+  --btn-padding-x: clamp(1rem, 2vmin, 2rem);
+  --btn-padding-y: clamp(0.5rem, 1vmin, 1rem);
+  
+  /* Fluid gap/margin utilities */
+  --gap-1: clamp(0.25rem, 0.5vmin, 0.5rem);
+  --gap-2: clamp(0.5rem, 1vmin, 1rem);
+  --gap-4: clamp(1rem, 2vmin, 1.5rem);
+  --gap-6: clamp(1.5rem, 3vmin, 2rem);
+  --gap-8: clamp(2rem, 4vmin, 3rem);
+  --gap-12: clamp(3rem, 6vmin, 4rem);
+  --gap-16: clamp(4rem, 8vmin, 6rem);
+  --gap-24: clamp(6rem, 12vmin, 8rem);
+}
+
+/* Fluid typography utility classes */
+.fluid-text-xs { font-size: var(--text-xs) !important; }
+.fluid-text-sm { font-size: var(--text-sm) !important; }
+.fluid-text-base { font-size: var(--text-base) !important; }
+.fluid-text-lg { font-size: var(--text-lg) !important; }
+.fluid-text-xl { font-size: var(--text-xl) !important; }
+.fluid-text-2xl { font-size: var(--text-2xl) !important; }
+.fluid-text-3xl { font-size: var(--text-3xl) !important; }
+.fluid-text-4xl { font-size: var(--text-4xl) !important; }
+.fluid-text-5xl { font-size: var(--text-5xl) !important; }
+.fluid-text-6xl { font-size: var(--text-6xl) !important; }
+.fluid-text-7xl { font-size: var(--text-7xl) !important; }
+.fluid-text-8xl { font-size: var(--text-8xl) !important; }
+.fluid-text-9xl { font-size: var(--text-9xl) !important; }
+
+/* Fluid spacing utility classes */
+.fluid-p-xs { padding: var(--space-xs) !important; }
+.fluid-p-sm { padding: var(--space-sm) !important; }
+.fluid-p-md { padding: var(--space-md) !important; }
+.fluid-p-lg { padding: var(--space-lg) !important; }
+.fluid-p-xl { padding: var(--space-xl) !important; }
+
+.fluid-m-xs { margin: var(--space-xs) !important; }
+.fluid-m-sm { margin: var(--space-sm) !important; }
+.fluid-m-md { margin: var(--space-md) !important; }
+.fluid-m-lg { margin: var(--space-lg) !important; }
+.fluid-m-xl { margin: var(--space-xl) !important; }
+
+.fluid-gap-xs { gap: var(--space-xs) !important; }
+.fluid-gap-sm { gap: var(--space-sm) !important; }
+.fluid-gap-md { gap: var(--space-md) !important; }
+.fluid-gap-lg { gap: var(--space-lg) !important; }
+.fluid-gap-xl { gap: var(--space-xl) !important; }
+
+/* Fluid padding directional */
+.fluid-px-sm { padding-left: var(--space-sm) !important; padding-right: var(--space-sm) !important; }
+.fluid-px-md { padding-left: var(--space-md) !important; padding-right: var(--space-md) !important; }
+.fluid-px-lg { padding-left: var(--space-lg) !important; padding-right: var(--space-lg) !important; }
+.fluid-px-xl { padding-left: var(--space-xl) !important; padding-right: var(--space-xl) !important; }
+
+.fluid-py-sm { padding-top: var(--space-sm) !important; padding-bottom: var(--space-sm) !important; }
+.fluid-py-md { padding-top: var(--space-md) !important; padding-bottom: var(--space-md) !important; }
+.fluid-py-lg { padding-top: var(--space-lg) !important; padding-bottom: var(--space-lg) !important; }
+.fluid-py-xl { padding-top: var(--space-xl) !important; padding-bottom: var(--space-xl) !important; }
+
+/* Fluid container class */
+.fluid-container {
+  width: 90vw;
+  max-width: min(90vw, calc(1400 * var(--fluid-scale-w)));
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+/* Fluid section padding */
+.fluid-section {
+  padding-top: var(--space-3xl);
+  padding-bottom: var(--space-3xl);
+  padding-left: clamp(1rem, 5vw, 8rem);
+  padding-right: clamp(1rem, 5vw, 4rem);
+}
+
 @font-face {
   font-family: 'Valorant';
   src: url('/fonts/Valorant Font.ttf') format('truetype');
@@ -203,15 +351,15 @@ body {
   background: linear-gradient(135deg,
       rgba(255, 255, 255, 0.03) 0%,
       rgba(255, 255, 255, 0.01) 100%);
-  backdrop-filter: blur(40px) saturate(180%) brightness(1.1);
-  -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(clamp(20px, 4vmin, 40px)) saturate(180%) brightness(1.1);
+  -webkit-backdrop-filter: blur(clamp(20px, 4vmin, 40px)) saturate(180%) brightness(1.1);
+  border: var(--border-normal) solid rgba(255, 255, 255, 0.15);
   box-shadow:
-    0 8px 32px 0 rgba(0, 0, 0, 0.3),
-    0 4px 20px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
-    inset 0 2px 4px 0 rgba(255, 255, 255, 0.25),
-    0 0 60px 0 rgba(255, 255, 255, 0.02);
+    0 clamp(4px, 1vmin, 8px) clamp(16px, 3vmin, 32px) 0 rgba(0, 0, 0, 0.3),
+    0 clamp(2px, 0.5vmin, 4px) clamp(10px, 2vmin, 20px) 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 var(--border-normal) rgba(255, 255, 255, 0.2),
+    inset 0 clamp(1px, 0.2vmin, 2px) clamp(2px, 0.4vmin, 4px) 0 rgba(255, 255, 255, 0.25),
+    0 0 clamp(30px, 5vmin, 60px) 0 rgba(255, 255, 255, 0.02);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -235,30 +383,24 @@ body {
   background: linear-gradient(135deg,
       rgba(255, 255, 255, 0.08) 0%,
       rgba(255, 255, 255, 0.04) 100%);
-  backdrop-filter: blur(24px) saturate(200%) brightness(1.2);
-  -webkit-backdrop-filter: blur(24px) saturate(200%) brightness(1.2);
+  backdrop-filter: blur(clamp(12px, 2.5vmin, 24px)) saturate(200%) brightness(1.2);
+  -webkit-backdrop-filter: blur(clamp(12px, 2.5vmin, 24px)) saturate(200%) brightness(1.2);
   border-color: rgba(255, 40, 60, 0.5);
   box-shadow:
-    0 12px 40px 0 rgba(0, 0, 0, 0.4),
-    0 6px 24px 0 rgba(255, 255, 255, 0.15),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 2px 6px 0 rgba(255, 255, 255, 0.3),
-    0 0 80px 0 rgba(220, 20, 60, 0.1);
-  box-shadow:
-    0 12px 48px 0 rgba(255, 0, 0, 0.28),
-    0 4px 24px 0 rgba(255, 255, 255, 0.12),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.2),
-    inset 0 1px 3px 0 rgba(255, 255, 255, 0.28);
-  transform: translateY(-2px);
+    0 clamp(6px, 1.2vmin, 12px) clamp(24px, 4vmin, 48px) 0 rgba(255, 0, 0, 0.28),
+    0 clamp(2px, 0.4vmin, 4px) clamp(12px, 2vmin, 24px) 0 rgba(255, 255, 255, 0.12),
+    inset 0 0 0 var(--border-normal) rgba(255, 255, 255, 0.2),
+    inset 0 var(--border-normal) clamp(1.5px, 0.3vmin, 3px) 0 rgba(255, 255, 255, 0.28);
+  transform: translateY(clamp(-1px, -0.2vmin, -2px));
 }
 
 .nothing-button {
   background: transparent;
-  border: 1px solid #FFFFFF;
+  border: var(--border-normal) solid #FFFFFF;
   color: #FFFFFF;
-  padding: 0.75rem 2rem;
+  padding: var(--btn-padding-y) var(--btn-padding-x);
   font-family: 'ntype82', sans-serif;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
@@ -290,11 +432,11 @@ body {
 
 .nothing-input {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: var(--border-normal) solid rgba(255, 255, 255, 0.3);
   color: #FFFFFF;
-  padding: 1rem 1.5rem;
+  padding: var(--space-sm) var(--space-md);
   font-family: 'ntype82', sans-serif;
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
   outline: none;
   transition: border-color 0.3s ease;
 }
@@ -381,33 +523,33 @@ body {
 /* Red Glow Effect for Headings */
 .glow-red {
   text-shadow:
-    0 0 10px rgba(255, 0, 60, 0.6),
-    0 0 20px rgba(255, 0, 60, 0.4),
-    0 0 30px rgba(255, 0, 60, 0.2);
+    0 0 var(--glow-sm) rgba(255, 0, 60, 0.6),
+    0 0 var(--glow-md) rgba(255, 0, 60, 0.4),
+    0 0 var(--glow-lg) rgba(255, 0, 60, 0.2);
 }
 
 /* White Glow Effect for White Text */
 .glow-white {
   text-shadow:
-    0 0 10px rgba(255, 255, 255, 0.6),
-    0 0 20px rgba(255, 255, 255, 0.4),
-    0 0 30px rgba(255, 255, 255, 0.2);
+    0 0 var(--glow-sm) rgba(255, 255, 255, 0.6),
+    0 0 var(--glow-md) rgba(255, 255, 255, 0.4),
+    0 0 var(--glow-lg) rgba(255, 255, 255, 0.2);
 }
 
 /* Button Hover Glow Effect - Red */
 .glow-on-hover-red:hover {
   box-shadow:
-    0 0 10px rgba(255, 0, 60, 0.6),
-    0 0 20px rgba(255, 0, 60, 0.4),
-    0 0 30px rgba(255, 0, 60, 0.2);
+    0 0 var(--glow-sm) rgba(255, 0, 60, 0.6),
+    0 0 var(--glow-md) rgba(255, 0, 60, 0.4),
+    0 0 var(--glow-lg) rgba(255, 0, 60, 0.2);
 }
 
 /* Button Hover Glow Effect - White */
 .glow-on-hover-white:hover {
   box-shadow:
-    0 0 10px rgba(255, 255, 255, 0.6),
-    0 0 20px rgba(255, 255, 255, 0.4),
-    0 0 30px rgba(255, 255, 255, 0.2);
+    0 0 var(--glow-sm) rgba(255, 255, 255, 0.6),
+    0 0 var(--glow-md) rgba(255, 255, 255, 0.4),
+    0 0 var(--glow-lg) rgba(255, 255, 255, 0.2);
 }
 
 

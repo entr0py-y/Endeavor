@@ -1,4 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
+// Get fluid scale based on viewport
+const getFluidScale = () => {
+  if (typeof window === 'undefined') return 1;
+  const vmin = Math.min(window.innerWidth, window.innerHeight);
+  return Math.max(0.5, Math.min(1.5, vmin / 1440));
+};
 
 export default function FollowCube() {
   const cubeRef = useRef<HTMLDivElement>(null);
@@ -6,13 +13,17 @@ export default function FollowCube() {
   const currentPosRef = useRef({ x: 0, y: 0 });
   const animationRef = useRef<number>();
 
-  const [isMobile, setIsMobile] = React.useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [fluidScale, setFluidScale] = useState(1);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    const updateScales = () => {
+      setIsMobile(window.innerWidth < 768);
+      setFluidScale(getFluidScale());
+    };
+    updateScales();
+    window.addEventListener('resize', updateScales);
+    return () => window.removeEventListener('resize', updateScales);
   }, []);
 
   useEffect(() => {
@@ -31,8 +42,13 @@ export default function FollowCube() {
       currentPosRef.current.x += (mouseRef.current.x - currentPosRef.current.x) * ease;
       currentPosRef.current.y += (mouseRef.current.y - currentPosRef.current.y) * ease;
 
+      // Get fluid size for offset
+      const scale = getFluidScale();
+      const size = 100 * Math.max(0.6, scale);
+      const offset = size / 2;
+
       // Use transform3d for GPU acceleration
-      cube.style.transform = `translate3d(${currentPosRef.current.x - 50}px, ${currentPosRef.current.y - 50}px, 0)`;
+      cube.style.transform = `translate3d(${currentPosRef.current.x - offset}px, ${currentPosRef.current.y - offset}px, 0)`;
 
       animationRef.current = requestAnimationFrame(animate);
     };
@@ -45,19 +61,22 @@ export default function FollowCube() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []); // Run effect always, but can exit early if isMobile inside?
-  // Actually, better to just let it run or add isMobile dependency. 
-  // But strictly, simply returning null at the end is safest for Hook rules.
+  }, []);
 
   if (isMobile) return null;
+
+  // Fluid cube size
+  const cubeSize = `clamp(60px, 8vmin, 100px)`;
+  const borderWidth = `clamp(1px, 0.2vmin, 2px)`;
+  const shadowSize = `clamp(10px, 2vmin, 20px)`;
 
   return (
     <div
       ref={cubeRef}
       className="fixed pointer-events-none z-0"
       style={{
-        width: '100px',
-        height: '100px',
+        width: cubeSize,
+        height: cubeSize,
         willChange: 'transform',
         left: 0,
         top: 0,
@@ -67,8 +86,8 @@ export default function FollowCube() {
         className="w-full h-full animate-spin"
         style={{
           background: 'rgba(255, 255, 255, 0.15)',
-          border: '2px solid rgba(255, 255, 255, 0.6)',
-          boxShadow: '0 0 20px rgba(255, 255, 255, 0.4)',
+          border: `${borderWidth} solid rgba(255, 255, 255, 0.6)`,
+          boxShadow: `0 0 ${shadowSize} rgba(255, 255, 255, 0.4)`,
           animationDuration: '4s',
         }}
       />

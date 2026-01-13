@@ -1,4 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
+// Get fluid scale based on viewport
+const getFluidScale = () => {
+  if (typeof window === 'undefined') return 1;
+  const vmin = Math.min(window.innerWidth, window.innerHeight);
+  return Math.max(0.5, Math.min(1.5, vmin / 1440));
+};
 
 export default function CursorGlow() {
   const glowRef = useRef<HTMLDivElement>(null);
@@ -7,6 +14,14 @@ export default function CursorGlow() {
   const intensityRef = useRef(0.5);
   const isMovingRef = useRef(false);
   const animationRef = useRef<number>();
+  const [fluidScale, setFluidScale] = useState(1);
+
+  useEffect(() => {
+    const updateScale = () => setFluidScale(getFluidScale());
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
 
   useEffect(() => {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -36,6 +51,11 @@ export default function CursorGlow() {
     // Single RAF loop for all cursor updates
     const animate = () => {
       const pos = positionRef.current;
+      const scale = getFluidScale();
+      
+      // Fluid glow size (base 60px scaled)
+      const glowSize = 60 * Math.max(0.6, scale * 1.2);
+      const dotSize = 6 * Math.max(0.7, scale * 1.1);
 
       // Smooth intensity transition
       const targetIntensity = isMovingRef.current ? 0.8 : 0.5;
@@ -43,10 +63,14 @@ export default function CursorGlow() {
       const intensity = intensityRef.current;
 
       // Update positions using transform (GPU accelerated)
-      glow.style.transform = `translate3d(${pos.x - 30}px, ${pos.y - 30}px, 0)`;
+      glow.style.width = `${glowSize}px`;
+      glow.style.height = `${glowSize}px`;
+      glow.style.transform = `translate3d(${pos.x - glowSize / 2}px, ${pos.y - glowSize / 2}px, 0)`;
       glow.style.opacity = String(intensity);
 
-      dot.style.transform = `translate3d(${pos.x - 3}px, ${pos.y - 3}px, 0)`;
+      dot.style.width = `${dotSize}px`;
+      dot.style.height = `${dotSize}px`;
+      dot.style.transform = `translate3d(${pos.x - dotSize / 2}px, ${pos.y - dotSize / 2}px, 0)`;
 
       animationRef.current = requestAnimationFrame(animate);
     };
@@ -67,15 +91,18 @@ export default function CursorGlow() {
     return null;
   }
 
+  // Fluid blur and shadow scaling
+  const blurSize = Math.round(15 * Math.max(0.6, fluidScale * 1.2));
+  const shadowSize1 = Math.round(40 * Math.max(0.6, fluidScale * 1.2));
+  const shadowSize2 = Math.round(80 * Math.max(0.6, fluidScale * 1.2));
+
   return (
     <>
       <div
         ref={glowRef}
         className="fixed pointer-events-none z-50 mix-blend-multiply"
         style={{
-          width: '60px',
-          height: '60px',
-          willChange: 'transform, opacity',
+          willChange: 'transform, opacity, width, height',
           left: 0,
           top: 0,
         }}
@@ -84,8 +111,8 @@ export default function CursorGlow() {
           className="w-full h-full rounded-full"
           style={{
             background: 'radial-gradient(circle, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.1) 30%, rgba(0, 0, 0, 0.02) 60%, transparent 80%)',
-            filter: 'blur(15px)',
-            boxShadow: '0 0 40px rgba(0, 0, 0, 0.15), 0 0 80px rgba(0, 0, 0, 0.07)',
+            filter: `blur(${blurSize}px)`,
+            boxShadow: `0 0 ${shadowSize1}px rgba(0, 0, 0, 0.15), 0 0 ${shadowSize2}px rgba(0, 0, 0, 0.07)`,
           }}
         />
       </div>
@@ -94,9 +121,7 @@ export default function CursorGlow() {
         ref={dotRef}
         className="fixed pointer-events-none z-50"
         style={{
-          width: '6px',
-          height: '6px',
-          willChange: 'transform',
+          willChange: 'transform, width, height',
           left: 0,
           top: 0,
         }}

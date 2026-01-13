@@ -231,8 +231,8 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
       <ScrollPrism currentIndex={currentSectionIndex} totalSections={sectionsList.length} isInverted={isInverted} />
 
       {/* Navigation Header */}
-      <nav className={`fixed top-0 left-0 right-0 z-[100] w-full px-6 md:pl-32 pr-8 py-8 flex justify-between items-start pointer-events-none transition-colors duration-500 ${isInverted ? 'text-black' : 'text-white mix-blend-difference'}`}>
-        <div className={`font-bold tracking-widest text-lg md:text-3xl leading-none pointer-events-auto cursor-default transition-all duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-[100] w-full px-[clamp(1rem,3vw,2rem)] md:pl-[clamp(4rem,8vw,8rem)] pr-[clamp(1rem,3vw,2rem)] py-[clamp(1rem,2vw,2rem)] flex justify-between items-start pointer-events-none transition-colors duration-500 ${isInverted ? 'text-black' : 'text-white mix-blend-difference'}`}>
+        <div className={`font-bold tracking-widest text-fluid-lg md:text-fluid-3xl leading-none pointer-events-auto cursor-default transition-all duration-500 ${currentSectionIndex === 0 ? 'opacity-100' : 'opacity-0'}`}>
           <span className={isInverted ? 'text-black' : 'text-white'}>&lt;</span>
           <span className={`font-space-mono inline-flex ${isInverted ? 'text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]' : 'text-black'}`}>
             <ScrambleText text="PORTFOLIO" as="span" duration={250} />
@@ -241,12 +241,12 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
         </div>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex flex-col items-end gap-2 text-sm tracking-wider pt-2 pointer-events-auto">
+        <div className="hidden md:flex flex-col items-end gap-[clamp(0.25rem,0.5vw,0.5rem)] text-fluid-sm tracking-wider pt-[clamp(0.25rem,0.5vw,0.5rem)] pointer-events-auto">
           {sectionsList.map((item, index) => {
             const isActive = currentSectionIndex === index;
 
             // Consistent styling: active = white with glow, inactive = black
-            let itemClasses = 'transition-all duration-500 relative group uppercase text-right py-1 cursor-pointer ';
+            let itemClasses = 'transition-all duration-500 relative group uppercase text-right py-[clamp(0.125rem,0.25vw,0.25rem)] cursor-pointer ';
             itemClasses += isActive
               ? 'text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]'
               : 'text-black hover:text-white hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]';
@@ -257,9 +257,9 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 onClick={() => scrollToSection(item)}
                 className={itemClasses}
               >
-                <span className={`mr-2 ${isActive ? 'opacity-80' : 'opacity-50'}`}>0{index + 1}.</span>
+                <span className={`mr-[clamp(0.25rem,0.5vw,0.5rem)] ${isActive ? 'opacity-80' : 'opacity-50'}`}>0{index + 1}.</span>
                 <ScrambleText text={item} as="span" duration={250} />
-                <span className={`absolute bottom-0 right-0 h-px transition-all duration-300 bg-white ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} />
+                <span className={`absolute bottom-0 right-0 h-[clamp(0.5px,0.1vw,1px)] transition-all duration-300 bg-white ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} />
               </button>
             );
           })}
@@ -270,12 +270,12 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
       {currentSectionIndex > 0 && (
         <button
           onClick={goToFirstSection}
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] md:hidden pointer-events-auto"
+          className="fixed top-[clamp(0.5rem,1vw,1rem)] left-1/2 -translate-x-1/2 z-[9999] md:hidden pointer-events-auto"
           aria-label="Go to top"
         >
           <svg
-            width="56"
-            height="56"
+            width="clamp(40px, 8vw, 56px)"
+            height="clamp(40px, 8vw, 56px)"
             viewBox="0 0 32 32"
             fill="none"
             className={`transition-colors duration-500 drop-shadow-lg ${isInverted ? 'text-white' : 'text-black'}`}
@@ -304,19 +304,19 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
         {/* Section 1: Identity */}
         <section
           id="identity"
-          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-[clamp(1rem,4vw,2rem)] pb-[clamp(4rem,10vh,6rem)] md:pb-[clamp(1rem,2vh,1.5rem)] md:pl-[clamp(4rem,8vw,8rem)] relative z-10 overflow-hidden"
         >
           <motion.div
-            className="w-full max-w-5xl relative text-left"
+            className="w-full max-w-[min(90vw,80rem)] relative text-left"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: currentSectionIndex === 0 ? 1 : 0.3, y: currentSectionIndex === 0 ? 0 : 20 }}
             transition={{ duration: 0.6 }}
           >
             <div className="flex flex-col justify-center relative items-center md:items-start text-center md:text-left">
-              <h2 className="text-base md:text-xl text-black tracking-wide mb-3 md:mb-4 font-bold font-space-mono">
+              <h2 className="text-fluid-base md:text-fluid-xl text-black tracking-wide mb-[clamp(0.5rem,1.5vw,1rem)] md:mb-[clamp(0.75rem,2vw,1.5rem)] font-bold font-space-mono">
                 <DecodingText text="Hi, I'm" trigger={hasEntered} duration={200} delay={50} className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.7)] opacity-70" />
               </h2>
-              <h1 className="text-4xl md:text-9xl font-bold tracking-tighter mb-4 md:mb-6 text-white font-valorant drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]">
+              <h1 className="text-fluid-4xl md:text-fluid-9xl font-bold tracking-tighter mb-[clamp(0.75rem,2vw,1.5rem)] md:mb-[clamp(1rem,2.5vw,2rem)] text-white font-valorant drop-shadow-[0_0_6px_rgba(255,255,255,0.4)]">
                 {entryComplete ? (
                   nameText
                 ) : (
@@ -329,24 +329,24 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                   />
                 )}
               </h1>
-              <div className="h-px w-24 bg-black mb-4 md:mb-8" />
-              <p className="text-lg md:text-2xl text-white/90 tracking-wide font-light mb-2 md:mb-4 drop-shadow-[0_0_4px_rgba(255,255,255,0.25)]">
+              <div className="h-[clamp(0.5px,0.1vw,1px)] w-[clamp(4rem,8vw,6rem)] bg-black mb-[clamp(0.75rem,2vw,2rem)] md:mb-[clamp(1.5rem,4vw,2.5rem)]" />
+              <p className="text-fluid-lg md:text-fluid-2xl text-white/90 tracking-wide font-light mb-[clamp(0.25rem,1vw,1rem)] md:mb-[clamp(0.75rem,2vw,1.5rem)] drop-shadow-[0_0_4px_rgba(255,255,255,0.25)]">
                 <DecodingText text={RESUME_DATA.role} trigger={hasEntered} duration={250} delay={200} />
               </p>
-              <p className="text-white/60 tracking-wide max-w-2xl text-sm md:text-lg mb-8 md:mb-12 drop-shadow-[0_0_3px_rgba(255,255,255,0.2)]">
+              <p className="text-white/60 tracking-wide max-w-[min(90vw,42rem)] text-fluid-sm md:text-fluid-lg mb-[clamp(1.5rem,4vw,3rem)] md:mb-[clamp(2rem,5vw,4rem)] drop-shadow-[0_0_3px_rgba(255,255,255,0.2)]">
                 <DecodingText text={RESUME_DATA.tagline} trigger={hasEntered} duration={250} delay={250} />
               </p>
 
-              <div className="flex flex-col md:flex-row gap-4 md:gap-8 w-full max-w-md">
+              <div className="flex flex-col md:flex-row gap-[clamp(0.75rem,2vw,1.5rem)] md:gap-[clamp(1.5rem,3vw,2.5rem)] w-full max-w-[min(90vw,28rem)]">
                 <button
                   onClick={(e) => { e.stopPropagation(); scrollToSection('education'); }}
-                  className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold cursor-pointer"
+                  className="bg-transparent border border-white text-white w-full py-[clamp(0.75rem,2vw,1.25rem)] text-fluid-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-300 dot-matrix font-bold cursor-pointer"
                 >
                   <ScrambleText text="MY EDUCATION" as="span" duration={250} />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); scrollToSection('connect'); }}
-                  className="bg-transparent border border-white text-white w-full py-4 text-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-white hover:text-black cursor-pointer"
+                  className="bg-transparent border border-white text-white w-full py-[clamp(0.75rem,2vw,1.25rem)] text-fluid-sm tracking-[0.2em] transition-all duration-300 dot-matrix font-bold hover:bg-white hover:text-black cursor-pointer"
                 >
                   <ScrambleText text="GET IN TOUCH" as="span" duration={250} />
                 </button>
@@ -358,51 +358,51 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
         {/* Section 2: Skills */}
         <section
           id="skills"
-          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-[clamp(1rem,4vw,2rem)] pb-[clamp(4rem,10vh,6rem)] md:pb-[clamp(1rem,2vh,1.5rem)] md:pl-[clamp(4rem,8vw,8rem)] relative z-10 overflow-hidden"
         >
           {/* 3D Object */}
-          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
+          <div className="absolute right-[clamp(2rem,5vw,5rem)] top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube />
           </div>
 
-          <div className="w-full max-w-6xl">
+          <div className="w-full max-w-[min(90vw,80rem)]">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: currentSectionIndex === 1 ? 1 : 0.3, y: currentSectionIndex === 1 ? 0 : 20 }}
               transition={{ duration: 0.8 }}
               className="text-left w-full"
             >
-              <div className="mb-6 md:mb-12 text-center md:text-left">
+              <div className="mb-[clamp(1rem,3vw,3rem)] md:mb-[clamp(2rem,5vw,4rem)] text-center md:text-left">
                 <ScrambleText
                   text="SKILLS & EXPERTISE"
                   as="h3"
                   duration={250}
-                  className="text-2xl md:text-4xl font-bold tracking-wider mb-2 text-white font-valorant drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
+                  className="text-fluid-2xl md:text-fluid-4xl font-bold tracking-wider mb-[clamp(0.25rem,1vw,0.5rem)] text-white font-valorant drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
                 />
-                <p className="text-white/60 text-sm tracking-widest font-mono drop-shadow-[0_0_2px_rgba(255,255,255,0.2)]">
+                <p className="text-white/60 text-fluid-sm tracking-widest font-mono drop-shadow-[0_0_2px_rgba(255,255,255,0.2)]">
                   &gt; Technologies I actively work with
                 </p>
               </div>
 
-              <div className="flex flex-col gap-8 w-full">
+              <div className="flex flex-col gap-[clamp(1.25rem,3vw,2.5rem)] w-full">
                 {RESUME_DATA.skills.map((skill, index) => (
                   <div key={index} className="w-full group">
-                    <div className="flex items-end justify-between mb-2">
-                      <div className="flex items-center gap-4">
-                        <span className="text-black/60 font-mono text-sm">[{skill.id}]</span>
+                    <div className="flex items-end justify-between mb-[clamp(0.25rem,0.75vw,0.5rem)]">
+                      <div className="flex items-center gap-[clamp(0.5rem,1.5vw,1rem)]">
+                        <span className="text-black/60 font-mono text-fluid-sm">[{skill.id}]</span>
                         <div className="">
-                          <h4 className="text-xl md:text-2xl text-white font-bold tracking-wide group-hover:text-black transition-colors drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]">{skill.name}</h4>
-                          <p className="text-white/40 text-xs tracking-wider uppercase hidden md:block drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">{skill.desc}</p>
+                          <h4 className="text-fluid-xl md:text-fluid-2xl text-white font-bold tracking-wide group-hover:text-black transition-colors drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]">{skill.name}</h4>
+                          <p className="text-white/40 text-fluid-xs tracking-wider uppercase hidden md:block drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">{skill.desc}</p>
                         </div>
                       </div>
                       <div className="text-right flex flex-col items-end">
-                        <span className="text-white/40 text-xs tracking-widest mb-1 drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">{skill.category}</span>
-                        <span className="text-black font-bold font-mono">{skill.percent}</span>
+                        <span className="text-white/40 text-fluid-xs tracking-widest mb-[clamp(0.125rem,0.25vw,0.25rem)] drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">{skill.category}</span>
+                        <span className="text-black font-bold font-mono text-fluid-sm">{skill.percent}</span>
                       </div>
                     </div>
 
                     {/* Progress Bar */}
-                    <div className="w-full h-1 bg-white/10 relative overflow-hidden">
+                    <div className="w-full h-[clamp(2px,0.3vw,4px)] bg-white/10 relative overflow-hidden">
                       <motion.div
                         className="absolute top-0 left-0 h-full bg-black"
                         initial={{ width: 0 }}
@@ -420,14 +420,14 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
         {/* Section 3: Projects */}
         <section
           id="projects"
-          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-[clamp(1rem,4vw,2rem)] pb-[clamp(4rem,10vh,6rem)] md:pb-[clamp(1rem,2vh,1.5rem)] md:pl-[clamp(4rem,8vw,8rem)] relative z-10 overflow-hidden"
         >
           {/* 3D Object */}
-          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
+          <div className="absolute right-[clamp(2rem,5vw,5rem)] top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube isInverted={isInverted} />
           </div>
 
-          <div className="w-full max-w-4xl text-left">
+          <div className="w-full max-w-[min(90vw,64rem)] text-left">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: currentSectionIndex === 2 ? 1 : 0.3, y: currentSectionIndex === 2 ? 0 : 20 }}
@@ -437,10 +437,10 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 text="PROJECT MODULE"
                 as="h2"
                 duration={250}
-                className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-12 text-white font-valorant text-center md:text-left drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
+                className="text-fluid-2xl md:text-fluid-4xl font-bold tracking-wider mb-[clamp(1.5rem,4vw,3rem)] md:mb-[clamp(2rem,5vw,4rem)] text-white font-valorant text-center md:text-left drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
               />
-              <div className="py-12 md:py-24 border-y border-white/10 w-full text-center md:text-left">
-                <ol className="list-decimal list-inside text-lg md:text-2xl font-light space-y-4">
+              <div className="py-[clamp(2rem,6vw,6rem)] md:py-[clamp(4rem,8vw,8rem)] border-y border-white/10 w-full text-center md:text-left">
+                <ol className="list-decimal list-inside text-fluid-lg md:text-fluid-2xl font-light space-y-[clamp(0.75rem,2vw,1.5rem)]">
                   <li>
                     <span className="text-white/90 drop-shadow-[0_0_3px_rgba(255,255,255,0.2)]">My Portfolio:</span> <a href="https://sylked.vercel.app" target="_blank" rel="noopener noreferrer" className="text-black underline hover:text-white transition-colors duration-300">https://sylked.vercel.app</a>
                   </li>
@@ -453,14 +453,14 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
         {/* Section 4: Education */}
         <section
           id="education"
-          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-[clamp(1rem,4vw,2rem)] pb-[clamp(4rem,10vh,6rem)] md:pb-[clamp(1rem,2vh,1.5rem)] md:pl-[clamp(4rem,8vw,8rem)] relative z-10 overflow-hidden"
         >
           {/* 3D Object */}
-          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
+          <div className="absolute right-[clamp(2rem,5vw,5rem)] top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube />
           </div>
 
-          <div className="w-full max-w-5xl">
+          <div className="w-full max-w-[min(90vw,80rem)]">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: currentSectionIndex === 3 ? 1 : 0.3, y: currentSectionIndex === 3 ? 0 : 20 }}
@@ -470,20 +470,20 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 text="EDUCATION LOGS"
                 as="h2"
                 duration={250}
-                className="text-2xl md:text-4xl font-bold tracking-wider mb-8 md:mb-16 text-white font-valorant text-center md:text-left drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
+                className="text-fluid-2xl md:text-fluid-4xl font-bold tracking-wider mb-[clamp(1.5rem,4vw,3rem)] md:mb-[clamp(3rem,6vw,5rem)] text-white font-valorant text-center md:text-left drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
               />
-              <div className="flex flex-col gap-12">
+              <div className="flex flex-col gap-[clamp(2rem,5vw,4rem)]">
                 {RESUME_DATA.education.map((edu, index) => (
-                  <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-8 hover:border-black transition-colors group w-full">
+                  <div key={index} className="flex flex-col md:flex-row justify-between items-start border-b border-white/20 pb-[clamp(1.5rem,3vw,2.5rem)] hover:border-black transition-colors group w-full">
                     <div className="text-left">
-                      <h3 className="text-xl md:text-3xl font-bold tracking-wide text-white group-hover:text-black transition-colors font-space-mono mb-2 drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]">
+                      <h3 className="text-fluid-xl md:text-fluid-3xl font-bold tracking-wide text-white group-hover:text-black transition-colors font-space-mono mb-[clamp(0.25rem,0.75vw,0.5rem)] drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]">
                         {edu.institution}
                       </h3>
-                      <p className="text-white/80 text-lg tracking-wider drop-shadow-[0_0_3px_rgba(255,255,255,0.2)]">{edu.title}</p>
+                      <p className="text-white/80 text-fluid-lg tracking-wider drop-shadow-[0_0_3px_rgba(255,255,255,0.2)]">{edu.title}</p>
                     </div>
-                    <div className="mt-4 md:mt-0 text-left md:text-right w-full md:w-auto">
-                      <span className="block text-black text-sm tracking-widest mb-1">{edu.status}</span>
-                      <p className="text-white/40 text-sm font-mono drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">{edu.year}</p>
+                    <div className="mt-[clamp(0.75rem,2vw,1rem)] md:mt-0 text-left md:text-right w-full md:w-auto">
+                      <span className="block text-black text-fluid-sm tracking-widest mb-[clamp(0.125rem,0.25vw,0.25rem)]">{edu.status}</span>
+                      <p className="text-white/40 text-fluid-sm font-mono drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">{edu.year}</p>
                     </div>
                   </div>
                 ))}
@@ -495,14 +495,14 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
         {/* Section 5: Connect */}
         <section
           id="connect"
-          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-4 pb-24 md:pb-6 md:pl-32 relative z-10 overflow-hidden"
+          className="w-full h-[100vh] flex flex-col items-center md:items-start justify-center px-[clamp(1rem,4vw,2rem)] pb-[clamp(4rem,10vh,6rem)] md:pb-[clamp(1rem,2vh,1.5rem)] md:pl-[clamp(4rem,8vw,8rem)] relative z-10 overflow-hidden"
         >
           {/* 3D Object */}
-          <div className="absolute right-20 top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
+          <div className="absolute right-[clamp(2rem,5vw,5rem)] top-1/2 -translate-y-1/2 hidden md:block pointer-events-none opacity-40">
             <RotatingCube />
           </div>
 
-          <div className="w-full max-w-5xl h-full flex flex-col justify-center py-20">
+          <div className="w-full max-w-[min(90vw,80rem)] h-full flex flex-col justify-center py-[clamp(3rem,6vw,5rem)]">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: currentSectionIndex === 4 ? 1 : 0.3, y: currentSectionIndex === 4 ? 0 : 20 }}
@@ -513,13 +513,13 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                 text="CONNECT MODULE"
                 as="h2"
                 duration={250}
-                className="text-2xl md:text-4xl font-bold tracking-wider mb-12 md:mb-24 text-white font-valorant text-center md:text-left drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
+                className="text-fluid-2xl md:text-fluid-4xl font-bold tracking-wider mb-[clamp(2rem,5vw,6rem)] md:mb-[clamp(4rem,8vw,8rem)] text-white font-valorant text-center md:text-left drop-shadow-[0_0_8px_rgba(255,255,255,0.7)]"
               />
 
-              <div className="flex flex-col gap-16 items-start justify-start w-full">
-                <a href="https://instagram.com/endeavv0r" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-8">
-                  <div className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center group-hover:border-black group-hover:bg-black/10 transition-all duration-500">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+              <div className="flex flex-col gap-[clamp(2.5rem,6vw,5rem)] items-start justify-start w-full">
+                <a href="https://instagram.com/endeavv0r" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-[clamp(1.25rem,3vw,2.5rem)]">
+                  <div className="w-[clamp(4rem,8vw,6rem)] h-[clamp(4rem,8vw,6rem)] rounded-full border border-white/20 flex items-center justify-center group-hover:border-black group-hover:bg-black/10 transition-all duration-500">
+                    <svg style={{ width: 'clamp(1.5rem, 3vw, 2.5rem)', height: 'clamp(1.5rem, 3vw, 2.5rem)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                       <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
                       <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -530,15 +530,15 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                       text="INSTAGRAM"
                       as="h3"
                       duration={250}
-                      className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]"
+                      className="text-fluid-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]"
                     />
-                    <p className="text-white/40 text-sm mt-2 tracking-wider drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">@endeavv0r</p>
+                    <p className="text-white/40 text-fluid-sm mt-[clamp(0.25rem,0.75vw,0.5rem)] tracking-wider drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">@endeavv0r</p>
                   </div>
                 </a>
 
-                <a href="https://www.linkedin.com/in/pushkar-jha-4a1258381" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-8">
-                  <div className="w-24 h-24 rounded-full border border-white/20 flex items-center justify-center group-hover:border-black group-hover:bg-black/10 transition-all duration-500">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                <a href="https://www.linkedin.com/in/pushkar-jha-4a1258381" target="_blank" rel="noopener noreferrer" className="group text-left flex items-center gap-[clamp(1.25rem,3vw,2.5rem)]">
+                  <div className="w-[clamp(4rem,8vw,6rem)] h-[clamp(4rem,8vw,6rem)] rounded-full border border-white/20 flex items-center justify-center group-hover:border-black group-hover:bg-black/10 transition-all duration-500">
+                    <svg style={{ width: 'clamp(1.5rem, 3vw, 2.5rem)', height: 'clamp(1.5rem, 3vw, 2.5rem)' }} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                       <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                       <rect x="2" y="9" width="4" height="12"></rect>
                       <circle cx="4" cy="4" r="2"></circle>
@@ -549,16 +549,16 @@ export default function Home({ hasEntered, isInverted = false, isTransitioning =
                       text="LINKEDIN"
                       as="h3"
                       duration={250}
-                      className="text-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]"
+                      className="text-fluid-3xl font-bold tracking-widest text-white group-hover:text-black transition-colors font-space-mono drop-shadow-[0_0_4px_rgba(255,255,255,0.3)]"
                     />
-                    <p className="text-white/40 text-sm mt-2 tracking-wider drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">Connect Professionally</p>
+                    <p className="text-white/40 text-fluid-sm mt-[clamp(0.25rem,0.75vw,0.5rem)] tracking-wider drop-shadow-[0_0_2px_rgba(255,255,255,0.15)]">Connect Professionally</p>
                   </div>
                 </a>
               </div>
             </motion.div>
 
-            <div className="mt-auto text-left pt-12">
-              <p className="text-black/80 text-xs tracking-[0.3em]">
+            <div className="mt-auto text-left pt-[clamp(2rem,5vw,4rem)]">
+              <p className="text-black/80 text-fluid-xs tracking-[0.3em]">
                 DESIGNED BY PUSHKAR JHA
               </p>
             </div>

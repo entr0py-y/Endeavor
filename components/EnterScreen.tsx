@@ -20,7 +20,7 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
 
     return (
         <motion.div
-            className="fixed inset-0 z-[9999] flex flex-col items-center justify-end pb-16 cursor-none"
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-end pb-[clamp(2rem,4vh,4rem)] cursor-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -40,11 +40,11 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
             <div className="absolute inset-0 bg-black/40" />
 
             {/* User Quote */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full max-w-2xl px-6 pointer-events-none select-none">
-                <p className="font-space-mono text-white text-lg md:text-xl glow-white leading-relaxed mb-6 tracking-wide">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full max-w-[min(90vw,42rem)] px-[clamp(1rem,4vw,1.5rem)] pointer-events-none select-none">
+                <p className="font-space-mono text-white text-fluid-lg md:text-fluid-xl glow-white leading-relaxed mb-[clamp(1rem,3vw,1.5rem)] tracking-wide">
                     "The optimist thinks this is the best of all possible worlds; the pessimist fears it is true."
                 </p>
-                <p className="font-space-mono text-white/80 text-sm md:text-base glow-white tracking-widest">
+                <p className="font-space-mono text-white/80 text-fluid-sm md:text-fluid-base glow-white tracking-widest">
                     - J. Robert Oppenheimer
                 </p>
             </div>
@@ -59,10 +59,14 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
                 }}
             >
                 {/* Inner dot */}
-                <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full ${isHovering ? 'bg-white' : 'bg-white'} transition-colors duration-200`} />
+                <div 
+                    className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ${isHovering ? 'bg-white' : 'bg-white'} transition-colors duration-200`}
+                    style={{ width: 'clamp(6px, 0.8vmin, 8px)', height: 'clamp(6px, 0.8vmin, 8px)' }}
+                />
                 {/* Outer circle */}
                 <div
-                    className={`w-8 h-8 rounded-full border ${isHovering ? 'border-white scale-125' : 'border-white/50'} transition-all duration-200`}
+                    className={`rounded-full border ${isHovering ? 'border-white scale-125' : 'border-white/50'} transition-all duration-200`}
+                    style={{ width: 'clamp(24px, 3vmin, 32px)', height: 'clamp(24px, 3vmin, 32px)' }}
                 />
             </div>
 
@@ -71,7 +75,7 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
                 onClick={onEnter}
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
-                className="cursor-none relative z-10 font-space-mono text-xs tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300"
+                className="cursor-none relative z-10 font-space-mono text-fluid-xs tracking-[0.2em] text-white/70 hover:text-white transition-colors duration-300"
             >
                 &lt;ENTER PORTFOLIO/&gt;
             </span>

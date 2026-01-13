@@ -6,6 +6,13 @@ interface ScrollPrismProps {
     isInverted?: boolean;
 }
 
+// Fluid scale factor for canvas elements
+const getFluidScale = () => {
+    if (typeof window === 'undefined') return 1;
+    const vmin = Math.min(window.innerWidth, window.innerHeight);
+    return vmin / 1440; // Reference viewport size
+};
+
 export default function ScrollPrism({ currentIndex, totalSections, isInverted = false }: ScrollPrismProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rotationRef = useRef({ x: 0, y: 0, z: 0 });
@@ -13,6 +20,7 @@ export default function ScrollPrism({ currentIndex, totalSections, isInverted = 
     const isInvertedRef = useRef(isInverted);
 
     const [isMobile, setIsMobile] = React.useState(false);
+    const [fluidScale, setFluidScale] = React.useState(1);
 
     // Update ref when prop changes
     useEffect(() => {
@@ -20,10 +28,13 @@ export default function ScrollPrism({ currentIndex, totalSections, isInverted = 
     }, [isInverted]);
 
     useEffect(() => {
-        const checkMobile = () => setIsMobile(window.innerWidth < 768);
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+        const updateScales = () => {
+            setIsMobile(window.innerWidth < 768);
+            setFluidScale(getFluidScale());
+        };
+        updateScales();
+        window.addEventListener('resize', updateScales);
+        return () => window.removeEventListener('resize', updateScales);
     }, []);
 
     useEffect(() => {
@@ -33,9 +44,14 @@ export default function ScrollPrism({ currentIndex, totalSections, isInverted = 
         const ctx = canvas.getContext('2d', { alpha: true });
         if (!ctx) return;
 
-        // Responsive scale: larger on desktop, smaller on mobile
-        const scale = isMobile ? 0.9 : 1.2;
-        const size = isMobile ? 120 : 200; // Corrected size
+        // Responsive scale: uses viewport-based scaling
+        const baseScale = isMobile ? 0.9 : 1.2;
+        const vminScale = Math.min(window.innerWidth, window.innerHeight) / 1440;
+        const scale = baseScale * Math.max(0.5, Math.min(1.5, vminScale * 1.5));
+        
+        // Size scales with viewport
+        const baseSize = isMobile ? 120 : 200;
+        const size = Math.round(baseSize * Math.max(0.6, Math.min(1.4, vminScale * 1.3)));
         canvas.width = size * 2;
         canvas.height = size * 2;
 
@@ -156,16 +172,21 @@ export default function ScrollPrism({ currentIndex, totalSections, isInverted = 
     // Position Calculation
     const progress = 15 + (currentIndex / Math.max(totalSections - 1, 1)) * 70;
 
+    // Fluid canvas size based on viewport
+    const canvasSize = isMobile 
+        ? `clamp(80px, 15vmin, 120px)` 
+        : `clamp(120px, 12vmin, 200px)`;
+
     // Desktop: Top%
     // Mobile: Left%
 
     const containerStyle: React.CSSProperties = isMobile ? {
         left: `${progress}%`,
-        bottom: '4.5rem', // Adjusted higher as requested
+        bottom: 'clamp(3rem, 6vh, 4.5rem)',
         transform: 'translateX(-50%)',
         transition: 'left 1.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
     } : {
-        left: '-20px',
+        left: 'clamp(-30px, -2vw, -10px)',
         top: `${progress}%`,
         transform: 'translateY(-50%)',
         transition: 'top 1.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
@@ -179,16 +200,17 @@ export default function ScrollPrism({ currentIndex, totalSections, isInverted = 
             <canvas
                 ref={canvasRef}
                 style={{
-                    width: isMobile ? '120px' : '160px',
-                    height: isMobile ? '120px' : '160px',
+                    width: canvasSize,
+                    height: canvasSize,
                 }}
             />
             {/* Track Line */}
             {isMobile ? (
                 // Horizontal Track (Mobile)
                 <div
-                    className={`absolute top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-transparent ${isInverted ? 'via-black' : 'via-white'} to-transparent ${isInverted ? 'drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'}`}
+                    className={`absolute top-1/2 -translate-y-1/2 bg-gradient-to-r from-transparent ${isInverted ? 'via-black' : 'via-white'} to-transparent ${isInverted ? 'drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'}`}
                     style={{
+                        height: 'clamp(0.5px, 0.1vmin, 1px)',
                         width: '200vw',
                         left: '-100vw',
                         zIndex: -1,
@@ -197,8 +219,9 @@ export default function ScrollPrism({ currentIndex, totalSections, isInverted = 
             ) : (
                 // Vertical Track (Desktop)
                 <div
-                    className={`absolute left-1/2 -translate-x-1/2 w-px bg-gradient-to-b from-transparent ${isInverted ? 'via-black' : 'via-white'} to-transparent ${isInverted ? 'drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'}`}
+                    className={`absolute left-1/2 -translate-x-1/2 bg-gradient-to-b from-transparent ${isInverted ? 'via-black' : 'via-white'} to-transparent ${isInverted ? 'drop-shadow-[0_0_8px_rgba(0,0,0,0.8)]' : 'drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'}`}
                     style={{
+                        width: 'clamp(0.5px, 0.1vmin, 1px)',
                         height: '200vh',
                         top: '-100vh',
                         zIndex: -1,
