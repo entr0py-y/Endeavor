@@ -140,7 +140,7 @@ export default function RotatingCube({ isInverted = false }: RotatingCubeProps) 
     };
 
     let lastFrame = 0;
-    const targetFrameTime = 1000 / 60; // 60fps
+    const targetFrameTime = 1000 / 30; // Reduced to 30fps for better performance
 
     // Lerp function and transition state
     const lerp = (a: number, b: number, t: number) => a + (b - a) * t;

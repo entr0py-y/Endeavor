@@ -40,9 +40,9 @@ const NetworkMesh: React.FC = () => {
     const getNodeCount = () => {
         const scale = getFluidScale();
         if (typeof window !== 'undefined' && window.innerWidth < 768) {
-            return Math.round(40 * Math.max(0.7, scale)); // Mobile: fewer nodes, scaled
+            return Math.round(18 * Math.max(0.7, scale)); // Mobile: minimal nodes for performance
         }
-        return Math.round(120 * Math.max(0.6, Math.min(1.3, scale))); // Desktop: scaled node count
+        return Math.round(50 * Math.max(0.6, Math.min(1.2, scale))); // Desktop: reduced from 70 for better performance
     };
     
     // Connection distances scale with viewport for proportional look

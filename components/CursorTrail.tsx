@@ -25,11 +25,11 @@ export default function CursorTrail() {
         performanceEngineRef.current = getPerformanceEngine();
         performanceEngineRef.current.start();
 
-        // Configuration
-        const TRAIL_LENGTH = 35;       // Number of points
+        // Configuration - reduced for better performance
+        const TRAIL_LENGTH = 20;       // Number of points (reduced from 35)
         const LINE_WIDTH = 1.0;        // Hairline thickness
         const INERTIA = 0.25;          // Lower = more drag/lazier (0.0 to 1.0)
-        const FADE_RATE = 0.2;         // How fast points age
+        const FADE_RATE = 0.25;        // How fast points age (faster fade)
 
         // Check for reduced motion preference
         const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');

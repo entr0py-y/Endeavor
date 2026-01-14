@@ -63,9 +63,9 @@ export interface PerformanceMetrics {
 
 const DEFAULT_CONFIG: FPSConfig = {
   targets: {
-    low: { min: 24, max: 40, initial: 30 },
-    medium: { min: 30, max: 60, initial: 50 },
-    high: { min: 60, max: 144, initial: 90 },
+    low: { min: 20, max: 30, initial: 24 },
+    medium: { min: 24, max: 45, initial: 30 },
+    high: { min: 30, max: 60, initial: 45 },  // Reduced from 90 for multiple concurrent animations
   },
   adjustmentInterval: 2000,
   adjustmentStep: 5,

@@ -1,22 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 
 // Dynamic imports to avoid SSR issues
 const RotatingCube = dynamic(() => import('./RotatingCube'), { ssr: false });
 const NetworkMesh = dynamic(() => import('./NetworkMesh'), { ssr: false });
+const CursorTrail = dynamic(() => import('./CursorTrail'), { ssr: false });
+const FollowCube = dynamic(() => import('./FollowCube'), { ssr: false });
 
 interface EnterScreenProps {
     onEnter: () => void;
 }
 
 export default function EnterScreen({ onEnter }: EnterScreenProps) {
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [isHovering, setIsHovering] = useState(false);
+    const cursorRef = useRef<HTMLDivElement>(null);
 
-    const handleMouseMove = (e: React.MouseEvent) => {
-        setMousePos({ x: e.clientX, y: e.clientY });
-    };
+    // Use RAF for smooth cursor updates instead of state
+    useEffect(() => {
+        const cursor = cursorRef.current;
+        if (!cursor) return;
+
+        const handleMouseMove = (e: MouseEvent) => {
+            cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+        };
+
+        window.addEventListener('mousemove', handleMouseMove, { passive: true });
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
 
     return (
         <motion.div
@@ -25,7 +36,6 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            onMouseMove={handleMouseMove}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
             onTouchEnd={(e) => e.stopPropagation()}
@@ -36,11 +46,21 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
             {/* Tesseract with coordinates - Background */}
             <RotatingCube />
 
+            {/* Follow Cube - Behind overlay, with GPU-accelerated opacity */}
+            <div className="absolute inset-0 z-[1] opacity-50 pointer-events-none" style={{ filter: 'blur(2px)', willChange: 'transform' }}>
+                <FollowCube />
+            </div>
+
             {/* Full overlay */}
             <div className="absolute inset-0 bg-black/40" />
 
+            {/* Cursor Trail Effect - on top of overlay */}
+            <div className="absolute inset-0 z-[2] pointer-events-none">
+                <CursorTrail />
+            </div>
+
             {/* User Quote */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full max-w-[min(90vw,42rem)] px-[clamp(1rem,4vw,1.5rem)] pointer-events-none select-none">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full max-w-[min(90vw,42rem)] px-[clamp(1rem,4vw,1.5rem)] pointer-events-none select-none z-[3]">
                 <p className="font-space-mono text-white text-fluid-lg md:text-fluid-xl glow-white leading-relaxed mb-[clamp(1rem,3vw,1.5rem)] tracking-wide">
                     "The optimist thinks this is the best of all possible worlds; the pessimist fears it is true."
                 </p>
@@ -51,16 +71,17 @@ export default function EnterScreen({ onEnter }: EnterScreenProps) {
 
             {/* Custom cursor - dot with circle */}
             <div
-                className="fixed pointer-events-none z-[10000] transition-transform duration-150"
+                ref={cursorRef}
+                className="fixed pointer-events-none z-[10000]"
                 style={{
-                    left: mousePos.x,
-                    top: mousePos.y,
-                    transform: 'translate(-50%, -50%)',
+                    left: 0,
+                    top: 0,
+                    willChange: 'transform',
                 }}
             >
                 {/* Inner dot */}
                 <div 
-                    className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full ${isHovering ? 'bg-white' : 'bg-white'} transition-colors duration-200`}
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white"
                     style={{ width: 'clamp(6px, 0.8vmin, 8px)', height: 'clamp(6px, 0.8vmin, 8px)' }}
                 />
                 {/* Outer circle */}

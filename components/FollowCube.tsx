@@ -36,19 +36,24 @@ export default function FollowCube() {
     };
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
-    const animate = () => {
+    let lastFrame = 0;
+    const targetFrameTime = 1000 / 30; // 30fps is enough for smooth follow
+
+    const animate = (timestamp: number) => {
+      // Frame limiting for performance
+      if (timestamp - lastFrame < targetFrameTime) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrame = timestamp;
+
       // Smooth follow with easing
-      const ease = 0.08;
+      const ease = 0.12; // Slightly faster easing to compensate for lower fps
       currentPosRef.current.x += (mouseRef.current.x - currentPosRef.current.x) * ease;
       currentPosRef.current.y += (mouseRef.current.y - currentPosRef.current.y) * ease;
 
-      // Get fluid size for offset
-      const scale = getFluidScale();
-      const size = 100 * Math.max(0.6, scale);
-      const offset = size / 2;
-
-      // Use transform3d for GPU acceleration
-      cube.style.transform = `translate3d(${currentPosRef.current.x - offset}px, ${currentPosRef.current.y - offset}px, 0)`;
+      // Use transform3d for GPU acceleration - translate(-50%, -50%) centers the cube on cursor
+      cube.style.transform = `translate3d(${currentPosRef.current.x}px, ${currentPosRef.current.y}px, 0) translate(-50%, -50%)`;
 
       animationRef.current = requestAnimationFrame(animate);
     };
